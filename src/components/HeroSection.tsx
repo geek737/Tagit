@@ -1,12 +1,11 @@
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-handshake-3d.png";
 
 const HeroSection = () => {
   return (
     <section className="w-full px-4 md:px-8 lg:px-16 py-12 md:py-20">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="flex items-center justify-center lg:justify-start min-h-[calc(100vh-120px)]">
           {/* Left Content */}
           <div className="space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -36,19 +35,6 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Content - Hero Image */}
-          <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="relative w-full max-w-lg">
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent rounded-3xl blur-3xl"></div>
-              <div className="relative backdrop-blur-sm bg-foreground/5 border border-foreground/20 rounded-3xl p-8 md:p-12">
-                <img
-                  src={heroImage}
-                  alt="Digital partnership handshake"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

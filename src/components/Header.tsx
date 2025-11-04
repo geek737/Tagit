@@ -18,9 +18,8 @@ const Header = () => {
     <header className="w-full py-6 px-4 md:px-8 lg:px-16 relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <img src={logo} alt="TagIt Logo" className="h-10 w-auto" />
-          <span className="text-foreground text-2xl font-bold">tagit</span>
         </div>
 
         {/* Desktop Navigation */}
