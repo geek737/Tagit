@@ -11,8 +11,7 @@ const Index = () => {
           className="absolute inset-0 bg-gradient-bg md:bg-none"
           style={{
             backgroundImage: 'url(/src/assets/hero-handshake-3d.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
           }}
         >
