@@ -5,9 +5,9 @@ const HeroSection = () => {
   return (
     <section className="w-full px-4 md:px-8 lg:px-16 py-12 md:py-20">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center lg:justify-start min-h-[calc(100vh-120px)]">
+        <div className="flex items-center justify-center lg:justify-start min-h-[calc(100vh-120px)] pt-16">
           {/* Left Content */}
-          <div className="space-y-8">
+          <div className="flex flex-col gap-16">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               <span className="text-accent">Digital marketing,</span>
               <br />

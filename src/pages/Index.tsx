@@ -1,16 +1,17 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import heroBackground from "@/assets/hero-handshake-3d.png";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-bg dark">
+    <div className="bg-gradient-bg dark max-h-screen">
       {/* Hero Section with Background Image */}
       <div className="relative min-h-screen">
         {/* Background Image - Hidden on mobile, gradient on mobile */}
         <div 
           className="absolute inset-0 bg-gradient-bg md:bg-none"
           style={{
-            backgroundImage: 'url(/src/assets/hero-handshake-3d.png)',
+            backgroundImage: `url(${heroBackground})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
           }}
