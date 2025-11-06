@@ -6,6 +6,7 @@ import iconSocialMedia from "@/assets/icon-social-media.png";
 import iconContent from "@/assets/icon-content.png";
 import iconWebsite from "@/assets/icon-website.png";
 import iconDesign from "@/assets/icon-design.png";
+import servicesBackground from "@/assets/services-background.png";
 
 const services = [
   {
@@ -42,15 +43,17 @@ const services = [
 
 const ServicesSection = () => {
   return (
-    <section className="w-full h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 relative overflow-hidden">
-      {/* Background overlay pattern */}
+    <section 
+      className="w-full h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 relative overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(135deg, rgb(147, 51, 234) 0%, rgb(126, 34, 206) 50%, rgb(109, 40, 217) 100%)`,
+      }}
+    >
+      {/* Background image for desktop only */}
       <div 
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 hidden md:block bg-cover bg-center"
         style={{
-          backgroundImage: `
-            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)
-          `,
+          backgroundImage: `url(${servicesBackground})`,
         }}
       />
 
