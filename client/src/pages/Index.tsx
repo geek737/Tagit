@@ -7,9 +7,9 @@ import heroBackground from "@/assets/hero-handshake-3d.png";
 const Index = () => {
   return (
     <>
-      <div className="bg-gradient-bg dark max-h-screen">
+      <div className="bg-gradient-bg dark min-h-screen">
         {/* Hero Section with Background Image */}
-        <div className="relative max-h-screen">
+        <div className="relative min-h-screen">
           {/* Background Image - Hidden on mobile, gradient on mobile */}
           <div 
             className="absolute inset-0 bg-gradient-bg md:bg-none"
@@ -33,7 +33,7 @@ const Index = () => {
             />
           </div>
           
-          <div className="relative z-10 h-screen">
+          <div className="relative z-10">
             <Header />
             <HeroSection />
           </div>
