@@ -8,7 +8,7 @@ const Index = () => {
     <>
       <div className="bg-gradient-bg dark max-h-screen">
         {/* Hero Section with Background Image */}
-        <div className="relative min-h-screen">
+        <div className="relative max-h-screen">
           {/* Background Image - Hidden on mobile, gradient on mobile */}
           <div 
             className="absolute inset-0 bg-gradient-bg md:bg-none"

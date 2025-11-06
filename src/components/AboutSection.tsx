@@ -2,9 +2,9 @@ import robotImage from "@/assets/robot-3d-orange.png";
 
 const AboutSection = () => {
   return (
-    <section className="w-full min-h-screen px-4 md:px-8 lg:px-16 py-12 md:py-20 bg-white flex items-center">
+    <section className="w-full max-h-screen px-4 md:px-8 lg:px-16 py-12 md:py-20 bg-white flex items-center">
       <div className="max-w-7xl mx-auto w-full">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-60">
           {/* Robot Image */}
           <div className="flex-1 flex justify-center lg:justify-start">
             <img 
@@ -28,11 +28,11 @@ const AboutSection = () => {
             </h3>
 
             <div className="space-y-4 text-black">
-              <p className="text-base md:text-lg leading-relaxed">
+              <p className="text-base md:text-lg leading-relaxed max-w-sm text-justify">
                 Nous concevons des expériences digitales qui font briller les marques. Guidés par la stratégie, animés par la créativité et portés par le digital, nous créons des contenus et des histoires qui inspirent, osent et laissent une empreinte durable, tout en générant un impact réel.
               </p>
               
-              <p className="text-base md:text-lg leading-relaxed">
+              <p className="text-base md:text-lg leading-relaxed max-w-sm text-justify">
                 Nous serions ravis de collaborer avec vous, d'imaginer ensemble des projets qui font la différence et de donner à votre marque la visibilité et l'impact qu'elle mérite.
               </p>
             </div>
