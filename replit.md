@@ -9,6 +9,8 @@ TagTik is a marketing and branding agency website built with React, TypeScript, 
 - **Fixed Express Route Issues**: Updated server configuration to work with latest Express version (using middleware instead of `app.get('*')`)
 - **Vite Configuration**: Configured `allowedHosts` for Replit's dynamic domains (`.replit.dev`, `.repl.co`)
 - **Router Migration**: Migrated from react-router-dom to wouter for better integration with the fullstack template
+- **Tailwind Configuration Fix**: Fixed Tailwind content paths to point to `./client/src/**/*.{ts,tsx}` for proper CSS application
+- **Services Section Background**: Added custom background image for desktop (md breakpoint and above) while keeping gradient background for mobile devices
 
 ## Project Architecture
 
