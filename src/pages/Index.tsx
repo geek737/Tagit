@@ -14,7 +14,7 @@ const Index = () => {
             className="absolute inset-0 bg-gradient-bg md:bg-none"
             style={{
               backgroundImage: `url(${heroBackground})`,
-              backgroundSize: 'contain',
+              backgroundSize: 'auto',
               backgroundRepeat: 'no-repeat',
             }}
           >
@@ -32,7 +32,7 @@ const Index = () => {
             />
           </div>
           
-          <div className="relative z-10">
+          <div className="relative z-10 h-screen">
             <Header />
             <HeroSection />
           </div>

@@ -2,7 +2,7 @@ import robotImage from "@/assets/robot-3d-orange.png";
 
 const AboutSection = () => {
   return (
-    <section className="w-full max-h-screen px-4 md:px-8 lg:px-16 py-12 md:py-20 bg-white flex items-center">
+    <section className="w-full max-h-screen px-4 md:px-8 lg:px-16 py-12 md:py-20 bg-white flex items-center h-screen">
       <div className="max-w-7xl mx-auto w-full">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-60">
           {/* Robot Image */}
@@ -20,11 +20,11 @@ const AboutSection = () => {
               <span className="text-primary font-bold">Step inside</span>
               <br />
               <span className="text-primary font-bold">Our </span>
-              <span className="text-primary font-medium">World</span>
+              <span className="text-primary font-normal">World</span>
             </h2>
 
-            <h3 className="text-xl md:text-2xl font-semibold text-black">
-              Agence <span className="text-primary">Digitale - Web</span>
+            <h3 className="text-xl md:text-2xl text-black">
+              Agence <span className="text-accent font-semibold">Digitale - Web</span>
             </h3>
 
             <div className="space-y-4 text-black">
