@@ -17,28 +17,10 @@ export function log(message: string) {
 export async function setupVite(app: Express) {
   const vite = await createViteServer({
     server: { middlewareMode: true },
-    appType: "custom",
+    appType: "spa",
   });
 
   app.use(vite.middlewares);
-  app.use(async (req, res, next) => {
-    const url = req.originalUrl;
-
-    try {
-      const clientTemplate = path.resolve("client/index.html");
-      let template = fs.readFileSync(clientTemplate, "utf-8");
-      template = await vite.transformIndexHtml(url, template);
-
-      const { render } = await vite.ssrLoadModule("/client/src/entry-server.tsx");
-      const appHtml = await render(url);
-      const html = template.replace(`<!--app-html-->`, appHtml);
-
-      res.status(200).set({ "Content-Type": "text/html" }).end(html);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
-    }
-  });
 }
 
 export function serveStatic(app: Express) {
