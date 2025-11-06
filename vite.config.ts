@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => ({
     outDir: "../dist/public",
     emptyOutDir: true,
   },
+  server: {
+    host: "0.0.0.0",
+    allowedHosts: [".replit.dev", ".repl.co"],
+  },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
