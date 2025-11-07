@@ -16,7 +16,12 @@ export function log(message: string) {
 
 export async function setupVite(app: Express) {
   const vite = await createViteServer({
-    server: { middlewareMode: true },
+    server: {
+      middlewareMode: true,
+      hmr: {
+        clientPort: 443,
+      },
+    },
     appType: "spa",
   });
 
