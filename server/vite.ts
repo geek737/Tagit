@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
+import type { Server } from "http";
 import { createServer as createViteServer } from "vite";
 
 export function log(message: string) {
@@ -14,11 +15,12 @@ export function log(message: string) {
   console.log(`${formattedTime} [express] ${message}`);
 }
 
-export async function setupVite(app: Express) {
+export async function setupVite(app: Express, server: Server) {
   const vite = await createViteServer({
     server: {
       middlewareMode: true,
       hmr: {
+        server: server,
         clientPort: 443,
       },
     },

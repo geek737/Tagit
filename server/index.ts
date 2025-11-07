@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import { createServer } from "http";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { MemStorage } from "./storage";
@@ -49,14 +50,16 @@ app.use((req, res, next) => {
     throw err;
   });
 
+  const server = createServer(app);
+
   if (app.get("env") === "development") {
-    await setupVite(app);
+    await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
   const PORT = 5000;
-  app.listen(PORT, "0.0.0.0", () => {
+  server.listen(PORT, "0.0.0.0", () => {
     log(`Server running on port ${PORT}`);
   });
 })();
