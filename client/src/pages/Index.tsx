@@ -16,8 +16,9 @@ const Index = () => {
 
       <div className="bg-gradient-bg dark min-h-screen">
         <div className="relative min-h-screen">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 lg:bg-none" />
           <div
-            className="absolute inset-0 bg-gradient-bg lg:bg-none"
+            className="absolute inset-0 hidden lg:block"
             style={{
               backgroundImage: `url(${heroBackground})`,
               backgroundSize: 'auto',

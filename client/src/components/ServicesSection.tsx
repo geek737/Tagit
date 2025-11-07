@@ -45,7 +45,7 @@ const ServicesSection = () => {
   return (
     <section
       id="services"
-      className="w-full min-h-screen relative overflow-hidden"
+      className="w-full min-h-screen relative overflow-hidden flex items-center"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 lg:bg-none" />
       <div
