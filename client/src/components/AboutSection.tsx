@@ -16,23 +16,23 @@ const AboutSection = () => {
 
           <div className="flex-1 space-y-4 md:space-y-6 lg:space-y-8 w-full">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight">
-              <span className="text-primary font-bold">Entrez dans</span>
+              <span className="text-primary font-bold">Step inside</span>
               <br />
-              <span className="text-primary font-bold">Notre </span>
-              <span className="text-primary font-normal">Univers</span>
+              <span className="text-primary font-bold">Our </span>
+              <span className="text-primary font-normal">World</span>
             </h2>
 
             <p className="text-lg md:text-xl lg:text-2xl text-black font-medium">
-              Agence <span className="text-accent font-semibold">Digitale - Web</span>
+              Digital Agency - <span className="text-accent font-semibold">Web</span>
             </p>
 
             <div className="space-y-4 md:space-y-5 text-black">
               <p className="text-sm md:text-base lg:text-lg leading-relaxed text-justify">
-                Nous concevons des expériences digitales qui font briller les marques. Guidés par la stratégie, animés par la créativité et portés par le digital, nous créons des contenus et des histoires qui inspirent, osent et laissent une empreinte durable, tout en générant un impact réel.
+                We design digital experiences that make brands shine. Guided by strategy, driven by creativity and powered by digital, we create content and stories that inspire, dare and leave a lasting impression, while generating real impact.
               </p>
-              
+
               <p className="text-sm md:text-base lg:text-lg leading-relaxed text-justify">
-                Nous serions ravis de collaborer avec vous, d'imaginer ensemble des projets qui font la différence et de donner à votre marque la visibilité et l'impact qu'elle mérite.
+                We would love to collaborate with you, imagine together projects that make a difference and give your brand the visibility and impact it deserves.
               </p>
             </div>
           </div>

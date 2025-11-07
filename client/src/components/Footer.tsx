@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <img src={logo} alt="TagTik Logo" className="h-10 w-auto" />
             <p className="text-sm text-foreground/80 leading-relaxed">
-              Votre agence de marketing digital au Maroc. Nous transformons vos idées en succès digitaux.
+              Your digital marketing agency in Morocco. We transform your ideas into digital success.
             </p>
           </div>
 
@@ -23,7 +23,7 @@ const Footer = () => {
                   href="#main-content"
                   className="text-sm text-foreground/80 hover:text-accent transition-colors"
                 >
-                  Accueil
+                  Home
                 </a>
               </li>
               <li>
@@ -31,7 +31,7 @@ const Footer = () => {
                   href="#about"
                   className="text-sm text-foreground/80 hover:text-accent transition-colors"
                 >
-                  À propos
+                  About
                 </a>
               </li>
               <li>
@@ -39,7 +39,7 @@ const Footer = () => {
                   href="#services"
                   className="text-sm text-foreground/80 hover:text-accent transition-colors"
                 >
-                  Nos Services
+                  Our Services
                 </a>
               </li>
               <li>
@@ -56,12 +56,12 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4 text-accent">Services</h3>
             <ul className="space-y-2 text-sm text-foreground/80">
-              <li>Marketing Digital</li>
+              <li>Digital Marketing</li>
               <li>Branding & Brand Content</li>
               <li>Social Media Management</li>
-              <li>Création de Contenu</li>
+              <li>Content Creation</li>
               <li>Web Design & UI/UX</li>
-              <li>Design Visuel</li>
+              <li>Visual Design</li>
             </ul>
           </div>
 
@@ -88,7 +88,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-2 text-sm text-foreground/80">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>Maroc</span>
+                <span>Morocco</span>
               </li>
             </ul>
           </div>
@@ -97,26 +97,26 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-foreground/60">
-              {currentYear} TagTik. Tous droits réservés.
+              {currentYear} TagTik. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-foreground/60">
               <a
-                href="#mentions-legales"
+                href="#legal"
                 className="hover:text-accent transition-colors"
               >
-                Mentions Légales
+                Legal Notice
               </a>
               <a
-                href="#politique-confidentialite"
+                href="#privacy"
                 className="hover:text-accent transition-colors"
               >
-                Politique de Confidentialité
+                Privacy Policy
               </a>
               <a
-                href="#cgv"
+                href="#terms"
                 className="hover:text-accent transition-colors"
               >
-                CGV
+                Terms
               </a>
             </div>
           </div>

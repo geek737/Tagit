@@ -8,17 +8,17 @@ const HeroSection = () => {
         <div className="flex items-center justify-center lg:justify-start min-h-[calc(100vh-140px)] md:min-h-[calc(100vh-120px)]">
           <div className="flex flex-col gap-8 md:gap-12 lg:gap-16 w-full">
             <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-              <span className="text-accent">Marketing Digital,</span>
+              <span className="text-accent">Digital marketing,</span>
               <br />
-              <span className="text-foreground">Branding, Contenu</span>
+              <span className="text-foreground">Branding, Content</span>
             </h1>
 
             <div className="space-y-3 md:space-y-4">
               <h2 className="text-lg md:text-xl lg:text-2xl font-semibold text-foreground">
-                Chaque marque a une histoire à raconter.
+                Every brand has a story to tell.
               </h2>
               <p className="text-foreground/90 text-sm md:text-base lg:text-lg leading-relaxed max-w-xl">
-                La nôtre, c'est d'aider la vôtre à briller avec des idées qui marquent, une stratégie qui inspire et un impact qui dure.
+                Ours is to help yours shine with ideas that make an impact, a strategy that inspires, and results that last.
               </p>
             </div>
 
@@ -30,7 +30,7 @@ const HeroSection = () => {
                 data-testid="button-what-we-offer"
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                Nos Services
+                What we offer
                 <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button
@@ -40,7 +40,7 @@ const HeroSection = () => {
                 data-testid="button-see-our-work"
                 onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                À Propos
+                About Us
                 <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>

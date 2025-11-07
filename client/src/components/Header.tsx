@@ -6,9 +6,9 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { label: "Accueil", href: "#main-content", active: true },
-    { label: "À propos", href: "#about" },
-    { label: "Nos services", href: "#services" },
+    { label: "Home", href: "#main-content", active: true },
+    { label: "About", href: "#about" },
+    { label: "Services", href: "#services" },
     { label: "Contact", href: "#contact" },
   ];
 
@@ -24,7 +24,6 @@ const Header = () => {
   return (
     <header className="w-full py-6 px-4 md:px-8 lg:px-16 relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
         <div className="flex items-center">
           <img src={logo} alt="TagIt Logo" className="h-10 w-auto" />
         </div>
@@ -44,7 +43,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Mobile Menu Button */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="lg:hidden text-foreground p-2"

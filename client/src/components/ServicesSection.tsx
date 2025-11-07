@@ -12,32 +12,32 @@ const services = [
   {
     icon: iconBranding,
     title: "Branding & Brand content",
-    description: "Faites de votre marque une identité inoubliable.\nDonnez-lui une voix, un style et une histoire\nqui marquent les esprits.",
+    description: "Make your brand an unforgettable identity. Give it a voice, a style, and a story that leaves a mark.",
   },
   {
     icon: iconMarketing,
     title: "Digital marketing",
-    description: "Donnez de la puissance à vos actions digitales.\nCampagnes ciblées, résultats\nmesurables, impact garanti.",
+    description: "Power up your digital actions. Targeted campaigns, measurable results, guaranteed impact.",
   },
   {
     icon: iconSocialMedia,
     title: "Social Media Management",
-    description: "Transformez vos réseaux en véritables\nmoteurs de croissance.\nStratégie, contenu, engagement,\non s'occupe de tout.",
+    description: "Transform your networks into real growth engines. Strategy, content, engagement - we handle it all.",
   },
   {
     icon: iconContent,
-    title: "Création de contenu",
-    description: "Captez l'attention, inspirez, engagez.\nDu visuel à la vidéo, chaque création\nraconte votre histoire",
+    title: "Content Creation",
+    description: "Capture attention, inspire, engage. From visuals to videos, each creation tells your story.",
   },
   {
     icon: iconWebsite,
     title: "Web Design & UI/UX",
-    description: "Offrez à vos visiteurs une\nexpérience fluide et mémorable.\nDesign moderne, navigation\nintuitive, identité forte.",
+    description: "Offer your visitors a smooth and memorable experience. Modern design, intuitive navigation, strong identity.",
   },
   {
     icon: iconDesign,
-    title: "Design Visuel",
-    description: "Des créations qui donnent sens à vos\nidées et cohérence à votre image.\nChaque détail est pensé pour refléter\nvotre univers et renforcer votre présence.",
+    title: "Visual Design",
+    description: "Creations that give meaning to your ideas and coherence to your image. Every detail reflects your universe.",
   },
 ];
 
@@ -45,13 +45,11 @@ const ServicesSection = () => {
   return (
     <section
       id="services"
-      className="w-full min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 relative overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(135deg, rgb(147, 51, 234) 0%, rgb(126, 34, 206) 50%, rgb(109, 40, 217) 100%)`,
-      }}
+      className="w-full min-h-screen relative overflow-hidden"
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-violet-900 lg:bg-none" />
       <div
-        className="absolute inset-0 hidden md:block bg-cover bg-center"
+        className="absolute inset-0 hidden lg:block bg-cover bg-center"
         style={{
           backgroundImage: `url(${servicesBackground})`,
         }}
@@ -63,17 +61,17 @@ const ServicesSection = () => {
         <div className="w-full flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-10 lg:gap-12 items-start lg:items-center">
           <div className="space-y-4 md:space-y-6 lg:space-y-8 w-full">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
-              Idées Intelligentes
+              Smart ideas
               <br />
-              Croissance Réelle
+              Real growth
             </h2>
 
             <p className="text-white text-sm md:text-base lg:text-lg leading-relaxed">
-              Grâce à notre approche axée sur les résultats,
+              Thanks to our results-driven approach,
               <br className="hidden md:inline" />
-              le digital devient bien plus qu'un simple outil :
+              digital becomes much more than just a tool:
               <br className="hidden md:inline" />
-              un moteur puissant de croissance.
+              a powerful growth engine.
             </p>
 
             <Button
@@ -83,7 +81,7 @@ const ServicesSection = () => {
               data-testid="button-see-work"
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Voir Nos Réalisations
+              See Our Work
               <ArrowRight className="ml-2" />
             </Button>
           </div>
@@ -92,33 +90,35 @@ const ServicesSection = () => {
             {services.map((service, index) => (
               <article
                 key={index}
-                className="flex flex-col items-center text-center space-y-2 md:space-y-3"
+                className="flex flex-col items-center text-center h-full"
                 data-testid={`service-card-${index}`}
               >
-                <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0">
-                  <img
-                    src={service.icon}
-                    alt={`Icône ${service.title}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                <div className="flex flex-col items-center h-full space-y-2 md:space-y-3">
+                  <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0">
+                    <img
+                      src={service.icon}
+                      alt={`Icon ${service.title}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <h3 className="text-accent font-bold text-xs md:text-sm lg:text-base leading-tight min-h-[2.5rem] md:min-h-[3rem] flex items-center">
+                    {service.title}
+                  </h3>
+
+                  <p className="text-white text-[10px] md:text-xs leading-relaxed hidden md:block flex-grow">
+                    {service.description}
+                  </p>
+
+                  <button
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent flex items-center justify-center hover:bg-accent/90 transition-colors flex-shrink-0 focus:ring-2 focus:ring-white focus:ring-offset-2 mt-auto"
+                    data-testid={`button-service-${index}`}
+                    aria-label={`Learn more about ${service.title}`}
+                  >
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </button>
                 </div>
-
-                <h3 className="text-accent font-bold text-xs md:text-sm lg:text-base leading-tight">
-                  {service.title}
-                </h3>
-
-                <p className="text-white text-[10px] md:text-xs leading-relaxed whitespace-pre-line hidden md:block">
-                  {service.description}
-                </p>
-
-                <button
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent flex items-center justify-center hover:bg-accent/90 transition-colors flex-shrink-0 focus:ring-2 focus:ring-white focus:ring-offset-2"
-                  data-testid={`button-service-${index}`}
-                  aria-label={`En savoir plus sur ${service.title}`}
-                >
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                </button>
               </article>
             ))}
           </div>

@@ -31,10 +31,10 @@ const ContactSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Contactez-<span className="text-accent">Nous</span>
+            Contact <span className="text-accent">Us</span>
           </h2>
           <p className="text-foreground/80 text-base md:text-lg max-w-2xl mx-auto">
-            Prêt à faire briller votre marque ? Parlons de votre projet et découvrons ensemble comment nous pouvons vous aider.
+            Ready to make your brand shine? Let's talk about your project and discover together how we can help you.
           </p>
         </div>
 
@@ -42,10 +42,10 @@ const ContactSection = () => {
           <div className="space-y-6">
             <div className="space-y-4">
               <h3 className="text-2xl font-semibold text-white">
-                Restons en Contact
+                Let's Stay Connected
               </h3>
               <p className="text-foreground/70 text-sm md:text-base">
-                Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner dans vos projets digitaux.
+                Our team is here to answer all your questions and support you in your digital projects.
               </p>
             </div>
 
@@ -70,7 +70,7 @@ const ContactSection = () => {
                   <Phone className="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-1">Téléphone</h4>
+                  <h4 className="text-white font-medium mb-1">Phone</h4>
                   <a
                     href="tel:+212600000000"
                     className="text-foreground/70 hover:text-accent transition-colors text-sm"
@@ -85,8 +85,8 @@ const ContactSection = () => {
                   <MapPin className="w-5 h-5 text-accent" />
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-1">Localisation</h4>
-                  <p className="text-foreground/70 text-sm">Maroc</p>
+                  <h4 className="text-white font-medium mb-1">Location</h4>
+                  <p className="text-foreground/70 text-sm">Morocco</p>
                 </div>
               </div>
             </div>
@@ -95,13 +95,13 @@ const ContactSection = () => {
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-medium text-white">
-                Nom complet
+                Full Name
               </label>
               <Input
                 id="name"
                 name="name"
                 type="text"
-                placeholder="Votre nom"
+                placeholder="Your name"
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -117,7 +117,7 @@ const ContactSection = () => {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="votre.email@exemple.com"
+                placeholder="your.email@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -127,7 +127,7 @@ const ContactSection = () => {
 
             <div className="space-y-2">
               <label htmlFor="phone" className="text-sm font-medium text-white">
-                Téléphone
+                Phone
               </label>
               <Input
                 id="phone"
@@ -147,7 +147,7 @@ const ContactSection = () => {
               <Textarea
                 id="message"
                 name="message"
-                placeholder="Parlez-nous de votre projet..."
+                placeholder="Tell us about your project..."
                 value={formData.message}
                 onChange={handleChange}
                 required
@@ -162,7 +162,7 @@ const ContactSection = () => {
               size="lg"
               className="w-full focus:ring-2 focus:ring-accent focus:ring-offset-2"
             >
-              Envoyer le Message
+              Send Message
             </Button>
           </form>
         </div>
