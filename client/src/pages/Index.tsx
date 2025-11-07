@@ -2,25 +2,30 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
+import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
 import heroBackground from "@/assets/hero-handshake-3d.png";
 
 const Index = () => {
   return (
-    <>
+    <main>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white">
+        Aller au contenu principal
+      </a>
+
       <div className="bg-gradient-bg dark min-h-screen">
-        {/* Hero Section with Background Image */}
         <div className="relative min-h-screen">
-          {/* Background Image - Hidden on mobile, gradient on mobile */}
-          <div 
+          <div
             className="absolute inset-0 bg-gradient-bg md:bg-none"
             style={{
               backgroundImage: `url(${heroBackground})`,
               backgroundSize: 'auto',
               backgroundRepeat: 'no-repeat',
             }}
+            role="presentation"
+            aria-hidden="true"
           >
-            {/* Background Pattern Overlay */}
-            <div 
+            <div
               className="absolute inset-0 opacity-30 pointer-events-none hidden md:block"
               style={{
                 backgroundImage: `
@@ -32,7 +37,7 @@ const Index = () => {
               }}
             />
           </div>
-          
+
           <div className="relative z-10">
             <Header />
             <HeroSection />
@@ -40,12 +45,11 @@ const Index = () => {
         </div>
       </div>
 
-      {/* About Section */}
       <AboutSection />
-
-      {/* Services Section */}
       <ServicesSection />
-    </>
+      <ContactSection />
+      <Footer />
+    </main>
   );
 };
 
