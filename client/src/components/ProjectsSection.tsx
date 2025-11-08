@@ -1,9 +1,9 @@
+import { useState, useEffect } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import projectPromotion from "@/assets/project-promotion.png";
 import projectPromotionCopy from "@/assets/project-promotion copy.png";
@@ -13,6 +13,8 @@ import projectBlendimmoCopy from "@/assets/project-blendimmo copy.png";
 import projectMoujda from "@/assets/project-moujda.png";
 
 const ProjectsSection = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
   const projects = [
     {
       id: 1,
@@ -52,6 +54,18 @@ const ProjectsSection = () => {
     },
   ];
 
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
   return (
     <section
       id="projects"
@@ -60,7 +74,7 @@ const ProjectsSection = () => {
       <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="order-2 lg:order-1">
-            <Carousel className="w-full">
+            <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {projects.map((project) => (
                   <CarouselItem key={project.id}>
@@ -78,9 +92,21 @@ const ProjectsSection = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-4" />
-              <CarouselNext className="right-4" />
             </Carousel>
+            <div className="flex justify-center gap-2 mt-4">
+              {projects.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => api?.scrollTo(index)}
+                  className={`h-1 rounded-full transition-all ${
+                    index === current
+                      ? "w-8 bg-accent"
+                      : "w-6 bg-gray-300"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="order-1 lg:order-2 space-y-6">
