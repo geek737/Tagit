@@ -55,7 +55,7 @@ const ProjectsSection = () => {
   return (
     <section
       id="projects"
-      className="w-full min-h-screen relative overflow-hidden flex items-center bg-white"
+      className="w-full min-h-screen relative overflow-hidden flex items-center bg-gray-100"
     >
       <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -64,11 +64,11 @@ const ProjectsSection = () => {
               <CarouselContent>
                 {projects.map((project) => (
                   <CarouselItem key={project.id}>
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-white p-4">
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                     <div className="mt-6">
