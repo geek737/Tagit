@@ -55,26 +55,26 @@ const ProjectsSection = () => {
   return (
     <section
       id="projects"
-      className="w-full min-h-screen relative overflow-hidden flex items-center bg-gray-100"
+      className="w-full h-screen max-h-screen relative overflow-hidden flex items-center bg-gray-100"
     >
-      <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="order-2 lg:order-1">
+      <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12 h-full">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+          <div className="order-2 lg:order-1 flex items-center max-h-full">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {projects.map((project) => (
                   <CarouselItem key={project.id}>
-                    <div className="relative overflow-hidden rounded-lg bg-white p-6">
+                    <div className="relative overflow-hidden rounded-lg bg-white p-4 lg:p-6">
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-auto object-contain"
+                        className="w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-contain"
                       />
-                      <div className="mt-6">
-                        <h3 className="text-xl font-bold text-accent mb-2">Services</h3>
-                        <p className="text-gray-700 text-sm">{project.description}</p>
+                      <div className="mt-4">
+                        <h3 className="text-lg lg:text-xl font-bold text-accent mb-2">Services</h3>
+                        <p className="text-gray-700 text-xs lg:text-sm">{project.description}</p>
                       </div>
-                      <div className="flex justify-center gap-2 mt-6">
+                      <div className="flex justify-center gap-2 mt-4">
                         {projects.map((_, index) => (
                           <button
                             key={index}
@@ -95,14 +95,14 @@ const ProjectsSection = () => {
             </Carousel>
           </div>
 
-          <div className="order-1 lg:order-2 space-y-6 lg:space-y-8 text-left">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-left">
+          <div className="order-1 lg:order-2 space-y-4 lg:space-y-6 text-left flex flex-col justify-center max-h-full overflow-y-auto">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left">
               <span className="text-[hsl(269,46%,59%)]">Our bold</span>
               <br />
               <span className="text-[hsl(269,46%,59%)]">projects</span>
             </h2>
 
-            <div className="space-y-4 text-gray-700 text-base md:text-lg lg:text-xl text-left">
+            <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg text-left">
               <p>
                 chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
               </p>
@@ -114,7 +114,7 @@ const ProjectsSection = () => {
 
             <div className="relative">
               <svg
-                className="w-full h-32 opacity-20"
+                className="w-full h-24 lg:h-32 opacity-20"
                 viewBox="0 0 400 100"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -134,9 +134,9 @@ const ProjectsSection = () => {
               </svg>
             </div>
 
-            <button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-full font-semibold text-lg inline-flex items-center gap-2 transition-all hover:scale-105 text-left">
+            <button className="bg-accent hover:bg-accent/90 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-full font-semibold text-base lg:text-lg inline-flex items-center gap-2 transition-all hover:scale-105 text-left">
               view projects
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
