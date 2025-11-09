@@ -57,52 +57,52 @@ const ProjectsSection = () => {
       id="projects"
       className="w-full min-h-screen relative overflow-hidden flex items-center bg-gray-100"
     >
-      <div className="container mx-auto px-4 lg:px-8 py-16 lg:py-24">
+      <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           <div className="order-2 lg:order-1">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {projects.map((project) => (
                   <CarouselItem key={project.id}>
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-white p-4">
+                    <div className="relative overflow-hidden rounded-lg bg-white p-6">
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-contain"
+                        className="w-full h-auto object-contain"
                       />
-                    </div>
-                    <div className="mt-6">
-                      <h3 className="text-xl font-bold text-accent mb-2">Services</h3>
-                      <p className="text-gray-700">{project.description}</p>
+                      <div className="mt-6">
+                        <h3 className="text-xl font-bold text-accent mb-2">Services</h3>
+                        <p className="text-gray-700 text-sm">{project.description}</p>
+                      </div>
+                      <div className="flex justify-center gap-2 mt-6">
+                        {projects.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => api?.scrollTo(index)}
+                            className={`h-1 rounded-full transition-all ${
+                              index === current
+                                ? "w-8 bg-accent"
+                                : "w-6 bg-gray-300"
+                            }`}
+                            aria-label={`Go to slide ${index + 1}`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
             </Carousel>
-            <div className="flex justify-center gap-2 mt-4">
-              {projects.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => api?.scrollTo(index)}
-                  className={`h-1 rounded-full transition-all ${
-                    index === current
-                      ? "w-8 bg-accent"
-                      : "w-6 bg-gray-300"
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
           </div>
 
-          <div className="order-1 lg:order-2 space-y-6">
-            <h2 className="text-4xl lg:text-6xl font-bold">
-              <span className="text-[#7c3aed]">Our bold</span>
+          <div className="order-1 lg:order-2 space-y-6 lg:space-y-8 text-left">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-left">
+              <span className="text-[hsl(269,46%,59%)]">Our bold</span>
               <br />
-              <span className="text-[#7c3aed]">projects</span>
+              <span className="text-[hsl(269,46%,59%)]">projects</span>
             </h2>
 
-            <div className="space-y-4 text-gray-700">
+            <div className="space-y-4 text-gray-700 text-base md:text-lg lg:text-xl text-left">
               <p>
                 chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
               </p>
@@ -134,7 +134,7 @@ const ProjectsSection = () => {
               </svg>
             </div>
 
-            <button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-full font-semibold text-lg inline-flex items-center gap-2 transition-all hover:scale-105">
+            <button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-full font-semibold text-lg inline-flex items-center gap-2 transition-all hover:scale-105 text-left">
               view projects
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
