@@ -7,9 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import projectPromotion from "@/assets/project-promotion.png";
 import projectPromotionCopy from "@/assets/project-promotion copy.png";
-import projectPromotionCopy2 from "@/assets/project-promotion copy copy.png";
 import projectBlendimmo from "@/assets/project-blendimmo.png";
-import projectBlendimmoCopy from "@/assets/project-blendimmo copy.png";
 import projectMoujda from "@/assets/project-moujda.png";
 
 const ProjectsSection = () => {
@@ -30,24 +28,12 @@ const ProjectsSection = () => {
     },
     {
       id: 3,
-      image: projectPromotionCopy2,
-      title: "Promotion de l'Égalité de Genre",
-      description: "Logo Design, Graphic Chart Creation, and Visual Identity Development"
-    },
-    {
-      id: 4,
       image: projectBlendimmo,
       title: "Blendimmo",
       description: "Logo Design, Graphic Chart Creation, and Visual Identity Development"
     },
     {
-      id: 5,
-      image: projectBlendimmoCopy,
-      title: "Blendimmo",
-      description: "Logo Design, Graphic Chart Creation, and Visual Identity Development"
-    },
-    {
-      id: 6,
+      id: 4,
       image: projectMoujda,
       title: "Moujda",
       description: "Logo Design, Graphic Chart Creation, and Visual Identity Development"
