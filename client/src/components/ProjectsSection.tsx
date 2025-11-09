@@ -57,9 +57,9 @@ const ProjectsSection = () => {
       id="projects"
       className="w-full h-screen relative overflow-hidden flex items-center bg-gray-100"
     >
-      <div className="container mx-auto px-4 lg:px-8 h-full flex items-center">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full">
-          <div className="order-2 lg:order-1">
+      <div className="container mx-auto px-4 lg:px-8 h-full py-8 lg:py-12">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 h-full">
+          <div className="order-2 lg:order-1 flex items-center">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {projects.map((project) => (
@@ -95,7 +95,7 @@ const ProjectsSection = () => {
             </Carousel>
           </div>
 
-          <div className="order-1 lg:order-2 flex flex-col justify-between h-full py-8 lg:py-12 text-right">
+          <div className="order-1 lg:order-2 flex flex-col justify-between h-full text-right">
             <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-right">
               <span className="text-[hsl(269,46%,59%)]">Our bold</span>
               <br />
