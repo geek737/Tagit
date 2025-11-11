@@ -103,7 +103,7 @@ const ProjectsSection = () => {
                 <span className="text-primary">projects</span>
               </h2>
 
-              <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg font-light text-left w-full">
+              <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg font-medium text-left w-full">
                 <p>
                   chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
                 </p>
@@ -113,7 +113,7 @@ const ProjectsSection = () => {
                 </p>
               </div>
 
-              <button className="bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-full font-semibold text-sm inline-flex items-center gap-2 transition-all hover:scale-105 w-fit">
+              <button className="bg-accent hover:bg-accent/90 text-white px-5 py-2.5 rounded-full font-semibold text-base inline-flex items-center gap-2 transition-colors w-fit">
                 view projects
                 <span className="bg-primary rounded-full p-1.5 flex items-center justify-center">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
