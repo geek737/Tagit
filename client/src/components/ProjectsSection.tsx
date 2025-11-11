@@ -95,53 +95,33 @@ const ProjectsSection = () => {
             </Carousel>
           </div>
 
-          <div className="order-1 lg:order-2 space-y-4 lg:space-y-6 text-left lg:text-right flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1 lg:items-end">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left lg:text-right w-full">
-              <span className="text-primary">Our bold</span>
-              <br />
-              <span className="text-primary">projects</span>
-            </h2>
+          <div className="order-1 lg:order-2 text-left lg:text-right flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1 lg:items-end">
+            <div className="flex flex-col gap-8 lg:gap-12">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left lg:text-right w-full">
+                <span className="text-primary">Our bold</span>
+                <br />
+                <span className="text-primary">projects</span>
+              </h2>
 
-            <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg text-left lg:text-right w-full">
-              <p>
-                chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
-              </p>
+              <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg text-left lg:text-right w-full">
+                <p>
+                  chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
+                </p>
 
-              <p>
-                Avec nos projets audacieux, le digital devient bien plus qu'un outil : il devient un véritable moteur de croissance et d'opportunités.
-              </p>
+                <p>
+                  Avec nos projets audacieux, le digital devient bien plus qu'un outil : il devient un véritable moteur de croissance et d'opportunités.
+                </p>
+              </div>
+
+              <button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-full font-semibold text-base inline-flex items-center gap-3 transition-all hover:scale-105">
+                view projects
+                <span className="bg-primary rounded-full p-2 flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </button>
             </div>
-
-            <div className="relative">
-              <svg
-                className="w-full h-24 lg:h-32 opacity-20"
-                viewBox="0 0 400 100"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle cx="50" cy="30" r="4" fill="#9b87f5" />
-                <circle cx="100" cy="60" r="4" fill="#9b87f5" />
-                <circle cx="150" cy="40" r="4" fill="#9b87f5" />
-                <circle cx="200" cy="70" r="4" fill="#9b87f5" />
-                <circle cx="250" cy="20" r="4" fill="#9b87f5" />
-                <circle cx="300" cy="50" r="4" fill="#9b87f5" />
-                <circle cx="350" cy="35" r="4" fill="#9b87f5" />
-                <line x1="50" y1="30" x2="100" y2="60" stroke="#9b87f5" strokeWidth="1" />
-                <line x1="100" y1="60" x2="150" y2="40" stroke="#9b87f5" strokeWidth="1" />
-                <line x1="150" y1="40" x2="200" y2="70" stroke="#9b87f5" strokeWidth="1" />
-                <line x1="200" y1="70" x2="250" y2="20" stroke="#9b87f5" strokeWidth="1" />
-                <line x1="250" y1="20" x2="300" y2="50" stroke="#9b87f5" strokeWidth="1" />
-                <line x1="300" y1="50" x2="350" y2="35" stroke="#9b87f5" strokeWidth="1" />
-              </svg>
-            </div>
-
-            <button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-full font-semibold text-base inline-flex items-center gap-3 transition-all hover:scale-105">
-              view projects
-              <span className="bg-primary rounded-full p-2 flex items-center justify-center">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </button>
           </div>
         </div>
       </div>
