@@ -10,6 +10,8 @@ import robotImage from "@/assets/robot-3d-orange.png";
 const TeamSection = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
   const teamMembers = [
     {
@@ -47,11 +49,21 @@ const TeamSection = () => {
       return;
     }
 
-    setCurrent(api.selectedScrollSnap());
-
-    api.on("select", () => {
+    const updateScrollButtons = () => {
+      setCanScrollPrev(api.canScrollPrev());
+      setCanScrollNext(api.canScrollNext());
       setCurrent(api.selectedScrollSnap());
-    });
+    };
+
+    updateScrollButtons();
+
+    api.on("select", updateScrollButtons);
+    api.on("reInit", updateScrollButtons);
+
+    return () => {
+      api.off("select", updateScrollButtons);
+      api.off("reInit", updateScrollButtons);
+    };
   }, [api]);
 
   const scrollPrev = () => {
@@ -83,15 +95,17 @@ const TeamSection = () => {
           </div>
 
           <div className="relative flex-1 flex items-center">
-            <button
-              onClick={scrollPrev}
-              className="absolute left-0 z-10 bg-accent hover:bg-accent/90 text-white rounded-full p-3 lg:p-4 transition-colors"
-              aria-label="Previous team member"
-            >
-              <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+            {canScrollPrev && (
+              <button
+                onClick={scrollPrev}
+                className="absolute left-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-4 lg:p-5 transition-colors backdrop-blur-sm"
+                aria-label="Previous team member"
+              >
+                <svg className="w-6 h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
 
             <div className="flex-1 px-12 lg:px-20">
               <Carousel className="w-full" setApi={setApi}>
@@ -99,12 +113,12 @@ const TeamSection = () => {
                   {teamMembers.map((member) => (
                     <CarouselItem key={member.id} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                       <div className="p-2">
-                        <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900 to-black p-6 h-full flex flex-col">
+                        <div className="relative overflow-hidden rounded-lg bg-transparent p-6 h-full flex flex-col">
                           <div className="flex-1 flex items-center justify-center mb-4">
                             <img
                               src={member.image}
                               alt={member.name}
-                              className="w-full h-auto max-h-[250px] object-contain"
+                              className="w-full h-auto max-h-[250px] object-contain rounded-xl"
                             />
                           </div>
                           <div className="text-center">
@@ -130,30 +144,17 @@ const TeamSection = () => {
               </Carousel>
             </div>
 
-            <button
-              onClick={scrollNext}
-              className="absolute right-0 z-10 bg-accent hover:bg-accent/90 text-white rounded-full p-3 lg:p-4 transition-colors"
-              aria-label="Next team member"
-            >
-              <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="flex justify-center gap-2">
-            {teamMembers.map((_, index) => (
+            {canScrollNext && (
               <button
-                key={index}
-                onClick={() => api?.scrollTo(index)}
-                className={`h-1 rounded-full transition-all ${
-                  index === current
-                    ? "w-8 bg-accent"
-                    : "w-6 bg-white/50"
-                }`}
-                aria-label={`Go to team member ${index + 1}`}
-              />
-            ))}
+                onClick={scrollNext}
+                className="absolute right-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-4 lg:p-5 transition-colors backdrop-blur-sm"
+                aria-label="Next team member"
+              >
+                <svg className="w-6 h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
       </div>
