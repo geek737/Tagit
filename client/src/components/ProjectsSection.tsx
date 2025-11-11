@@ -97,9 +97,9 @@ const ProjectsSection = () => {
 
           <div className="order-1 lg:order-2 space-y-4 lg:space-y-6 text-left lg:text-right flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1 lg:items-end">
             <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left lg:text-right w-full">
-              <span className="text-[hsl(269,46%,59%)]">Our bold</span>
+              <span className="text-primary">Our bold</span>
               <br />
-              <span className="text-[hsl(269,46%,59%)]">projects</span>
+              <span className="text-primary">projects</span>
             </h2>
 
             <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg text-left lg:text-right w-full">
@@ -136,7 +136,7 @@ const ProjectsSection = () => {
 
             <button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-full font-semibold text-base inline-flex items-center gap-3 transition-all hover:scale-105">
               view projects
-              <span className="bg-[hsl(269,46%,59%)] rounded-full p-2 flex items-center justify-center">
+              <span className="bg-primary rounded-full p-2 flex items-center justify-center">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
