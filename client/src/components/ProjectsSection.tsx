@@ -95,15 +95,15 @@ const ProjectsSection = () => {
             </Carousel>
           </div>
 
-          <div className="order-1 lg:order-2 text-left lg:text-right flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1 lg:items-end">
-            <div className="flex flex-col gap-8 lg:gap-12">
+          <div className="order-1 lg:order-2 flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1">
+            <div className="flex flex-col gap-8 lg:gap-12 items-start lg:items-end">
               <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left lg:text-right w-full">
                 <span className="text-primary">Our bold</span>
                 <br />
                 <span className="text-primary">projects</span>
               </h2>
 
-              <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg text-left lg:text-right w-full">
+              <div className="space-y-3 text-gray-700 text-sm md:text-base lg:text-lg font-light text-left w-full">
                 <p>
                   chaque projet est une aventure audacieuse. Nous ne nous contentons pas de suivre les tendances : nous les créons. Nos projets allient créativité, innovation et stratégie pour transformer les idées en résultats concrets. Chaque initiative est pensée pour repousser les limites, surprendre, et générer une réelle valeur pour nos clients.
                 </p>
