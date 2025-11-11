@@ -57,9 +57,9 @@ const ProjectsSection = () => {
       id="projects"
       className="w-full h-screen max-h-screen relative overflow-hidden flex items-center bg-gray-100"
     >
-      <div className="container mx-auto px-4 lg:px-8 py-8 lg:py-12 h-full">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center h-full">
-          <div className="order-2 lg:order-1 flex items-center max-h-full lg:flex-1">
+      <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-6 h-full">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch h-full">
+          <div className="order-2 lg:order-1 flex items-center lg:flex-1">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
                 {projects.map((project) => (
@@ -68,7 +68,7 @@ const ProjectsSection = () => {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-auto max-h-[40vh] lg:max-h-[50vh] object-contain"
+                        className="w-full h-auto max-h-[50vh] lg:max-h-[60vh] object-contain"
                       />
                       <div className="mt-4">
                         <h3 className="text-lg lg:text-xl font-bold text-accent mb-2">Services</h3>
@@ -95,7 +95,7 @@ const ProjectsSection = () => {
             </Carousel>
           </div>
 
-          <div className="order-1 lg:order-2 flex flex-col justify-center max-h-full overflow-y-auto lg:flex-1">
+          <div className="order-1 lg:order-2 flex flex-col justify-center lg:flex-1">
             <div className="flex flex-col gap-8 lg:gap-12 items-start lg:items-end">
               <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-left lg:text-right w-full">
                 <span className="text-primary">Our bold</span>
