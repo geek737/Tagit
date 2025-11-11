@@ -79,7 +79,7 @@ const TeamSection = () => {
       id="team"
       className="w-full h-screen max-h-screen relative overflow-hidden flex items-center bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900"
     >
-      <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-6 h-full">
+      <div className="container mx-auto px-4 lg:px-8 h-full" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
         <div className="flex flex-col gap-8 lg:gap-12 h-full justify-center">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6">
