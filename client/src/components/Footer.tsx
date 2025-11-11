@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           <div className="space-y-4">
-            <img src={logo} alt="TagTik Logo" className="h-10 w-auto" />
+            <img src={logo} alt="tagit Logo" className="h-10 w-auto" />
             <p className="text-sm text-foreground/80 leading-relaxed">
               Your digital marketing agency in Morocco. We transform your ideas into digital success.
             </p>
@@ -71,10 +71,10 @@ const Footer = () => {
               <li className="flex items-start gap-2 text-sm text-foreground/80">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <a
-                  href="mailto:contact@tagtik.ma"
+                  href="mailto:contact@tagit.ma"
                   className="hover:text-accent transition-colors"
                 >
-                  contact@tagtik.ma
+                  contact@tagit.ma
                 </a>
               </li>
               <li className="flex items-start gap-2 text-sm text-foreground/80">
@@ -97,7 +97,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-foreground/60">
-              {currentYear} TagTik. All rights reserved.
+              {currentYear} tagit. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-foreground/60">
               <a

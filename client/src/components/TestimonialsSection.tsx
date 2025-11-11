@@ -14,19 +14,19 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       id: 1,
-      quote: "Travailler avec Tagtik a été un vrai plaisir. Leur équipe est à l'écoute, créative et très réactive. Grâce à leurs stratégies digitales, j'ai vu une nette augmentation de l'engagement sur mes réseaux sociaux et une croissance réelle de mes ventes. Je recommande vivement !",
+      quote: "Travailler avec tagit a été un vrai plaisir. Leur équipe est à l'écoute, créative et très réactive. Grâce à leurs stratégies digitales, j'ai vu une nette augmentation de l'engagement sur mes réseaux sociaux et une croissance réelle de mes ventes. Je recommande vivement !",
       author: "ATOINI ZAKARIAE",
       role: "Designer, Infographiste",
     },
     {
       id: 2,
-      quote: "L'équipe de Tagtik a transformé notre présence en ligne. Leur professionnalisme et leur créativité ont dépassé nos attentes. Les résultats parlent d'eux-mêmes !",
+      quote: "L'équipe de tagit a transformé notre présence en ligne. Leur professionnalisme et leur créativité ont dépassé nos attentes. Les résultats parlent d'eux-mêmes !",
       author: "SARAH BENNANI",
       role: "Directrice Marketing",
     },
     {
       id: 3,
-      quote: "Une collaboration exceptionnelle ! Tagtik a su comprendre nos besoins et proposer des solutions innovantes. Notre site web est maintenant moderne et performant.",
+      quote: "Une collaboration exceptionnelle ! tagit a su comprendre nos besoins et proposer des solutions innovantes. Notre site web est maintenant moderne et performant.",
       author: "MEHDI ALAMI",
       role: "Entrepreneur",
     },

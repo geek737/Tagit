@@ -57,10 +57,10 @@ const ContactSection = () => {
                 <div>
                   <h4 className="text-white font-medium mb-1">Email</h4>
                   <a
-                    href="mailto:contact@tagtik.ma"
+                    href="mailto:contact@tagit.ma"
                     className="text-foreground/70 hover:text-accent transition-colors text-sm"
                   >
-                    contact@tagtik.ma
+                    contact@tagit.ma
                   </a>
                 </div>
               </div>

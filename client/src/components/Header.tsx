@@ -25,7 +25,7 @@ const Header = () => {
     <header className="w-full py-6 px-4 md:px-8 lg:px-16 relative z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <img src={logo} alt="TagIt Logo" className="h-10 w-auto" />
+          <img src={logo} alt="tagit Logo" className="h-10 w-auto" />
         </div>
 
         <nav className="hidden lg:flex items-center gap-8">

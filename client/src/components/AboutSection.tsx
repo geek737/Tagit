@@ -8,7 +8,7 @@ const AboutSection = () => {
           <div className="flex-1 flex justify-center lg:justify-start w-full">
             <img
               src={robotImage}
-              alt="Robot 3D orange et violet représentant l'innovation de l'agence TagTik"
+              alt="Robot 3D orange et violet représentant l'innovation de l'agence tagit"
               className="w-full max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl h-auto object-contain"
               loading="lazy"
             />
