@@ -17,6 +17,8 @@ const Index = () => {
         Skip to main content
       </a>
 
+      <Header />
+
       <div className="bg-gradient-bg dark min-h-screen">
         <div className="relative min-h-screen">
           <div className="absolute inset-0 bg-gradient-bg lg:bg-none" />
@@ -44,7 +46,6 @@ const Index = () => {
           </div>
 
           <div className="relative z-10">
-            <Header />
             <HeroSection />
           </div>
         </div>

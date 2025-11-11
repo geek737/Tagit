@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-tagtik.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const navItems = [
     { label: "Home", href: "#main-content", active: true },
     { label: "About", href: "#about" },
     { label: "Services", href: "#services" },
+    { label: "Team", href: "#team" },
     { label: "Contact", href: "#contact" },
   ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -22,10 +33,14 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full py-6 px-4 md:px-8 lg:px-16 relative z-50">
+    <header
+      className={`w-full py-6 px-4 md:px-8 lg:px-16 fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-primary/80 backdrop-blur-md shadow-lg" : "bg-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <img src={logo} alt="tagit Logo" className="h-10 w-auto" />
+          <img src={logo} alt="tagit Logo" className="h-14 md:h-16 w-auto" />
         </div>
 
         <nav className="hidden lg:flex items-center gap-8">
