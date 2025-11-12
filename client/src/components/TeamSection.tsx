@@ -94,31 +94,31 @@ const TeamSection = () => {
             </p>
           </div>
 
-          <div className="relative flex-1 flex items-center">
+          <div className="relative flex items-center w-full">
             {canScrollPrev && (
               <button
                 onClick={scrollPrev}
-                className="absolute left-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-4 lg:p-5 transition-colors backdrop-blur-sm"
+                className="absolute left-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 lg:p-5 transition-colors backdrop-blur-sm"
                 aria-label="Previous team member"
               >
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
             )}
 
-            <div className="flex-1 px-12 lg:px-20">
+            <div className="w-full px-10 md:px-12 lg:px-20">
               <Carousel className="w-full" setApi={setApi}>
-                <CarouselContent className="-ml-2 md:-ml-4">
+                <CarouselContent>
                   {teamMembers.map((member) => (
-                    <CarouselItem key={member.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                      <div className="h-full">
-                        <div className="relative overflow-hidden rounded-lg bg-transparent p-6 h-full flex flex-col">
-                          <div className="flex-1 flex items-center justify-center mb-4">
+                    <CarouselItem key={member.id} className="basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <div className="px-2 md:px-4">
+                        <div className="relative overflow-hidden rounded-lg bg-transparent p-4 md:p-6 flex flex-col">
+                          <div className="flex items-center justify-center mb-4">
                             <img
                               src={member.image}
                               alt={member.name}
-                              className="w-full h-auto max-h-[250px] object-contain rounded-xl mx-auto"
+                              className="w-full h-auto max-h-[250px] object-contain rounded-xl"
                             />
                           </div>
                           <div className="text-center">
@@ -147,10 +147,10 @@ const TeamSection = () => {
             {canScrollNext && (
               <button
                 onClick={scrollNext}
-                className="absolute right-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-4 lg:p-5 transition-colors backdrop-blur-sm"
+                className="absolute right-0 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 lg:p-5 transition-colors backdrop-blur-sm"
                 aria-label="Next team member"
               >
-                <svg className="w-6 h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
