@@ -55,10 +55,10 @@ const ProjectsSection = () => {
   return (
     <section
       id="projects"
-      className="w-full h-screen max-h-screen relative overflow-hidden flex items-center bg-gray-100"
+      className="w-full min-h-screen relative overflow-hidden flex items-center bg-gray-100 py-16 lg:py-0"
     >
-      <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-6 h-full">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch h-full">
+      <div className="container mx-auto px-4 lg:px-8 py-4 lg:py-6">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch">
           <div className="order-2 lg:order-1 flex items-center lg:flex-1">
             <Carousel className="w-full" setApi={setApi}>
               <CarouselContent>
@@ -68,7 +68,7 @@ const ProjectsSection = () => {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-auto max-h-[50vh] lg:max-h-[60vh] object-contain"
+                        className="w-full h-auto max-h-[40vh] lg:max-h-[60vh] object-contain"
                       />
                       <div className="mt-4">
                         <h3 className="text-lg lg:text-xl font-bold text-accent mb-2">Services</h3>

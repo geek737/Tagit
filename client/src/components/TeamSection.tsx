@@ -77,10 +77,10 @@ const TeamSection = () => {
   return (
     <section
       id="team"
-      className="w-full h-screen max-h-screen relative overflow-hidden flex items-center bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900"
+      className="w-full min-h-screen relative overflow-hidden flex items-center bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 py-16 lg:py-0"
     >
-      <div className="container mx-auto px-4 lg:px-8 h-full" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
-        <div className="flex flex-col gap-8 lg:gap-12 h-full justify-center">
+      <div className="container mx-auto px-4 lg:px-8" style={{ paddingTop: '4.5rem', paddingBottom: '4.5rem' }}>
+        <div className="flex flex-col gap-8 lg:gap-12 justify-center">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6">
               <span className="text-accent">Our</span>{" "}
@@ -109,16 +109,16 @@ const TeamSection = () => {
 
             <div className="flex-1 px-12 lg:px-20">
               <Carousel className="w-full" setApi={setApi}>
-                <CarouselContent>
+                <CarouselContent className="-ml-2 md:-ml-4">
                   {teamMembers.map((member) => (
-                    <CarouselItem key={member.id} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                      <div className="p-2">
+                    <CarouselItem key={member.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <div className="h-full">
                         <div className="relative overflow-hidden rounded-lg bg-transparent p-6 h-full flex flex-col">
                           <div className="flex-1 flex items-center justify-center mb-4">
                             <img
                               src={member.image}
                               alt={member.name}
-                              className="w-full h-auto max-h-[250px] object-contain rounded-xl"
+                              className="w-full h-auto max-h-[250px] object-contain rounded-xl mx-auto"
                             />
                           </div>
                           <div className="text-center">
