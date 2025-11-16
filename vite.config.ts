@@ -5,6 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   root: "./client",
+  envDir: "../",
   build: {
     outDir: "../dist/public",
     emptyOutDir: true,
