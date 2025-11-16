@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,13 +31,12 @@ const navItems = [
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
-    navigate('/admin/login');
+    setLocation('/admin/login');
   };
 
   return (
@@ -52,7 +51,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = location === item.path;
               return (
                 <Link
                   key={item.path}
@@ -96,7 +95,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <main className="pl-64">
         <div className="h-16 border-b border-gray-200 bg-white px-8 flex items-center">
           <h1 className="text-xl font-semibold text-gray-900">
-            {navItems.find(item => item.path === location.pathname)?.label || 'Admin Panel'}
+            {navItems.find(item => item.path === location)?.label || 'Admin Panel'}
           </h1>
         </div>
         <div className="p-8">
