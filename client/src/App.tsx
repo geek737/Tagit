@@ -18,6 +18,8 @@ import Projects from "./pages/admin/Projects";
 import Team from "./pages/admin/Team";
 import Settings from "./pages/admin/Settings";
 
+const AdminRedirect = () => <Redirect to="/admin/dashboard" />;
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -26,9 +28,7 @@ const App = () => (
         <Sonner />
         <Switch>
           <Route path="/" component={Index} />
-          <Route path="/admin">
-            <Redirect to="/admin/dashboard" />
-          </Route>
+          <Route path="/admin" component={AdminRedirect} />
           <Route path="/admin/login" component={Login} />
           <Route path="/admin/dashboard">
             <ProtectedRoute>
