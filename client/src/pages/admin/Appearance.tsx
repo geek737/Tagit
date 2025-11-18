@@ -76,6 +76,30 @@ export default function Appearance() {
     }
   };
 
+  const handleResetToDefaults = async () => {
+    if (!confirm('Are you sure you want to reset all colors to default values? This will overwrite your current color scheme.')) {
+      return;
+    }
+
+    setSaving(true);
+    try {
+      for (const [key, value] of Object.entries(DEFAULT_COLORS)) {
+        const { error } = await supabase
+          .from('site_settings')
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq('key', key);
+
+        if (error) throw error;
+      }
+      setSettings(DEFAULT_COLORS);
+      toast.success('Colors reset to default values');
+    } catch (error) {
+      toast.error('Failed to reset colors');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveSections = async () => {
     setSaving(true);
     try {
@@ -120,6 +144,14 @@ export default function Appearance() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const DEFAULT_COLORS = {
+    primary_color: '#FF6B35',
+    secondary_color: '#7C3AED',
+    accent_color: '#FF6B35',
+    background_color: '#FFFFFF',
+    text_color: '#1F2937'
   };
 
   const colorSettings = [
@@ -199,9 +231,14 @@ export default function Appearance() {
                 </div>
 
                 <div className="flex justify-between items-center pt-6 border-t">
-                  <Button variant="outline" onClick={loadData}>
-                    Reset Changes
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={loadData}>
+                      Cancel Changes
+                    </Button>
+                    <Button variant="outline" onClick={handleResetToDefaults}>
+                      Reset to Defaults
+                    </Button>
+                  </div>
                   <Button onClick={handleSaveColors} disabled={saving}>
                     {saving ? 'Saving...' : 'Save Color Scheme'}
                   </Button>
