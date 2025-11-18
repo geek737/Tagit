@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Upload, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Image as ImageIcon } from 'lucide-react';
+import MediaUploadDialog from '@/components/admin/MediaUploadDialog';
 
 interface MediaFile {
   id: string;
@@ -86,10 +85,7 @@ export default function Media() {
             <h2 className="text-2xl font-bold text-gray-900">Media Library</h2>
             <p className="text-gray-600 mt-1">Manage images and media files</p>
           </div>
-          <Button>
-            <Upload className="h-4 w-4 mr-2" />
-            Upload Media
-          </Button>
+          <MediaUploadDialog onUploadComplete={loadMedia} />
         </div>
 
         <Card>
