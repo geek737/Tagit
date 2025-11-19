@@ -1,7 +1,7 @@
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import HeroEditor from '@/components/admin/content/HeroEditor';
-import AboutEditor from '@/components/admin/content/AboutEditor';
+import EnhancedHeroEditor from '@/components/admin/content/EnhancedHeroEditor';
+import EnhancedAboutEditor from '@/components/admin/content/EnhancedAboutEditor';
 import ServicesEditor from '@/components/admin/content/ServicesEditor';
 import ProjectsEditor from '@/components/admin/content/ProjectsEditor';
 import TeamEditor from '@/components/admin/content/TeamEditor';
@@ -47,11 +47,11 @@ export default function Content() {
           </TabsList>
 
           <TabsContent value="hero">
-            <HeroEditor />
+            <EnhancedHeroEditor />
           </TabsContent>
 
           <TabsContent value="about">
-            <AboutEditor />
+            <EnhancedAboutEditor />
           </TabsContent>
 
           <TabsContent value="services">
