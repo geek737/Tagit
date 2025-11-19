@@ -2,12 +2,12 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EnhancedHeroEditor from '@/components/admin/content/EnhancedHeroEditor';
 import EnhancedAboutEditor from '@/components/admin/content/EnhancedAboutEditor';
-import ServicesEditor from '@/components/admin/content/ServicesEditor';
-import ProjectsEditor from '@/components/admin/content/ProjectsEditor';
-import TeamEditor from '@/components/admin/content/TeamEditor';
-import TestimonialsEditor from '@/components/admin/content/TestimonialsEditor';
+import EnhancedServicesEditor from '@/components/admin/content/EnhancedServicesEditor';
+import EnhancedProjectsEditor from '@/components/admin/content/EnhancedProjectsEditor';
+import EnhancedTeamEditor from '@/components/admin/content/EnhancedTeamEditor';
+import EnhancedTestimonialsEditor from '@/components/admin/content/EnhancedTestimonialsEditor';
 import ContactEditor from '@/components/admin/content/ContactEditor';
-import FooterEditor from '@/components/admin/content/FooterEditor';
+import EnhancedFooterEditor from '@/components/admin/content/EnhancedFooterEditor';
 
 export default function Content() {
   return (
@@ -55,19 +55,19 @@ export default function Content() {
           </TabsContent>
 
           <TabsContent value="services">
-            <ServicesEditor />
+            <EnhancedServicesEditor />
           </TabsContent>
 
           <TabsContent value="projects">
-            <ProjectsEditor />
+            <EnhancedProjectsEditor />
           </TabsContent>
 
           <TabsContent value="team">
-            <TeamEditor />
+            <EnhancedTeamEditor />
           </TabsContent>
 
           <TabsContent value="testimonials">
-            <TestimonialsEditor />
+            <EnhancedTestimonialsEditor />
           </TabsContent>
 
           <TabsContent value="contact">
@@ -75,7 +75,7 @@ export default function Content() {
           </TabsContent>
 
           <TabsContent value="footer">
-            <FooterEditor />
+            <EnhancedFooterEditor />
           </TabsContent>
         </Tabs>
       </div>
