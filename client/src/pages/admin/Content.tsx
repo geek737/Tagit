@@ -20,28 +20,28 @@ export default function Content() {
 
         <Tabs defaultValue="hero" className="space-y-6">
           <TabsList className="flex flex-wrap h-auto gap-2 bg-gray-100 p-2 rounded-lg">
-            <TabsTrigger value="hero" className="data-[state=active]:bg-white">
+            <TabsTrigger value="hero" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Hero
             </TabsTrigger>
-            <TabsTrigger value="about" className="data-[state=active]:bg-white">
+            <TabsTrigger value="about" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               About
             </TabsTrigger>
-            <TabsTrigger value="services" className="data-[state=active]:bg-white">
+            <TabsTrigger value="services" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Services
             </TabsTrigger>
-            <TabsTrigger value="projects" className="data-[state=active]:bg-white">
+            <TabsTrigger value="projects" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Projects
             </TabsTrigger>
-            <TabsTrigger value="team" className="data-[state=active]:bg-white">
+            <TabsTrigger value="team" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Team
             </TabsTrigger>
-            <TabsTrigger value="testimonials" className="data-[state=active]:bg-white">
+            <TabsTrigger value="testimonials" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Testimonials
             </TabsTrigger>
-            <TabsTrigger value="contact" className="data-[state=active]:bg-white">
+            <TabsTrigger value="contact" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Contact
             </TabsTrigger>
-            <TabsTrigger value="footer" className="data-[state=active]:bg-white">
+            <TabsTrigger value="footer" className="data-[state=active]:bg-white data-[state=active]:text-gray-900">
               Footer
             </TabsTrigger>
           </TabsList>

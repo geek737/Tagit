@@ -187,6 +187,7 @@ export default function EnhancedProjectsEditor() {
         <div className="flex gap-2">
           <Button
             variant={previewMode ? "default" : "outline"}
+            className={previewMode ? "bg-accent text-white hover:bg-accent/90" : "text-black hover:text-accent hover:border-accent"}
             onClick={() => setPreviewMode(!previewMode)}
           >
             <Eye className="h-4 w-4 mr-2" />

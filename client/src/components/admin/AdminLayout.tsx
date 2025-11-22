@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-gray-200 px-6">
             <img src={logoTagtik} alt="Tagit" className="h-8" />
-            <span className="ml-2 text-sm font-semibold text-gray-500">Admin</span>
+            <span className="ml-2 text-sm font-semibold text-gray-500">Back Office</span>
           </div>
 
           <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
@@ -80,9 +80,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </div>
             </div>
             <Button
-              variant="outline"
+              variant="default"
               size="sm"
-              className="w-full"
+              className="w-full bg-accent text-white hover:bg-accent/90"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />

@@ -6,6 +6,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { supabase } from "@/lib/supabase";
+import defaultRobotImage from "@/assets/robot-3d-orange.png";
 
 interface TeamMember {
   id: string;
@@ -68,7 +69,17 @@ const TeamSection = () => {
       ]);
 
       if (headerRes.data) setHeader(headerRes.data);
-      if (membersRes.data) setMembers(membersRes.data);
+      if (membersRes.data) {
+        // Mapper les données et ajouter l'image par défaut si nécessaire
+        const mappedMembers = membersRes.data.map((member: any) => ({
+          ...member,
+          image: member.image || defaultRobotImage, // Utiliser l'image de la DB ou l'image par défaut
+          name_color: member.name_color || '#FFFFFF',
+          role_color: member.role_color || '#FFFFFF',
+          skills_color: member.skills_color || '#FFFFFF',
+        }));
+        setMembers(mappedMembers);
+      }
     } catch (error) {
       console.error('Error loading team:', error);
     } finally {
@@ -149,13 +160,11 @@ const TeamSection = () => {
                         <div className="px-2 md:px-4">
                           <div className="relative overflow-hidden rounded-lg bg-transparent p-4 md:p-6 flex flex-col">
                             <div className="flex items-center justify-center mb-4">
-                              {member.image && (
-                                <img
-                                  src={member.image}
-                                  alt={member.name}
-                                  className="w-full h-auto max-h-[250px] object-contain rounded-xl"
-                                />
-                              )}
+                              <img
+                                src={member.image || defaultRobotImage}
+                                alt={member.name || 'Team member'}
+                                className="w-full h-auto max-h-[250px] object-contain rounded-xl"
+                              />
                             </div>
                             <div className="text-center">
                               <h3

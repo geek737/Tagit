@@ -28,6 +28,20 @@ export default function Media() {
     loadMedia();
   }, []);
 
+  // Fonction pour normaliser les URLs (supprimer /client si présent)
+  const normalizeUrl = (url: string): string => {
+    if (!url) return url;
+    // Si l'URL commence par /client/src, remplacer par /src
+    if (url.startsWith('/client/src/')) {
+      return url.replace('/client/src/', '/src/');
+    }
+    // Si l'URL commence par client/src, remplacer par src
+    if (url.startsWith('client/src/')) {
+      return url.replace('client/src/', 'src/');
+    }
+    return url;
+  };
+
   const loadMedia = async () => {
     try {
       const { data, error } = await supabase
@@ -36,7 +50,14 @@ export default function Media() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setMedia(data || []);
+      
+      // Normaliser les URLs lors du chargement
+      const normalizedData = (data || []).map(item => ({
+        ...item,
+        url: normalizeUrl(item.url)
+      }));
+      
+      setMedia(normalizedData);
     } catch (error) {
       toast.error('Failed to load media');
     } finally {
@@ -66,6 +87,7 @@ export default function Media() {
   const filteredMedia = filterCategory === 'all'
     ? media
     : media.filter(item => item.category === filterCategory);
+  console.log(filteredMedia);
 
   if (loading) {
     return (
