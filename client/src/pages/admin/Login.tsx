@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
+import { useState, useEffect } from 'react';
+import { useLocation, Redirect } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,15 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Rediriger si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (!authLoading && user) {
+      setLocation('/admin/dashboard');
+    }
+  }, [user, authLoading, setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,13 +30,31 @@ export default function Login() {
     const result = await login(username, password);
 
     if (result.success) {
-      setLocation('/admin/dashboard');
+      // Ne pas rediriger immédiatement ici
+      // Le useEffect va détecter le changement de user et rediriger
+      // Cela évite les problèmes de timing avec l'état React
     } else {
       setError(result.error || 'Login failed');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  // Afficher un loader pendant la vérification de l'authentification
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si l'utilisateur est connecté, rediriger
+  if (user) {
+    return <Redirect to="/admin/dashboard" />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 p-4">

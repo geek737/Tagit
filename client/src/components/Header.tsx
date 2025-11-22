@@ -1,32 +1,141 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo-tagtik.png";
+import { supabase } from "@/lib/supabase";
+
+interface MenuItem {
+  id: string;
+  label: string;
+  href: string;
+  display_order: number;
+  is_visible: boolean;
+}
+
+interface NavItem {
+  label: string;
+  href: string;
+  id: string;
+}
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("main-content");
+  const [navItems, setNavItems] = useState<NavItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const navItems = [
-    { label: "Home", href: "#main-content", active: true },
-    { label: "About", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Team", href: "#team" },
-    { label: "Contact", href: "#contact" },
-  ];
-
+  // Charger les items du menu depuis la base de données
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    const loadMenuItems = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('menu_items')
+          .select('*')
+          .is('parent_id', null) // Seulement les items de premier niveau
+          .eq('is_visible', true) // Seulement les items visibles
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error loading menu items:', error);
+          // En cas d'erreur, utiliser les items par défaut
+          setNavItems([
+            { label: "Home", href: "#main-content", id: "main-content" },
+            { label: "About", href: "#about", id: "about" },
+            { label: "Services", href: "#services", id: "services" },
+            { label: "Team", href: "#team", id: "team" },
+            { label: "Contact", href: "#contact", id: "contact" },
+          ]);
+          setLoading(false);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          // Transformer les données de la DB en format NavItem
+          const items: NavItem[] = data.map((item: MenuItem) => ({
+            label: item.label,
+            href: item.href,
+            id: item.href.replace('#', '') || item.label.toLowerCase(), // Extraire l'ID du href
+          }));
+          setNavItems(items);
+          
+          // Définir la section active par défaut (premier item)
+          if (items.length > 0) {
+            setActiveSection(items[0].id);
+          }
+        } else {
+          // Pas d'items dans la DB, utiliser les items par défaut
+          setNavItems([
+            { label: "Home", href: "#main-content", id: "main-content" },
+            { label: "About", href: "#about", id: "about" },
+            { label: "Services", href: "#services", id: "services" },
+            { label: "Team", href: "#team", id: "team" },
+            { label: "Contact", href: "#contact", id: "contact" },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // En cas d'erreur, utiliser les items par défaut
+        setNavItems([
+          { label: "Home", href: "#main-content", id: "main-content" },
+          { label: "About", href: "#about", id: "about" },
+          { label: "Services", href: "#services", id: "services" },
+          { label: "Team", href: "#team", id: "team" },
+          { label: "Contact", href: "#contact", id: "contact" },
+        ]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    loadMenuItems();
   }, []);
+
+  useEffect(() => {
+    if (loading || navItems.length === 0) return; // Attendre que le menu soit chargé
+
+    const headerOffset = 150; // Offset pour le header fixe
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+
+      // Si on est tout en haut, activer le premier item
+      if (window.scrollY < 100 && navItems.length > 0) {
+        setActiveSection(navItems[0].id);
+        return;
+      }
+
+      // Trouver la section actuellement visible dans le viewport
+      let currentSection = navItems.length > 0 ? navItems[0].id : "main-content";
+      
+      for (let i = navItems.length - 1; i >= 0; i--) {
+        const item = navItems[i];
+        const element = document.getElementById(item.id);
+        
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // La section est visible si elle commence avant la position du header
+          if (rect.top <= headerOffset) {
+            currentSection = item.id;
+            break;
+          }
+        }
+      }
+      
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Appeler une fois au chargement pour définir l'état initial
+    
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, navItems]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const element = document.querySelector(href);
     if (element) {
+      const sectionId = href.replace('#', '');
+      setActiveSection(sectionId); // Mettre à jour immédiatement l'item cliqué
       element.scrollIntoView({ behavior: 'smooth' });
       setIsMenuOpen(false);
     }
@@ -44,18 +153,29 @@ const Header = () => {
         </div>
 
         <nav className="hidden lg:flex items-center gap-8">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={(e) => handleNavClick(e, item.href)}
-              className={`text-base font-medium transition-colors hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-sm px-1 ${
-                item.active ? "text-accent" : "text-foreground"
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
+          {loading ? (
+            <div className="flex gap-8">
+              <div className="h-5 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-5 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-5 w-20 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          ) : (
+            navItems.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
+                  className={`text-base font-medium transition-colors hover:text-accent focus:outline-none rounded-sm px-1 ${
+                    isActive ? "text-accent" : "text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })
+          )}
         </nav>
 
         <button
@@ -70,18 +190,29 @@ const Header = () => {
       {isMenuOpen && (
         <nav className="lg:hidden absolute top-full left-0 right-0 bg-primary/95 backdrop-blur-lg border-t border-border py-4 px-4">
           <div className="flex flex-col gap-4">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className={`text-base font-medium transition-colors hover:text-accent py-2 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-sm ${
-                  item.active ? "text-accent" : "text-foreground"
-                }`}
-              >
-                {item.label}
-              </a>
-            ))}
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                <div className="h-5 w-20 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-5 w-16 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-5 w-24 bg-gray-200 animate-pulse rounded"></div>
+              </div>
+            ) : (
+              navItems.map((item) => {
+                const isActive = activeSection === item.id;
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`text-base font-medium transition-colors hover:text-accent py-2 focus:outline-none rounded-sm ${
+                      isActive ? "text-accent" : "text-foreground"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })
+            )}
           </div>
         </nav>
       )}
