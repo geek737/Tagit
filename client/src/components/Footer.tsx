@@ -45,14 +45,19 @@ const Footer = () => {
           .from('footer_settings')
           .select('*')
           .eq('is_active', true)
-          .single()
+          .maybeSingle()
       ]);
 
-      if (sectionsRes.data) {
+      if (sectionsRes.data && sectionsRes.data.length > 0) {
         setSections(sectionsRes.data);
+      } else {
+        setSections([]);
       }
+
       if (settingsRes.data) {
         setSettings(settingsRes.data);
+      } else {
+        setSettings(null);
       }
     } catch (error) {
       console.error('Error loading footer data:', error);
@@ -91,16 +96,29 @@ const Footer = () => {
   };
 
   if (loading) {
-    return (
-      <footer className="bg-primary text-foreground border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
+  return (
+    <footer className="bg-primary text-foreground border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
           <div className="text-center">Loading...</div>
         </div>
       </footer>
     );
   }
 
-  const displaySettings = settings || {
+  // Use DB settings if available, otherwise use static fallback
+  const displaySettings = settings ? {
+    background_color: settings.background_color || '#7C3AED',
+    text_color: settings.text_color || '#FFFFFF',
+    link_color: settings.link_color || '#FFFFFF',
+    link_hover_color: settings.link_hover_color || '#FF6B35',
+    copyright_text: settings.copyright_text || `${currentYear} tagit. All rights reserved.`,
+    legal_links: settings.legal_links || [
+      { label: 'Legal Notice', href: '#legal' },
+      { label: 'Privacy Policy', href: '#privacy' },
+      { label: 'Terms', href: '#terms' }
+    ],
+    layout_columns: settings.layout_columns || 4
+  } : {
     background_color: '#7C3AED',
     text_color: '#FFFFFF',
     link_color: '#FFFFFF',
@@ -116,6 +134,20 @@ const Footer = () => {
 
   const gridCols = getGridCols(displaySettings.layout_columns || 4);
 
+  // Determine if we should use DB data or static fallback
+  const useDbData = sections.length > 0;
+
+  // Handle smooth scroll for anchor links
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   return (
     <footer
       className="border-t border-border"
@@ -126,7 +158,8 @@ const Footer = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16">
         <div className={`grid ${gridCols} gap-8 md:gap-12`}>
-          {sections.length > 0 ? (
+          {useDbData ? (
+            // Display dynamic data from DB
             sections.map((section) => {
               if (section.section_key === 'brand') {
                 return (
@@ -156,6 +189,7 @@ const Footer = () => {
                         <li key={index}>
                           <a
                             href={link.href || '#'}
+                            onClick={(e) => handleLinkClick(e, link.href || '#')}
                             className="text-sm transition-colors"
                             style={{
                               color: displaySettings.text_color + 'CC',
@@ -312,71 +346,87 @@ const Footer = () => {
               );
             })
           ) : (
-            // Fallback to default content
+            // Fallback to static content (DB is empty or error)
             <>
-              <div className="space-y-4">
-                <img src={logo} alt="tagit Logo" className="h-10 w-auto" />
-                <p className="text-sm text-foreground/80 leading-relaxed">
-                  Your digital marketing agency in Morocco. We transform your ideas into digital success.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-accent">Navigation</h3>
-                <ul className="space-y-2">
-                  <li>
-                    <a href="#main-content" className="text-sm text-foreground/80 hover:text-accent transition-colors">
-                      Home
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#about" className="text-sm text-foreground/80 hover:text-accent transition-colors">
-                      About
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#services" className="text-sm text-foreground/80 hover:text-accent transition-colors">
-                      Our Services
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#contact" className="text-sm text-foreground/80 hover:text-accent transition-colors">
-                      Contact
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-accent">Services</h3>
-                <ul className="space-y-2 text-sm text-foreground/80">
-                  <li>Digital Marketing</li>
-                  <li>Branding & Brand Content</li>
-                  <li>Social Media Management</li>
-                  <li>Content Creation</li>
-                  <li>Web Design & UI/UX</li>
-                  <li>Visual Design</li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-accent">Contact</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2 text-sm text-foreground/80">
-                    <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div className="space-y-4">
+            <img src={logo} alt="tagit Logo" className="h-10 w-auto" />
+            <p className="text-sm text-foreground/80 leading-relaxed">
+              Your digital marketing agency in Morocco. We transform your ideas into digital success.
+            </p>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-accent">Navigation</h3>
+            <ul className="space-y-2">
+              <li>
+                <a
+                  href="#main-content"
+                      onClick={(e) => handleLinkClick(e, '#main-content')}
+                  className="text-sm text-foreground/80 hover:text-accent transition-colors"
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#about"
+                      onClick={(e) => handleLinkClick(e, '#about')}
+                  className="text-sm text-foreground/80 hover:text-accent transition-colors"
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#services"
+                      onClick={(e) => handleLinkClick(e, '#services')}
+                  className="text-sm text-foreground/80 hover:text-accent transition-colors"
+                >
+                  Our Services
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                      onClick={(e) => handleLinkClick(e, '#contact')}
+                  className="text-sm text-foreground/80 hover:text-accent transition-colors"
+                >
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-accent">Services</h3>
+            <ul className="space-y-2 text-sm text-foreground/80">
+              <li>Digital Marketing</li>
+              <li>Branding & Brand Content</li>
+              <li>Social Media Management</li>
+              <li>Content Creation</li>
+              <li>Web Design & UI/UX</li>
+              <li>Visual Design</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-accent">Contact</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2 text-sm text-foreground/80">
+                <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <a href="mailto:contact@tagit.ma" className="hover:text-accent transition-colors">
-                      contact@tagit.ma
-                    </a>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm text-foreground/80">
-                    <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  contact@tagit.ma
+                </a>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-foreground/80">
+                <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <a href="tel:+212600000000" className="hover:text-accent transition-colors">
-                      +212 6 00 00 00 00
-                    </a>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm text-foreground/80">
-                    <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>Morocco</span>
-                  </li>
-                </ul>
-              </div>
+                  +212 6 00 00 00 00
+                </a>
+              </li>
+              <li className="flex items-start gap-2 text-sm text-foreground/80">
+                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>Morocco</span>
+              </li>
+            </ul>
+          </div>
             </>
           )}
         </div>
@@ -391,6 +441,7 @@ const Footer = () => {
                 <a
                   key={index}
                   href={link.href || '#'}
+                  onClick={(e) => handleLinkClick(e, link.href || '#')}
                   className="transition-colors"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = displaySettings.link_hover_color;

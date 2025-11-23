@@ -227,35 +227,61 @@ function SortableSectionItem({
               </div>
               {(section.content?.items || []).map((item: any, itemIndex: number) => (
                 <div key={itemIndex} className="flex gap-2">
-                  <Input
-                    placeholder="Type (email, phone, location)"
-                    value={item.type || ''}
-                    onChange={(e) => {
+                  <Select
+                    value={item.type || 'email'}
+                    onValueChange={(value) => {
                       const items = [...(section.content?.items || [])];
-                      items[itemIndex] = { ...item, type: e.target.value };
+                      const iconMap: { [key: string]: string } = {
+                        email: 'mail',
+                        phone: 'phone',
+                        location: 'map-pin',
+                        address: 'map-pin',
+                      };
+                      items[itemIndex] = {
+                        ...item,
+                        type: value,
+                        icon: iconMap[value] || item.icon || 'mail',
+                      };
                       onUpdate(index, 'content', { ...section.content, items });
                     }}
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="phone">Phone</SelectItem>
+                      <SelectItem value="location">Location</SelectItem>
+                      <SelectItem value="address">Address</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Input
                     placeholder="Value"
                     value={item.value || ''}
                     onChange={(e) => {
                       const items = [...(section.content?.items || [])];
                       items[itemIndex] = { ...item, value: e.target.value };
-                      onUpdate(index, 'content', { ...section.content, items });
+                      const newContent = { ...section.content, items };
+                      onUpdate(index, 'content', newContent);
                     }}
                   />
-                  <Input
-                    placeholder="Icon (mail, phone, map-pin)"
-                    value={item.icon || ''}
-                    onChange={(e) => {
+                  <Select
+                    value={item.icon || 'mail'}
+                    onValueChange={(value) => {
                       const items = [...(section.content?.items || [])];
-                      items[itemIndex] = { ...item, icon: e.target.value };
+                      items[itemIndex] = { ...item, icon: value };
                       onUpdate(index, 'content', { ...section.content, items });
                     }}
-                    className="w-32"
-                  />
+                  >
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="Icon" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mail">Mail</SelectItem>
+                      <SelectItem value="phone">Phone</SelectItem>
+                      <SelectItem value="map-pin">Map Pin</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -327,7 +353,7 @@ function SortableSectionItem({
                     const links = section.content?.links || [];
                     onUpdate(index, 'content', {
                       ...section.content,
-                      links: [...links, { platform: '', url: '', icon: '' }],
+                      links: [...links, { platform: 'facebook', url: '' }],
                     });
                   }}
                 >
@@ -335,51 +361,82 @@ function SortableSectionItem({
                   Add Social Link
                 </Button>
               </div>
-              {(section.content?.links || []).map((link: any, linkIndex: number) => (
-                <div key={linkIndex} className="flex gap-2">
-                  <Input
-                    placeholder="Platform (Facebook, Twitter, etc.)"
-                    value={link.platform || ''}
-                    onChange={(e) => {
-                      const links = [...(section.content?.links || [])];
-                      links[linkIndex] = { ...link, platform: e.target.value };
-                      onUpdate(index, 'content', { ...section.content, links });
-                    }}
-                    className="w-40"
-                  />
-                  <Input
-                    placeholder="URL"
-                    value={link.url || ''}
-                    onChange={(e) => {
-                      const links = [...(section.content?.links || [])];
-                      links[linkIndex] = { ...link, url: e.target.value };
-                      onUpdate(index, 'content', { ...section.content, links });
-                    }}
-                  />
-                  <Input
-                    placeholder="Icon name"
-                    value={link.icon || ''}
-                    onChange={(e) => {
-                      const links = [...(section.content?.links || [])];
-                      links[linkIndex] = { ...link, icon: e.target.value };
-                      onUpdate(index, 'content', { ...section.content, links });
-                    }}
-                    className="w-32"
-                  />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      const links = (section.content?.links || []).filter(
-                        (_: any, i: number) => i !== linkIndex
-                      );
-                      onUpdate(index, 'content', { ...section.content, links });
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                      {(section.content?.links || []).map((link: any, linkIndex: number) => {
+                        const isCustomPlatform = link.platform && !['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'tiktok', 'github'].includes(link.platform);
+                        return (
+                          <div key={linkIndex} className="flex gap-2">
+                            {!isCustomPlatform ? (
+                              <Select
+                                value={link.platform || 'facebook'}
+                                onValueChange={(value) => {
+                                  const links = [...(section.content?.links || [])];
+                                  links[linkIndex] = { ...link, platform: value };
+                                  onUpdate(index, 'content', { ...section.content, links });
+                                }}
+                              >
+                                <SelectTrigger className="w-40">
+                                  <SelectValue placeholder="Platform" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="facebook">Facebook</SelectItem>
+                                  <SelectItem value="twitter">Twitter</SelectItem>
+                                  <SelectItem value="instagram">Instagram</SelectItem>
+                                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                                  <SelectItem value="youtube">YouTube</SelectItem>
+                                  <SelectItem value="tiktok">TikTok</SelectItem>
+                                  <SelectItem value="github">GitHub</SelectItem>
+                                  <SelectItem value="custom">Custom...</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                placeholder="Platform name"
+                                value={link.platform || ''}
+                                onChange={(e) => {
+                                  const links = [...(section.content?.links || [])];
+                                  links[linkIndex] = { ...link, platform: e.target.value };
+                                  onUpdate(index, 'content', { ...section.content, links });
+                                }}
+                                className="w-40"
+                              />
+                            )}
+                            <Input
+                              placeholder="URL"
+                              value={link.url || ''}
+                              onChange={(e) => {
+                                const links = [...(section.content?.links || [])];
+                                links[linkIndex] = { ...link, url: e.target.value };
+                                onUpdate(index, 'content', { ...section.content, links });
+                              }}
+                            />
+                            {isCustomPlatform && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const links = [...(section.content?.links || [])];
+                                  links[linkIndex] = { ...link, platform: 'facebook' };
+                                  onUpdate(index, 'content', { ...section.content, links });
+                                }}
+                              >
+                                Use Select
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                const links = (section.content?.links || []).filter(
+                                  (_: any, i: number) => i !== linkIndex
+                                );
+                                onUpdate(index, 'content', { ...section.content, links });
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        );
+                      })}
             </div>
           )}
         </CardContent>
@@ -419,16 +476,96 @@ export default function EnhancedFooterEditor() {
     try {
       const [sectionsRes, settingsRes] = await Promise.all([
         supabase.from('footer_sections').select('*').order('display_order', { ascending: true }),
-        supabase.from('footer_settings').select('*').eq('is_active', true).single()
+        supabase.from('footer_settings').select('*').eq('is_active', true).maybeSingle()
       ]);
 
-      if (sectionsRes.data) {
+      // Load sections - if empty, create default sections
+      if (sectionsRes.data && sectionsRes.data.length > 0) {
         setSections(sectionsRes.data);
+      } else {
+        // Create default sections based on current footer
+        const defaultSections: FooterSection[] = [
+          {
+            id: `new-${Date.now()}-1`,
+            section_key: 'brand',
+            section_title: 'tagit',
+            content: {
+              tagline: 'Your digital marketing agency in Morocco. We transform your ideas into digital success.',
+            },
+            display_order: 0,
+            is_visible: true,
+          },
+          {
+            id: `new-${Date.now()}-2`,
+            section_key: 'navigation',
+            section_title: 'Navigation',
+            content: {
+              links: [
+                { label: 'Home', href: '#main-content' },
+                { label: 'About', href: '#about' },
+                { label: 'Our Services', href: '#services' },
+                { label: 'Contact', href: '#contact' },
+              ],
+            },
+            display_order: 1,
+            is_visible: true,
+          },
+          {
+            id: `new-${Date.now()}-3`,
+            section_key: 'services',
+            section_title: 'Services',
+            content: {
+              links: [
+                { label: 'Digital Marketing', href: '#services' },
+                { label: 'Branding & Brand Content', href: '#services' },
+                { label: 'Social Media Management', href: '#services' },
+                { label: 'Content Creation', href: '#services' },
+                { label: 'Web Design & UI/UX', href: '#services' },
+                { label: 'Visual Design', href: '#services' },
+              ],
+            },
+            display_order: 2,
+            is_visible: true,
+          },
+          {
+            id: `new-${Date.now()}-4`,
+            section_key: 'contact',
+            section_title: 'Contact',
+            content: {
+              items: [
+                { type: 'email', value: 'contact@tagit.ma', icon: 'mail' },
+                { type: 'phone', value: '+212 6 00 00 00 00', icon: 'phone' },
+                { type: 'location', value: 'Morocco', icon: 'map-pin' },
+              ],
+            },
+            display_order: 3,
+            is_visible: true,
+          },
+        ];
+        setSections(defaultSections);
       }
+
+      // Load settings - if empty, create default settings
       if (settingsRes.data) {
         setSettings({
           ...settingsRes.data,
           layout_columns: settingsRes.data.layout_columns || 4,
+        });
+      } else {
+        // Use default settings based on current footer
+        setSettings({
+          background_color: '#7C3AED',
+          text_color: '#FFFFFF',
+          link_color: '#FFFFFF',
+          link_hover_color: '#FF6B35',
+          copyright_text: `${new Date().getFullYear()} tagit. All rights reserved.`,
+          legal_links: [
+            { label: 'Legal Notice', href: '#legal' },
+            { label: 'Privacy Policy', href: '#privacy' },
+            { label: 'Terms', href: '#terms' },
+          ],
+          layout_columns: 4,
+          is_active: true,
         });
       }
     } catch (error) {
@@ -491,16 +628,23 @@ export default function EnhancedFooterEditor() {
 
           if (error) throw error;
         } else {
+          // Ensure content is properly formatted as JSON
+          const contentToSave = typeof section.content === 'string' 
+            ? JSON.parse(section.content) 
+            : section.content;
+          
+          const updateData = {
+            section_key: section.section_key,
+            section_title: section.section_title,
+            content: contentToSave,
+            display_order: section.display_order,
+            is_visible: section.is_visible,
+            updated_at: new Date().toISOString(),
+          };
+          
           const { error } = await supabase
             .from('footer_sections')
-            .update({
-              section_key: section.section_key,
-              section_title: section.section_title,
-              content: section.content,
-              display_order: section.display_order,
-              is_visible: section.is_visible,
-              updated_at: new Date().toISOString(),
-            })
+            .update(updateData)
             .eq('id', section.id);
 
           if (error) throw error;
@@ -509,40 +653,76 @@ export default function EnhancedFooterEditor() {
 
       // Save settings
       if (settings.id) {
+        const settingsToUpdate: any = {
+          background_color: settings.background_color,
+          text_color: settings.text_color,
+          link_color: settings.link_color,
+          link_hover_color: settings.link_hover_color,
+          copyright_text: settings.copyright_text,
+          legal_links: settings.legal_links,
+          is_active: settings.is_active,
+          updated_at: new Date().toISOString(),
+        };
+        
+        if (settings.layout_columns !== undefined) {
+          settingsToUpdate.layout_columns = settings.layout_columns;
+        }
+        
         const { error } = await supabase
           .from('footer_settings')
-          .update({
-            ...settings,
-            updated_at: new Date().toISOString(),
-          })
+          .update(settingsToUpdate)
           .eq('id', settings.id);
 
         if (error) throw error;
       } else {
+        const settingsToInsert: any = {
+          background_color: settings.background_color,
+          text_color: settings.text_color,
+          link_color: settings.link_color,
+          link_hover_color: settings.link_hover_color,
+          copyright_text: settings.copyright_text,
+          legal_links: settings.legal_links,
+          is_active: settings.is_active,
+        };
+        
+        if (settings.layout_columns !== undefined) {
+          settingsToInsert.layout_columns = settings.layout_columns;
+        }
+        
         const { data, error } = await supabase
-            .from('footer_settings')
-          .insert([settings])
+          .from('footer_settings')
+          .insert([settingsToInsert])
           .select()
           .single();
 
-      if (error) throw error;
+        if (error) throw error;
         if (data) setSettings({ ...settings, id: data.id });
       }
 
       toast.success('Footer saved successfully');
       await loadContent();
     } catch (error) {
+      console.error('Failed to save footer:', error);
       toast.error('Failed to save footer');
-      console.error('Error:', error);
     } finally {
       setSaving(false);
     }
   };
 
   const updateSection = (index: number, field: keyof FooterSection, value: any) => {
-    setSections((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
-    );
+    setSections((prev) => {
+      const updated = prev.map((s, i) => {
+        if (i === index) {
+          // Deep clone for content field to ensure proper update
+          const newSection = field === 'content' 
+            ? { ...s, [field]: JSON.parse(JSON.stringify(value)) } // Deep clone for JSON
+            : { ...s, [field]: value };
+          return newSection;
+        }
+        return s;
+      });
+      return updated;
+    });
   };
 
   const deleteSection = (index: number) => {
@@ -897,7 +1077,7 @@ export default function EnhancedFooterEditor() {
                         <Plus className="h-4 w-4 mr-2" />
                         Add Section
                             </Button>
-                          </div>
+                        </div>
                   </CardContent>
                 </Card>
               )}
@@ -950,7 +1130,7 @@ export default function EnhancedFooterEditor() {
                     >
                       <Columns className="h-4 w-4 mr-2" />
                       2 Columns
-                    </Button>
+                          </Button>
                     <Button
                       variant={settings.layout_columns === 3 ? "default" : "outline"}
                       className={settings.layout_columns === 3 ? "bg-accent text-white" : ""}
@@ -966,10 +1146,10 @@ export default function EnhancedFooterEditor() {
                     >
                       <Grid3x3 className="h-4 w-4 mr-2" />
                       4 Columns
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                            </Button>
+                          </div>
+                  </CardContent>
+                </Card>
 
             <Card>
               <CardHeader>
@@ -1013,9 +1193,9 @@ export default function EnhancedFooterEditor() {
                           onChange={(e) =>
                             setSettings((prev) => ({ ...prev, text_color: e.target.value }))
                           }
-                        />
-                      </div>
+                      />
                     </div>
+                  </div>
                     <div className="space-y-2">
                       <Label>Link Color</Label>
                       <div className="flex gap-2">
@@ -1033,7 +1213,7 @@ export default function EnhancedFooterEditor() {
                             setSettings((prev) => ({ ...prev, link_color: e.target.value }))
                           }
                         />
-                      </div>
+                </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Link Hover Color</Label>
@@ -1051,10 +1231,10 @@ export default function EnhancedFooterEditor() {
                           onChange={(e) =>
                             setSettings((prev) => ({ ...prev, link_hover_color: e.target.value }))
                           }
-                        />
-                      </div>
+                      />
                     </div>
                   </div>
+                </div>
                 </CardContent>
               </Card>
 
