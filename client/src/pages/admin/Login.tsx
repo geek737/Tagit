@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import logoTagtik from '@/assets/logo-tagtik.png';
+import logoAdmin from '@/assets/logo-admin.png';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -61,7 +61,7 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <div className="flex justify-center">
-            <img src={logoTagtik} alt="Tagit Logo" className="h-12" />
+            <img src={logoAdmin} alt="Admin Logo" className="h-12" />
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
           <CardDescription className="text-center">
@@ -93,8 +93,28 @@ export default function Login() {
               />
             </div>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                {error}
+              <div className="text-sm text-red-700 bg-red-50 border border-red-200 p-3 rounded-md flex items-start gap-2">
+                <svg 
+                  className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                  />
+                </svg>
+                <div>
+                  <p className="font-medium text-red-800">{error}</p>
+                  {error.includes('connection') && (
+                    <p className="text-xs text-red-600 mt-1">
+                      If the problem persists, please contact support.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
             <Button type="submit" className="w-full" disabled={loading}>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { getLoginErrorMessage } from '@/lib/errorHandler';
 
 interface AdminUser {
   id: string;
@@ -40,20 +41,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     try {
-      const { data, error } = await supabase
+      // Validate input
+      if (!username || !password) {
+        return { 
+          success: false, 
+          error: 'Please enter both username and password.' 
+        };
+      }
+
+      // Check network connectivity
+      if (!navigator.onLine) {
+        return { 
+          success: false, 
+          error: 'No internet connection. Please check your network and try again.' 
+        };
+      }
+
+      // Attempt login with timeout
+      const loginPromise = supabase
         .from('admin_users')
         .select('id, username, email')
         .eq('username', username)
         .maybeSingle();
 
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Connection timeout')), 10000)
+      );
+
+      const { data, error } = await Promise.race([
+        loginPromise,
+        timeoutPromise
+      ]) as any;
+
+      // Handle Supabase errors
       if (error) {
-        return { success: false, error: 'Database error' };
+        const friendlyError = getLoginErrorMessage(error, username);
+        return { success: false, error: friendlyError };
       }
 
+      // Check if user exists
       if (!data) {
-        return { success: false, error: 'Invalid credentials' };
+        // Don't reveal if username exists or not (security best practice)
+        return { 
+          success: false, 
+          error: 'The username or password you entered is incorrect. Please try again.' 
+        };
       }
 
+      // Verify password
       if (password === 'admin') {
         const adminUser = {
           id: data.id,
@@ -65,9 +100,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       }
 
-      return { success: false, error: 'Invalid credentials' };
-    } catch (err) {
-      return { success: false, error: 'Login failed' };
+      // Invalid password (but don't reveal if username was correct)
+      return { 
+        success: false, 
+        error: 'The username or password you entered is incorrect. Please try again.' 
+      };
+    } catch (err: any) {
+      // Handle timeout and other errors
+      const friendlyError = getLoginErrorMessage(err, username);
+      return { success: false, error: friendlyError };
     }
   };
 

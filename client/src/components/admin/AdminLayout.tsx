@@ -13,7 +13,7 @@ import {
   Briefcase,
   LogOut
 } from 'lucide-react';
-import logoTagtik from '@/assets/logo-tagtik.png';
+import logoAdmin from '@/assets/logo-admin.png';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-white border-r border-gray-200">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-gray-200 px-6">
-            <img src={logoTagtik} alt="Tagit" className="h-8" />
+            <img src={logoAdmin} alt="Admin" className="h-8" />
             <span className="ml-2 text-sm font-semibold text-gray-500">Back Office</span>
           </div>
 
