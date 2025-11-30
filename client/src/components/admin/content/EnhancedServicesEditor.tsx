@@ -18,6 +18,7 @@ interface ServiceItem {
   title_color: string;
   description_color: string;
   button_color: string;
+  link_url: string;
   display_order: number;
   is_visible: boolean;
 }
@@ -160,6 +161,7 @@ export default function EnhancedServicesEditor() {
       title_color: '#FF6B35',
       description_color: '#FFFFFF',
       button_color: '#FF6B35',
+      link_url: '',
       display_order: prev.length,
       is_visible: true
     }]);
@@ -257,12 +259,14 @@ export default function EnhancedServicesEditor() {
                         <p className="text-xs leading-relaxed mb-3" style={{ color: service.description_color }}>
                           {service.description}
                         </p>
-                        <button
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
+                        <a
+                          href={service.link_url || '#'}
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-opacity"
                           style={{ backgroundColor: service.button_color }}
+                          title={service.link_url || 'No URL set'}
                         >
                           →
-                        </button>
+                        </a>
                       </div>
                     ))}
                   </div>
@@ -380,6 +384,15 @@ export default function EnhancedServicesEditor() {
                         onChange={(e) => updateService(index, 'description', e.target.value)}
                         rows={2}
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Link URL (Arrow Button)</Label>
+                      <Input
+                        value={service.link_url || ''}
+                        onChange={(e) => updateService(index, 'link_url', e.target.value)}
+                        placeholder="Ex: /branding, https://example.com, #contact"
+                      />
+                      <p className="text-xs text-gray-500">URL vers laquelle l'utilisateur sera redirigé en cliquant sur la flèche</p>
                     </div>
                     {service.icon_image && (
                       <div className="flex justify-center p-4 bg-gray-100 rounded">

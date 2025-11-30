@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { useLocation } from "wouter";
 import logo from "@/assets/logo-tagtik.png";
 import { supabase } from "@/lib/supabase";
 
@@ -18,11 +19,15 @@ interface NavItem {
 }
 
 const Header = () => {
+  const [location, setLocation] = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("main-content");
   const [navItems, setNavItems] = useState<NavItem[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Vérifier si on est sur la page d'accueil
+  const isHomePage = location === "/" || location === "";
 
   // Charger les items du menu depuis la base de données
   useEffect(() => {
@@ -132,12 +137,32 @@ const Header = () => {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    setIsMenuOpen(false);
+    
+    // Si on n'est pas sur la page d'accueil, rediriger vers l'accueil avec la section
+    if (!isHomePage) {
+      // Naviguer vers l'accueil avec l'ancre
+      window.location.href = `/${href}`;
+      return;
+    }
+    
+    // Si on est sur la page d'accueil, scroll vers la section
     const element = document.querySelector(href);
     if (element) {
       const sectionId = href.replace('#', '');
       setActiveSection(sectionId); // Mettre à jour immédiatement l'item cliqué
       element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
+    }
+  };
+
+  // Fonction pour retourner à l'accueil
+  const handleLogoClick = () => {
+    if (isHomePage) {
+      // Si on est sur l'accueil, scroll en haut
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Sinon, naviguer vers l'accueil
+      setLocation('/');
     }
   };
 
@@ -149,7 +174,13 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <img src={logo} alt="tagit Logo" className="h-14 md:h-16 w-auto" />
+          <button
+            onClick={handleLogoClick}
+            className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-lg transition-transform hover:scale-105"
+            aria-label="Go to homepage"
+          >
+            <img src={logo} alt="tagit Logo" className="h-14 md:h-16 w-auto" />
+          </button>
         </div>
 
         <nav className="hidden lg:flex items-center gap-8">

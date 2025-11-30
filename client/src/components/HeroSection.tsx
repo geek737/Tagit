@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 
 interface HeroContent {
@@ -124,30 +123,32 @@ const HeroSection = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <Button
-                variant="hero"
-                size="lg"
-                className="group w-full sm:w-auto focus:ring-2 focus:ring-accent focus:ring-offset-2"
+              <button
+                className="hero-button group relative inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full text-white font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 w-full sm:w-auto"
                 data-testid="button-what-we-offer"
-                style={{
-                  backgroundColor: content.button1_bg_color,
-                  color: content.button1_text_color
-                }}
                 onClick={() => document.getElementById(content.button1_url.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' })}
+                style={{
+                  '--button-bg-color': content.button1_bg_color || '#FF6B35',
+                } as React.CSSProperties}
               >
-                {content.button1_text}
-                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button
-                variant="outline-light"
-                size="lg"
-                className="group w-full sm:w-auto focus:ring-2 focus:ring-accent focus:ring-offset-2"
+                <span>{content.button1_text}</span>
+                <div className="hero-button-icon flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300">
+                  <ChevronRight className="w-6 h-6 text-white stroke-[3]" />
+                </div>
+              </button>
+              <button
+                className="hero-button group relative inline-flex items-center justify-center gap-3 px-6 py-3 rounded-full text-white font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 w-full sm:w-auto"
                 data-testid="button-see-our-work"
                 onClick={() => document.getElementById(content.button2_url.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' })}
+                style={{
+                  '--button-bg-color': content.button1_bg_color || '#FF6B35',
+                } as React.CSSProperties}
               >
-                {content.button2_text}
-                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Button>
+                <span>{content.button2_text}</span>
+                <div className="hero-button-icon flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300">
+                  <ChevronRight className="w-6 h-6 text-white stroke-[3]" />
+                </div>
+              </button>
             </div>
           </div>
 

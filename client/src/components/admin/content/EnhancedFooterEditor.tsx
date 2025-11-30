@@ -690,12 +690,12 @@ export default function EnhancedFooterEditor() {
         }
         
         const { data, error } = await supabase
-          .from('footer_settings')
+            .from('footer_settings')
           .insert([settingsToInsert])
           .select()
           .single();
 
-        if (error) throw error;
+      if (error) throw error;
         if (data) setSettings({ ...settings, id: data.id });
       }
 

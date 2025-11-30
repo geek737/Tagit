@@ -11,6 +11,7 @@ interface Service {
   title_color: string;
   description_color: string;
   button_color: string;
+  link_url: string;
   display_order: number;
 }
 
@@ -161,14 +162,27 @@ const ServicesSection = () => {
                     {service.description}
                   </p>
 
-                  <button
-                    className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:opacity-90 transition-opacity flex-shrink-0 focus:ring-2 focus:ring-white focus:ring-offset-2 mt-auto"
-                    style={{ backgroundColor: service.button_color }}
-                    data-testid={`button-service-${index}`}
-                    aria-label={`Learn more about ${service.title}`}
-                  >
-                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                  </button>
+                  {service.link_url ? (
+                    <a
+                      href={service.link_url}
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:opacity-90 hover:scale-105 transition-all duration-300 flex-shrink-0 focus:ring-2 focus:ring-white focus:ring-offset-2 mt-auto"
+                      style={{ backgroundColor: service.button_color }}
+                      data-testid={`button-service-${index}`}
+                      aria-label={`Learn more about ${service.title}`}
+                    >
+                      <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    </a>
+                  ) : (
+                    <button
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:opacity-90 transition-opacity flex-shrink-0 focus:ring-2 focus:ring-white focus:ring-offset-2 mt-auto cursor-default"
+                      style={{ backgroundColor: service.button_color }}
+                      data-testid={`button-service-${index}`}
+                      aria-label={`${service.title}`}
+                      disabled
+                    >
+                      <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    </button>
+                  )}
                 </div>
               </article>
             ))}

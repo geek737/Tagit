@@ -11,7 +11,8 @@ import {
   Palette,
   Users,
   Briefcase,
-  LogOut
+  LogOut,
+  File
 } from 'lucide-react';
 import logoAdmin from '@/assets/logo-admin.png';
 
@@ -22,6 +23,7 @@ interface AdminLayoutProps {
 const navItems = [
   { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/admin/content', icon: FileText, label: 'Content' },
+  { path: '/admin/pages', icon: File, label: 'Pages' },
   { path: '/admin/appearance', icon: Palette, label: 'Appearance' },
   { path: '/admin/media', icon: Image, label: 'Media' },
   { path: '/admin/menu', icon: Menu, label: 'Menu' },

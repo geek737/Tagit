@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -11,6 +12,37 @@ import ScrollToTop from "@/components/ScrollToTop";
 import heroBackground from "@/assets/hero-handshake-3d.png";
 
 const Index = () => {
+  // Gérer le scroll vers l'ancre après le chargement de la page
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const scrollToSection = () => {
+        const element = document.querySelector(hash);
+        if (element) {
+          // Élément trouvé, scroll vers lui
+          element.scrollIntoView({ behavior: 'smooth' });
+          return true;
+        }
+        return false;
+      };
+
+      // Fonction qui réessaie jusqu'à trouver l'élément
+      const attemptScroll = () => {
+        attempts++;
+        if (!scrollToSection() && attempts < maxAttempts) {
+          // Réessayer après 200ms si l'élément n'est pas encore chargé
+          setTimeout(attemptScroll, 200);
+        }
+      };
+
+      // Premier essai après un court délai pour laisser React rendre
+      setTimeout(attemptScroll, 100);
+    }
+  }, []);
+
   return (
     <main>
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white">
