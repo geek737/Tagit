@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { convertToBase64, compressImage } from '@/lib/mediaStorage';
+import { convertToBase64, compressImage, generateThumbnail } from '@/lib/mediaStorage';
 import { supabase } from '@/lib/supabase';
 
 interface MediaUploadDialogProps {
@@ -59,15 +59,45 @@ export default function MediaUploadDialog({ onUploadComplete, trigger }: MediaUp
     setUploading(true);
     try {
       const base64Data = await convertToBase64(file);
+      
+      // Generate thumbnail for fast gallery loading
+      let thumbnailData: string | null = null;
+      try {
+        thumbnailData = await generateThumbnail(file, 150, 0.6);
+      } catch (thumbError) {
+        console.warn('Failed to generate thumbnail, continuing without it:', thumbError);
+      }
 
-      const { error } = await supabase.from('media_library').insert({
+      const mediaData = {
         filename: file.name,
         url: base64Data,
+        thumbnail: thumbnailData,
         file_type: file.type,
         category: category,
         section_name: category,
         alt_text: altText || file.name
-      });
+      };
+
+      // Try direct Supabase first, fall back to proxy for local development
+      let error: any = null;
+      
+      try {
+        const result = await supabase.from('media_library').insert(mediaData);
+        error = result.error;
+      } catch (corsError) {
+        // If CORS error in development, use server proxy
+        console.log('Using server proxy for upload...');
+        const proxyResponse = await fetch('/api/media/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(mediaData)
+        });
+        
+        if (!proxyResponse.ok) {
+          const errorData = await proxyResponse.json();
+          error = { message: errorData.error || 'Upload failed' };
+        }
+      }
 
       if (error) throw error;
 

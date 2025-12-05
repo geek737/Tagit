@@ -191,21 +191,18 @@ function ServiceCard({ service, index }: { service: ServicePage; index: number }
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 transition-all duration-400 h-full flex flex-col">
-        {/* Icon Container */}
+        {/* Icon Container - Sans cercle de fond */}
         <div className="flex justify-center mb-6">
-          <div className="relative w-24 h-24 md:w-28 md:h-28 flex items-center justify-center">
-            {/* Background circle */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-50 to-orange-100/80" />
-            {/* Icon */}
+          <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
             {service.service_icon ? (
               <img
                 src={service.service_icon}
                 alt={service.title}
-                className="relative z-10 w-14 h-14 md:w-16 md:h-16 object-contain"
+                className="w-full h-full object-contain"
               />
             ) : (
-              <div className="relative z-10 w-14 h-14 md:w-16 md:h-16 rounded-full bg-accent/20 flex items-center justify-center">
-                <span className="text-2xl font-bold text-accent">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-accent/20 flex items-center justify-center">
+                <span className="text-2xl md:text-3xl font-bold text-accent">
                   {service.title.charAt(0)}
                 </span>
               </div>

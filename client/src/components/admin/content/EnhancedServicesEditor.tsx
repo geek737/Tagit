@@ -192,15 +192,15 @@ export default function EnhancedServicesEditor() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-xl font-bold">Services Section Editor</h3>
-          <p className="text-sm text-gray-600">Edit header content and manage service cards</p>
+          <h3 className="text-lg sm:text-xl font-bold">Services Section Editor</h3>
+          <p className="text-xs sm:text-sm text-gray-600">Edit header content and manage service cards</p>
         </div>
         <div className="flex gap-2">
           <Button
             variant={previewMode ? "default" : "outline"}
-            className={previewMode ? "bg-accent text-white hover:bg-accent/90" : "text-black hover:text-accent hover:border-accent"}
+            className={`w-full sm:w-auto ${previewMode ? "bg-accent text-white hover:bg-accent/90" : "text-black hover:text-accent hover:border-accent"}`}
             onClick={() => setPreviewMode(!previewMode)}
           >
             <Eye className="h-4 w-4 mr-2" />
@@ -211,63 +211,84 @@ export default function EnhancedServicesEditor() {
 
       {previewMode ? (
         <Card>
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-hidden">
             <section
-              className="w-full min-h-screen relative overflow-hidden flex items-center"
+              className="w-full min-h-[60vh] md:min-h-[70vh] relative overflow-hidden flex items-center"
               style={{ backgroundColor: header.background_color }}
             >
+              {/* Gradient background effect */}
+              <div className="absolute inset-0 bg-gradient-bg lg:bg-none" />
               {header.background_image && (
                 <div
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute inset-0 hidden lg:block bg-cover bg-center"
                   style={{ backgroundImage: `url(${header.background_image})` }}
                 />
               )}
-              <div className="max-w-7xl mx-auto px-16 py-20 relative z-10">
-                <div className="w-full grid grid-cols-2 gap-12 items-center">
-                  <div className="space-y-8">
-                    <h2 className="text-6xl font-bold leading-tight">
+              
+              <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16 relative z-10 w-full">
+                <div className="w-full flex flex-col lg:grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-start lg:items-center">
+                  {/* Left content */}
+                  <div className="space-y-4 md:space-y-6 lg:space-y-8 w-full">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                       <span style={{ color: header.heading_line1_color }}>{header.heading_line1}</span>
                       <br />
                       <span style={{ color: header.heading_line2_color }}>{header.heading_line2}</span>
                     </h2>
-                    <p className="text-lg leading-relaxed" style={{ color: header.description_color }}>
+                    <p className="text-sm md:text-base lg:text-lg leading-relaxed max-w-lg" style={{ color: header.description_color }}>
                       {header.description}
                     </p>
                     <button
-                      className="px-5 py-2.5 rounded-full font-semibold text-base inline-flex items-center gap-2"
+                      className="px-4 md:px-5 py-2 md:py-2.5 rounded-full font-semibold text-sm md:text-base inline-flex items-center gap-2 transition-all hover:opacity-90"
                       style={{
                         backgroundColor: header.button_bg_color,
                         color: header.button_text_color
                       }}
                     >
                       {header.button_text}
-                      <span>→</span>
+                      <span className="ml-1">→</span>
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-6">
+                  {/* Right content - Service cards grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 lg:gap-6 w-full">
                     {services.filter(s => s.is_visible).map((service, index) => (
-                      <div key={index} className="flex flex-col items-center text-center">
-                        <div className="w-24 h-24 rounded-2xl overflow-hidden mb-3">
-                          {service.icon_image && (
-                            <img src={service.icon_image} alt={service.title} className="w-full h-full object-cover" />
-                          )}
+                      <article key={index} className="flex flex-col items-center text-center h-full">
+                        <div className="flex flex-col items-center h-full space-y-2 md:space-y-3">
+                          {/* Icon */}
+                          <div className="w-14 h-14 md:w-18 md:h-18 lg:w-24 lg:h-24 rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0">
+                            {service.icon_image ? (
+                              <img src={service.icon_image} alt={service.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full bg-white/20 flex items-center justify-center">
+                                <span className="text-white text-xl font-bold">{service.title.charAt(0)}</span>
+                              </div>
+                            )}
+                          </div>
+                          {/* Title */}
+                          <h3 
+                            className="font-bold text-xs md:text-sm lg:text-base leading-tight min-h-[2rem] md:min-h-[2.5rem] flex items-center"
+                            style={{ color: service.title_color }}
+                          >
+                            {service.title}
+                          </h3>
+                          {/* Description - hidden on mobile */}
+                          <p 
+                            className="text-[10px] md:text-xs leading-relaxed hidden md:block flex-grow line-clamp-3"
+                            style={{ color: service.description_color }}
+                          >
+                            {service.description}
+                          </p>
+                          {/* Arrow button */}
+                          <a
+                            href={service.link_url || '#'}
+                            className="w-7 h-7 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-opacity flex-shrink-0 mt-auto"
+                            style={{ backgroundColor: service.button_color }}
+                            title={service.link_url || 'No URL set'}
+                          >
+                            <span className="text-xs md:text-sm lg:text-base">→</span>
+                          </a>
                         </div>
-                        <h3 className="font-bold text-base mb-2" style={{ color: service.title_color }}>
-                          {service.title}
-                        </h3>
-                        <p className="text-xs leading-relaxed mb-3" style={{ color: service.description_color }}>
-                          {service.description}
-                        </p>
-                        <a
-                          href={service.link_url || '#'}
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-                          style={{ backgroundColor: service.button_color }}
-                          title={service.link_url || 'No URL set'}
-                        >
-                          →
-                        </a>
-                      </div>
+                      </article>
                     ))}
                   </div>
                 </div>
@@ -338,9 +359,9 @@ export default function EnhancedServicesEditor() {
 
           <TabsContent value="services">
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">Manage your service cards (max 6 recommended)</p>
-                <Button onClick={addService}>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <p className="text-xs sm:text-sm text-gray-600">Manage your service cards (max 6 recommended)</p>
+                <Button onClick={addService} className="w-full sm:w-auto">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Service
                 </Button>
@@ -348,37 +369,38 @@ export default function EnhancedServicesEditor() {
 
               {services.map((service, index) => (
                 <Card key={index}>
-                  <CardHeader>
+                  <CardHeader className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <GripVertical className="h-5 w-5 text-gray-400" />
-                        <CardTitle>Service {index + 1}</CardTitle>
+                        <GripVertical className="h-5 w-5 text-gray-400 hidden sm:block" />
+                        <CardTitle className="text-base sm:text-lg">Service {index + 1}</CardTitle>
                       </div>
                       <Button variant="destructive" size="sm" onClick={() => removeService(index)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <CardContent className="space-y-4 p-4 sm:p-6 pt-0 sm:pt-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Service Title</Label>
+                        <Label className="text-sm">Service Title</Label>
                         <Input
                           value={service.title}
                           onChange={(e) => updateService(index, 'title', e.target.value)}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label>Icon Upload</Label>
+                        <Label className="text-sm">Icon Upload</Label>
                         <Input
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleImageUpload(e, index)}
+                          className="text-sm"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Description</Label>
+                      <Label className="text-sm">Description</Label>
                       <Textarea
                         value={service.description}
                         onChange={(e) => updateService(index, 'description', e.target.value)}
@@ -386,7 +408,7 @@ export default function EnhancedServicesEditor() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Link URL (Arrow Button)</Label>
+                      <Label className="text-sm">Link URL (Arrow Button)</Label>
                       <Input
                         value={service.link_url || ''}
                         onChange={(e) => updateService(index, 'link_url', e.target.value)}
@@ -395,8 +417,8 @@ export default function EnhancedServicesEditor() {
                       <p className="text-xs text-gray-500">URL vers laquelle l'utilisateur sera redirigé en cliquant sur la flèche</p>
                     </div>
                     {service.icon_image && (
-                      <div className="flex justify-center p-4 bg-gray-100 rounded">
-                        <img src={service.icon_image} alt={service.title} className="w-24 h-24 object-cover rounded-xl" />
+                      <div className="flex justify-center p-3 sm:p-4 bg-gray-100 rounded">
+                        <img src={service.icon_image} alt={service.title} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl" />
                       </div>
                     )}
                   </CardContent>

@@ -8,6 +8,7 @@ interface HeroBannerProps {
   titleColor2?: string; // Color for Title Line 2
   image?: string | null;
   breadcrumbLabel?: string;
+  breadcrumbItems?: Array<{ label: string; href?: string }>; // Multi-level breadcrumb
   gradientFrom?: string;
   gradientTo?: string;
 }
@@ -20,13 +21,19 @@ export default function HeroBanner({
   titleColor2 = '#FFFFFF',
   image, 
   breadcrumbLabel,
+  breadcrumbItems,
   gradientFrom = '#FF6B35',
   gradientTo = '#4C1D95'
 }: HeroBannerProps) {
   // Si titleHighlight et titleRest ne sont pas fournis, utiliser le titre complet
   const displayHighlight = titleHighlight || title.split(' ')[0];
   const displayRest = titleRest || title.split(' ').slice(1).join(' ');
-  const breadcrumb = breadcrumbLabel || title;
+  
+  // Build breadcrumb items
+  const breadcrumbs = breadcrumbItems || [
+    { label: 'Accueil', href: '/' },
+    ...(breadcrumbLabel ? [{ label: breadcrumbLabel }] : [{ label: title }])
+  ];
 
   return (
     <section
@@ -75,21 +82,32 @@ export default function HeroBanner({
               </h1>
             </div>
             
-            {/* Breadcrumb */}
+            {/* Breadcrumb - Multi-level support */}
             <nav 
-              className="flex items-center justify-center lg:justify-start gap-2 text-xs sm:text-sm md:text-base animate-fade-in-up" 
+              className="flex items-center justify-center lg:justify-start gap-2 text-xs sm:text-sm md:text-base animate-fade-in-up flex-wrap" 
               style={{ animationDelay: '0.2s' }}
             >
-              <a 
-                href="/" 
-                className="text-white/80 hover:text-white transition-colors duration-300"
-              >
-                Accueil
-              </a>
-              <div className="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full bg-white">
-                <ChevronRight className="w-2.5 h-2.5 md:w-3 md:h-3 text-gray-800" />
-              </div>
-              <span className="text-white/90 font-medium truncate max-w-[200px] md:max-w-none">{breadcrumb}</span>
+              {breadcrumbs.map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {index > 0 && (
+                    <div className="flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full bg-white">
+                      <ChevronRight className="w-2.5 h-2.5 md:w-3 md:h-3 text-gray-800" />
+                    </div>
+                  )}
+                  {item.href ? (
+                    <a 
+                      href={item.href} 
+                      className="text-white/80 hover:text-white transition-colors duration-300"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <span className="text-white/90 font-medium truncate max-w-[200px] md:max-w-none">
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+              ))}
             </nav>
           </div>
           

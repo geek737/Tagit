@@ -137,12 +137,12 @@ export default function Projects() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Projects Management</h2>
-            <p className="text-gray-600 mt-1">Manage your portfolio projects</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Projects Management</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your portfolio projects</p>
           </div>
-          <Button onClick={addProject}>
+          <Button onClick={addProject} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Add Project
           </Button>
@@ -159,17 +159,17 @@ export default function Projects() {
           ) : (
             projects.map((project) => (
               <Card key={project.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{project.title}</CardTitle>
-                    <div className="flex items-center gap-4">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <CardTitle className="text-base sm:text-lg">{project.title}</CardTitle>
+                    <div className="flex items-center justify-between sm:justify-end gap-4">
                       <div className="flex items-center gap-2">
                         <Switch
                           id={`visible-${project.id}`}
                           checked={project.is_visible}
                           onCheckedChange={(checked) => updateProject(project.id, 'is_visible', checked)}
                         />
-                        <Label htmlFor={`visible-${project.id}`}>Visible</Label>
+                        <Label htmlFor={`visible-${project.id}`} className="text-sm">Visible</Label>
                       </div>
                       <Button
                         variant="destructive"
@@ -181,7 +181,7 @@ export default function Projects() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-4 sm:p-6 pt-0 sm:pt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor={`title-${project.id}`}>Title</Label>

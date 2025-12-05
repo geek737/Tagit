@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, ExternalLink, FileText, Calendar, Globe, Palette, Type, Megaphone, Layers, ArrowRight } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, FileText, Calendar, Globe, Palette, Type, Megaphone, Layers, ArrowRight, ChevronRight, FolderOpen } from 'lucide-react';
 import MediaSelector from '@/components/admin/MediaSelector';
+import PortfolioProjectsEditor from '@/components/admin/content/PortfolioProjectsEditor';
 
 interface Page {
   id: string;
@@ -58,6 +59,18 @@ interface Page {
   service_description_color: string | null;
   service_button_color: string | null;
   service_display_order: number | null;
+  // Portfolio
+  portfolio_title_line1: string | null;
+  portfolio_title_line2: string | null;
+  portfolio_title_line1_color: string | null;
+  portfolio_title_line2_color: string | null;
+  portfolio_items_per_page: number | null;
+  // Portfolio Child
+  portfolio_child_title: string | null;
+  portfolio_child_title_color: string | null;
+  portfolio_child_subtitle: string | null;
+  portfolio_child_subtitle_color: string | null;
+  portfolio_parent_slug: string | null;
   // SEO
   seo_title: string | null;
   seo_description: string | null;
@@ -110,11 +123,30 @@ const defaultFormData = {
   service_description_color: '#6b7280',
   service_button_color: '#FF6B35',
   service_display_order: 0,
+  // Portfolio
+  portfolio_title_line1: 'Our bold',
+  portfolio_title_line2: 'projects',
+  portfolio_title_line1_color: '#FF6B35',
+  portfolio_title_line2_color: '#7C3AED',
+  portfolio_items_per_page: 4,
+  // Portfolio Child
+  portfolio_child_title: '',
+  portfolio_child_title_color: '#FF6B35',
+  portfolio_child_subtitle: '',
+  portfolio_child_subtitle_color: '#1f2937',
+  portfolio_parent_slug: 'portfolio',
   // SEO
   seo_title: '',
   seo_description: '',
   seo_keywords: '',
 };
+
+interface PortfolioChildPreview {
+  id: string;
+  title: string;
+  slug: string;
+  first_project_image: string | null;
+}
 
 export default function Pages() {
   const [pages, setPages] = useState<Page[]>([]);
@@ -122,10 +154,25 @@ export default function Pages() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPage, setEditingPage] = useState<Page | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
+  const [portfolioChildPages, setPortfolioChildPages] = useState<PortfolioChildPreview[]>([]);
+  const [loadingPortfolioChildren, setLoadingPortfolioChildren] = useState(false);
 
   useEffect(() => {
     loadPages();
   }, []);
+
+  // Load portfolio child pages when editing a portfolio page
+  useEffect(() => {
+    if (isDialogOpen && formData.template_type === 'portfolio' && formData.slug) {
+      const timeoutId = setTimeout(() => {
+        loadPortfolioChildPages();
+      }, 300); // Debounce to avoid too many requests while typing
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setPortfolioChildPages([]);
+    }
+  }, [isDialogOpen, formData.slug, formData.template_type, editingPage?.id]);
 
   const loadPages = async () => {
     try {
@@ -140,6 +187,72 @@ export default function Pages() {
       toast.error('Failed to load pages');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPortfolioChildPages = async () => {
+    if (formData.template_type !== 'portfolio') {
+      setPortfolioChildPages([]);
+      return;
+    }
+    
+    const parentSlug = formData.slug || editingPage?.slug;
+    
+    if (!parentSlug) {
+      setPortfolioChildPages([]);
+      return;
+    }
+    
+    setLoadingPortfolioChildren(true);
+    try {
+      
+      // Load portfolio child pages
+      const { data: pagesData, error: pagesError } = await supabase
+        .from('pages')
+        .select('id, title, slug')
+        .eq('template_type', 'portfolio_child')
+        .eq('is_published', true)
+        .eq('portfolio_parent_slug', parentSlug)
+        .order('service_display_order', { ascending: true, nullsFirst: false })
+        .order('title', { ascending: true })
+        .limit(4); // Limit to 4 for preview
+
+      if (pagesError) throw pagesError;
+      
+      if (!pagesData || pagesData.length === 0) {
+        setPortfolioChildPages([]);
+        setLoadingPortfolioChildren(false);
+        return;
+      }
+
+      // Load first project image for each page
+      const itemsWithImages = await Promise.all(
+        pagesData.map(async (page) => {
+          // Get the first visible project for this page
+          const { data: projectData } = await supabase
+            .from('portfolio_projects')
+            .select('main_image')
+            .eq('page_id', page.id)
+            .eq('is_visible', true)
+            .order('display_order', { ascending: true })
+            .limit(1);
+
+          const firstProjectImage = projectData && projectData.length > 0 
+            ? projectData[0].main_image 
+            : null;
+
+          return {
+            ...page,
+            first_project_image: firstProjectImage
+          };
+        })
+      );
+
+      setPortfolioChildPages(itemsWithImages);
+    } catch (error) {
+      console.error('Error loading portfolio child pages:', error);
+    } finally {
+      setLoadingPortfolioChildren(false);
     }
   };
 
@@ -204,6 +317,18 @@ export default function Pages() {
         service_description_color: page.service_description_color || '#6b7280',
         service_button_color: page.service_button_color || '#FF6B35',
         service_display_order: page.service_display_order || 0,
+        // Portfolio
+        portfolio_title_line1: page.portfolio_title_line1 || 'Our bold',
+        portfolio_title_line2: page.portfolio_title_line2 || 'projects',
+        portfolio_title_line1_color: page.portfolio_title_line1_color || '#FF6B35',
+        portfolio_title_line2_color: page.portfolio_title_line2_color || '#7C3AED',
+        portfolio_items_per_page: page.portfolio_items_per_page || 4,
+        // Portfolio Child
+        portfolio_child_title: page.portfolio_child_title || '',
+        portfolio_child_title_color: page.portfolio_child_title_color || '#FF6B35',
+        portfolio_child_subtitle: page.portfolio_child_subtitle || '',
+        portfolio_child_subtitle_color: page.portfolio_child_subtitle_color || '#1f2937',
+        portfolio_parent_slug: page.portfolio_parent_slug || 'portfolio',
         // SEO
         seo_title: page.seo_title || '',
         seo_description: page.seo_description || '',
@@ -284,8 +409,18 @@ export default function Pages() {
     }
   };
 
-  // Check if template is service to show Service Card tab
+  // Check template type to show appropriate tabs
   const isServiceTemplate = formData.template_type === 'service';
+  const isPortfolioTemplate = formData.template_type === 'portfolio';
+  const isPortfolioChildTemplate = formData.template_type === 'portfolio_child';
+
+  // Calculate number of tabs for grid
+  const getTabsCount = () => {
+    if (isServiceTemplate) return 6; // Basic, Hero, Content, Card, CTA, SEO
+    if (isPortfolioTemplate) return 5; // Basic, Hero, Portfolio, CTA, SEO
+    if (isPortfolioChildTemplate) return 5; // Basic, Hero, Projects, CTA, SEO
+    return 5; // Default
+  };
 
   if (loading) {
     return (
@@ -301,14 +436,14 @@ export default function Pages() {
     <AdminLayout>
       <div className="space-y-8">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 sm:pb-6 border-b border-gray-200">
           <div className="space-y-1">
-            <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Pages</h1>
-            <p className="text-base text-gray-600">Create and manage your website pages with custom templates</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">Pages</h1>
+            <p className="text-sm sm:text-base text-gray-600">Create and manage your website pages with custom templates</p>
           </div>
           <Button 
             onClick={() => handleOpenDialog()}
-            className="bg-accent hover:bg-accent/90 text-white shadow-md hover:shadow-lg transition-all duration-200"
+            className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-white shadow-md hover:shadow-lg transition-all duration-200"
             size="lg"
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -378,7 +513,12 @@ export default function Pages() {
                       </div>
                       <CardDescription className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                         <Globe className="h-3 w-3" />
-                        <span className="font-mono">/{page.slug}</span>
+                        <span className="font-mono">
+                          {page.template_type === 'portfolio_child' 
+                            ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
+                            : `/${page.slug}`
+                          }
+                        </span>
                       </CardDescription>
                     </div>
                     <div className="flex flex-col gap-1 items-end">
@@ -391,6 +531,12 @@ export default function Pages() {
                       </div>
                       {page.template_type === 'service' && (
                         <span className="text-xs text-orange-500 font-medium">Service</span>
+                      )}
+                      {page.template_type === 'portfolio' && (
+                        <span className="text-xs text-purple-500 font-medium">Portfolio</span>
+                      )}
+                      {page.template_type === 'portfolio_child' && (
+                        <span className="text-xs text-indigo-500 font-medium">Portfolio Child</span>
                       )}
                     </div>
                   </div>
@@ -433,8 +579,17 @@ export default function Pages() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(`/${page.slug}`, '_blank')}
+                        onClick={() => {
+                          const url = page.template_type === 'portfolio_child'
+                            ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
+                            : `/${page.slug}`;
+                          window.open(url, '_blank');
+                        }}
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        title={`View page: ${page.template_type === 'portfolio_child' 
+                          ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
+                          : `/${page.slug}`
+                        }`}
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Button>
@@ -479,43 +634,61 @@ export default function Pages() {
 
         {/* Edit/Create Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white">
-            <DialogHeader className="pb-4 border-b border-gray-200">
-              <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogContent className="w-[95vw] max-w-5xl max-h-[90vh] overflow-y-auto bg-white p-4 sm:p-6">
+            <DialogHeader className="pb-3 sm:pb-4 border-b border-gray-200">
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900">
                 {editingPage ? 'Edit Page' : 'Create New Page'}
               </DialogTitle>
-              <DialogDescription className="text-base text-gray-600 mt-2">
+              <DialogDescription className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">
                 Configure your page content, design, and settings using the tabs below.
               </DialogDescription>
             </DialogHeader>
 
-            <Tabs defaultValue="basic" className="mt-6">
-              <TabsList className={`grid w-full mb-6 ${isServiceTemplate ? 'grid-cols-6' : 'grid-cols-5'}`}>
-                <TabsTrigger value="basic" className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span className="hidden sm:inline">Basic</span>
+            <Tabs defaultValue="basic" className="mt-4 sm:mt-6">
+              <TabsList className={`grid w-full mb-4 sm:mb-6 gap-1 h-auto grid-cols-3 sm:grid-cols-${getTabsCount()}`}>
+                <TabsTrigger value="basic" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline sm:inline">Basic</span>
                 </TabsTrigger>
-                <TabsTrigger value="hero" className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  <span className="hidden sm:inline">Hero</span>
+                <TabsTrigger value="hero" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                  <Palette className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline sm:inline">Hero</span>
                 </TabsTrigger>
-                <TabsTrigger value="content" className="flex items-center gap-2">
-                  <Type className="h-4 w-4" />
-                  <span className="hidden sm:inline">Content</span>
-                </TabsTrigger>
+                {/* Content Tab - Only for Service Pages */}
                 {isServiceTemplate && (
-                  <TabsTrigger value="service" className="flex items-center gap-2">
-                    <Layers className="h-4 w-4" />
-                    <span className="hidden sm:inline">Card</span>
+                  <TabsTrigger value="content" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                    <Type className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline sm:inline">Content</span>
                   </TabsTrigger>
                 )}
-                <TabsTrigger value="cta" className="flex items-center gap-2">
-                  <Megaphone className="h-4 w-4" />
-                  <span className="hidden sm:inline">CTA</span>
+                {/* Portfolio Tab - Only for Portfolio Pages */}
+                {isPortfolioTemplate && (
+                  <TabsTrigger value="portfolio" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                    <Layers className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline sm:inline">Portfolio</span>
+                  </TabsTrigger>
+                )}
+                {/* Projects Tab - Only for Portfolio Child Pages */}
+                {isPortfolioChildTemplate && (
+                  <TabsTrigger value="projects" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                    <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline sm:inline">Projects</span>
+                  </TabsTrigger>
+                )}
+                {/* Service Card Tab - Only for Service Pages */}
+                {isServiceTemplate && (
+                  <TabsTrigger value="service" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                    <Layers className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline sm:inline">Card</span>
+                  </TabsTrigger>
+                )}
+                <TabsTrigger value="cta" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                  <Megaphone className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline sm:inline">CTA</span>
                 </TabsTrigger>
-                <TabsTrigger value="seo" className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  <span className="hidden sm:inline">SEO</span>
+                <TabsTrigger value="seo" className="flex items-center justify-center gap-1 sm:gap-2 px-2 py-2 text-xs sm:text-sm">
+                  <Globe className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline sm:inline">SEO</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -546,6 +719,51 @@ export default function Pages() {
                         placeholder="branding-brand-content"
                         className="text-gray-900 h-11 font-mono text-sm"
                       />
+                      {/* Display full URL for portfolio_child pages */}
+                      {formData.template_type === 'portfolio_child' && formData.slug && (
+                        <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Globe className="h-3 w-3 text-blue-600" />
+                            <span className="text-xs text-blue-800 font-medium">Full URL:</span>
+                            <span className="text-xs text-blue-900 font-mono">
+                              /{formData.portfolio_parent_slug || 'portfolio'}/{formData.slug}
+                            </span>
+                            {formData.is_published && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const url = `/${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
+                                  window.open(url, '_blank');
+                                }}
+                                className="h-6 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 ml-auto"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {/* Display URL for other page types */}
+                      {formData.template_type !== 'portfolio_child' && formData.slug && (
+                        <div className="mt-2 p-2 bg-gray-50 border border-gray-200 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Globe className="h-3 w-3 text-gray-600" />
+                            <span className="text-xs text-gray-700 font-medium">URL:</span>
+                            <span className="text-xs text-gray-900 font-mono">/{formData.slug}</span>
+                            {formData.is_published && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => window.open(`/${formData.slug}`, '_blank')}
+                                className="h-6 px-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 ml-auto"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -560,11 +778,16 @@ export default function Pages() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="service">Service Page</SelectItem>
+                          <SelectItem value="portfolio">Portfolio Page</SelectItem>
+                          <SelectItem value="portfolio_child">Portfolio Child (Projects)</SelectItem>
                           <SelectItem value="landing">Landing Page</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-gray-500">
-                        Service pages appear in "Autres Services" section
+                        {formData.template_type === 'service' && 'Service pages appear in "Autres Services" section'}
+                        {formData.template_type === 'portfolio' && 'Portfolio displays all services in a masonry grid'}
+                        {formData.template_type === 'portfolio_child' && 'Portfolio Child displays detailed projects with images'}
+                        {formData.template_type === 'landing' && 'Landing pages are standalone pages'}
                       </p>
                     </div>
                     <div className="flex items-end">
@@ -590,19 +813,64 @@ export default function Pages() {
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Title Configuration</h4>
                   
-                  {/* Preview du titre avec couleurs personnalisées */}
+                  {/* Preview complet du Hero Banner */}
                   <div 
-                    className="p-4 rounded-lg"
+                    className="rounded-lg overflow-hidden relative"
                     style={{ 
-                      background: `linear-gradient(135deg, ${formData.hero_gradient_from} 0%, ${formData.hero_gradient_to} 100%)` 
+                      background: `linear-gradient(135deg, ${formData.hero_gradient_from} 0%, ${formData.hero_gradient_from} 35%, ${formData.hero_gradient_to} 100%)` 
                     }}
                   >
-                    <p className="text-xs text-white/60 mb-2 uppercase tracking-wide">Preview</p>
-                    <h3 className="text-2xl md:text-3xl font-bold">
-                      <span style={{ color: formData.hero_title_color_1 }}>{formData.hero_title_highlight || 'Branding'}</span>
-                      <br />
-                      <span style={{ color: formData.hero_title_color_2 }}>{formData.hero_title_rest || '& Brand content'}</span>
-                    </h3>
+                    {/* Decorative elements */}
+                    <div 
+                      className="absolute top-0 right-0 w-[60%] h-full opacity-20"
+                      style={{
+                        background: `radial-gradient(ellipse at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+                      }}
+                    />
+                    <div 
+                      className="absolute inset-0 opacity-[0.03]"
+                      style={{
+                        backgroundImage: `
+                          linear-gradient(rgba(255,255,255,1) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)
+                        `,
+                        backgroundSize: '30px 30px'
+                      }}
+                    />
+                    
+                    <div className="relative z-10 p-4 sm:p-6">
+                      <p className="text-xs text-white/60 mb-3 uppercase tracking-wide">Preview Hero Banner</p>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight">
+                            <span style={{ color: formData.hero_title_color_1 }}>{formData.hero_title_highlight || 'Branding'}</span>
+                            <br />
+                            <span style={{ color: formData.hero_title_color_2 }}>{formData.hero_title_rest || '& Brand content'}</span>
+                          </h3>
+                          {/* Breadcrumb preview */}
+                          <div className="flex items-center gap-2 mt-3 text-xs sm:text-sm">
+                            <span className="text-white/80">Accueil</span>
+                            <div className="flex items-center justify-center w-4 h-4 rounded-full bg-white">
+                              <ChevronRight className="w-2.5 h-2.5 text-gray-800" />
+                            </div>
+                            <span className="text-white/90 font-medium">{formData.hero_breadcrumb_label || formData.title || 'Page'}</span>
+                          </div>
+                        </div>
+                        {/* Hero image preview */}
+                        {formData.hero_image && (
+                          <div className="hidden sm:block w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
+                            <img 
+                              src={formData.hero_image} 
+                              alt="Hero" 
+                              className="w-full h-full object-contain drop-shadow-lg"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Bottom wave */}
+                    <div className="h-4 bg-white" style={{ clipPath: 'ellipse(70% 100% at 50% 100%)' }} />
                   </div>
                   
                   {/* Title Line 1 */}
@@ -720,8 +988,58 @@ export default function Pages() {
                 </div>
               </TabsContent>
 
-              {/* Content Tab */}
+              {/* Content Tab - Only for Service Pages */}
+              {isServiceTemplate && (
               <TabsContent value="content" className="space-y-5">
+                {/* Preview Text Section */}
+                <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Preview Text Section</h4>
+                  <div 
+                    className="rounded-lg overflow-hidden relative p-4 sm:p-6"
+                    style={{ backgroundColor: formData.text_background_color || '#f5f5f5' }}
+                  >
+                    {/* Network pattern decoration - simplified */}
+                    <div className="absolute top-0 right-0 w-1/3 h-full opacity-30 hidden sm:block">
+                      <svg className="absolute top-1/2 right-0 -translate-y-1/2 w-32 h-32" viewBox="0 0 500 500">
+                        <g stroke="#9333ea" strokeWidth="1" fill="none" opacity="0.4">
+                          <line x1="250" y1="50" x2="400" y2="120" />
+                          <line x1="400" y1="120" x2="450" y2="250" />
+                          <line x1="300" y1="150" x2="350" y2="280" />
+                        </g>
+                        <g fill="#9333ea" opacity="0.5">
+                          <circle cx="250" cy="50" r="3" />
+                          <circle cx="400" cy="120" r="4" />
+                          <circle cx="450" cy="250" r="3" />
+                          <circle cx="300" cy="150" r="3" />
+                          <circle cx="350" cy="280" r="3" />
+                        </g>
+                      </svg>
+                    </div>
+                    
+                    <div className="relative z-10 max-w-lg">
+                      {formData.text_section_title && (
+                        <h3 className="text-lg sm:text-xl font-bold mb-3" style={{ color: '#1f2937' }}>
+                          {formData.text_section_title}
+                        </h3>
+                      )}
+                      <p 
+                        className="text-xs sm:text-sm leading-relaxed line-clamp-3"
+                        style={{ color: formData.text_content_color || '#374151' }}
+                      >
+                        {formData.text_content || 'Your content will appear here...'}
+                      </p>
+                      {formData.text_show_button && (
+                        <div className="mt-3 flex items-center gap-2">
+                          <span className="text-xs sm:text-sm font-medium text-gray-800">{formData.text_button_text || 'See Our Work'}</span>
+                          <div className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-accent text-white">
+                            <ChevronRight className="w-3 h-3" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Text Section</h4>
                   <div className="space-y-2">
@@ -820,6 +1138,336 @@ export default function Pages() {
                   )}
                 </div>
               </TabsContent>
+              )}
+
+              {/* Portfolio Tab - Only for Portfolio Pages */}
+              {isPortfolioTemplate && (
+              <TabsContent value="portfolio" className="space-y-5">
+                {/* Preview Portfolio Section */}
+                <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Preview Portfolio Section</h4>
+                  <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-100">
+                    {/* Title Preview */}
+                    <div className="space-y-1 mb-6">
+                      <h2 
+                        className="text-xl sm:text-2xl md:text-3xl font-bold"
+                        style={{ color: formData.portfolio_title_line1_color }}
+                      >
+                        {formData.portfolio_title_line1 || 'Our bold'}
+                      </h2>
+                      <h2 
+                        className="text-xl sm:text-2xl md:text-3xl font-bold"
+                        style={{ color: formData.portfolio_title_line2_color }}
+                      >
+                        {formData.portfolio_title_line2 || 'projects'}
+                      </h2>
+                    </div>
+                    {/* Grid Preview - Portfolio Child Pages */}
+                    {loadingPortfolioChildren ? (
+                      <div className="grid grid-cols-2 gap-3">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="aspect-[4/3] bg-gray-200 rounded-lg animate-pulse"></div>
+                        ))}
+                      </div>
+                    ) : portfolioChildPages.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-3">
+                          {portfolioChildPages.map((childPage) => (
+                            <div key={childPage.id} className="group relative">
+                              <div className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 shadow-sm">
+                                {childPage.first_project_image ? (
+                                  <img
+                                    src={childPage.first_project_image}
+                                    alt={childPage.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 flex items-center justify-center">
+                                    <span className="text-2xl font-bold text-gray-300">
+                                      {childPage.title.charAt(0)}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="pt-3">
+                                <h3 className="text-sm font-bold text-gray-900 line-clamp-1">
+                                  {childPage.title}
+                                </h3>
+                                <div className="flex items-center gap-2 mt-2">
+                                  <span className="text-xs font-medium text-gray-700">
+                                    See Our Work
+                                  </span>
+                                  <div className="flex items-center justify-center w-5 h-5 rounded-full bg-accent text-white">
+                                    <ArrowRight className="w-3 h-3" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {/* Fill remaining slots if less than 4 */}
+                          {Array.from({ length: Math.max(0, 4 - portfolioChildPages.length) }).map((_, i) => (
+                            <div key={`placeholder-${i}`} className="aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                              <span className="text-xs text-gray-400">Portfolio Child</span>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-4 text-center">
+                          {portfolioChildPages.length} portfolio child {portfolioChildPages.length > 1 ? 'pages' : 'page'} affichée{portfolioChildPages.length > 1 ? 's' : ''}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                              <span className="text-xs text-gray-400">Portfolio Child</span>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-4 text-center">
+                          Aucun portfolio child page publié pour cette page portfolio. Les pages de type "Portfolio Child" avec le même parent slug seront affichées ici.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Section Title</h4>
+                  
+                  {/* Title Line 1 */}
+                  <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">Title Line 1</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        value={formData.portfolio_title_line1}
+                        onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1: e.target.value }))}
+                        placeholder="Our bold"
+                        className="text-gray-900 h-11"
+                      />
+                      <div className="flex gap-2 items-center">
+                        <Label className="text-xs text-gray-500 whitespace-nowrap">Color:</Label>
+                        <Input
+                          type="color"
+                          value={formData.portfolio_title_line1_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1_color: e.target.value }))}
+                          className="w-14 h-11 cursor-pointer"
+                        />
+                        <Input
+                          value={formData.portfolio_title_line1_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1_color: e.target.value }))}
+                          placeholder="#FF6B35"
+                          className="text-gray-900 h-11 font-mono text-sm flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title Line 2 */}
+                  <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">Title Line 2</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        value={formData.portfolio_title_line2}
+                        onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line2: e.target.value }))}
+                        placeholder="projects"
+                        className="text-gray-900 h-11"
+                      />
+                      <div className="flex gap-2 items-center">
+                        <Label className="text-xs text-gray-500 whitespace-nowrap">Color:</Label>
+                        <Input
+                          type="color"
+                          value={formData.portfolio_title_line2_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line2_color: e.target.value }))}
+                          className="w-14 h-11 cursor-pointer"
+                        />
+                        <Input
+                          value={formData.portfolio_title_line2_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line2_color: e.target.value }))}
+                          placeholder="#7C3AED"
+                          className="text-gray-900 h-11 font-mono text-sm flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Display Settings</h4>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700">Items Per Page (Carousel)</Label>
+                    <Input
+                      type="number"
+                      min="2"
+                      max="8"
+                      value={formData.portfolio_items_per_page}
+                      onChange={(e) => setFormData(prev => ({ ...prev, portfolio_items_per_page: parseInt(e.target.value) || 4 }))}
+                      className="text-gray-900 h-11 w-32"
+                    />
+                    <p className="text-xs text-gray-500">Nombre de projets affichés avant pagination (2-8)</p>
+                  </div>
+                </div>
+              </TabsContent>
+              )}
+
+              {/* Projects Tab - Only for Portfolio Child Pages */}
+              {isPortfolioChildTemplate && (
+              <TabsContent value="projects" className="space-y-5">
+                <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <p className="text-sm text-indigo-800">
+                    <strong>Info:</strong> Gérez les projets affichés sur cette page portfolio. Ajoutez des projets avec leurs images, descriptions et informations client.
+                  </p>
+                </div>
+
+                {/* Section Title Settings */}
+                <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Section Settings</h4>
+                  
+                  {/* Title Preview */}
+                  <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Preview</p>
+                    <h3 
+                      className="text-xl md:text-2xl font-bold"
+                      style={{ color: formData.portfolio_child_title_color }}
+                    >
+                      {formData.portfolio_child_title || 'Branding & Brand content'}
+                    </h3>
+                    {formData.portfolio_child_subtitle && (
+                      <p 
+                        className="mt-1 text-sm"
+                        style={{ color: formData.portfolio_child_subtitle_color }}
+                      >
+                        {formData.portfolio_child_subtitle}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">Section Title</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        value={formData.portfolio_child_title}
+                        onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_title: e.target.value }))}
+                        placeholder="Branding & Brand content"
+                        className="text-gray-900 h-11"
+                      />
+                      <div className="flex gap-2 items-center">
+                        <Label className="text-xs text-gray-500 whitespace-nowrap">Color:</Label>
+                        <Input
+                          type="color"
+                          value={formData.portfolio_child_title_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_title_color: e.target.value }))}
+                          className="w-14 h-11 cursor-pointer"
+                        />
+                        <Input
+                          value={formData.portfolio_child_title_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_title_color: e.target.value }))}
+                          placeholder="#FF6B35"
+                          className="text-gray-900 h-11 font-mono text-sm flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subtitle */}
+                  <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
+                    <Label className="text-sm font-semibold text-gray-700">Section Subtitle (optional)</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        value={formData.portfolio_child_subtitle}
+                        onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_subtitle: e.target.value }))}
+                        placeholder="Subtitle text..."
+                        className="text-gray-900 h-11"
+                      />
+                      <div className="flex gap-2 items-center">
+                        <Label className="text-xs text-gray-500 whitespace-nowrap">Color:</Label>
+                        <Input
+                          type="color"
+                          value={formData.portfolio_child_subtitle_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_subtitle_color: e.target.value }))}
+                          className="w-14 h-11 cursor-pointer"
+                        />
+                        <Input
+                          value={formData.portfolio_child_subtitle_color}
+                          onChange={(e) => setFormData(prev => ({ ...prev, portfolio_child_subtitle_color: e.target.value }))}
+                          placeholder="#1f2937"
+                          className="text-gray-900 h-11 font-mono text-sm flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Parent Portfolio Link */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700">Parent Portfolio Page Slug</Label>
+                    <Input
+                      value={formData.portfolio_parent_slug}
+                      onChange={(e) => setFormData(prev => ({ ...prev, portfolio_parent_slug: e.target.value }))}
+                      placeholder="portfolio"
+                      className="text-gray-900 h-11 w-64"
+                    />
+                    <p className="text-xs text-gray-500">Used for the "All Projects" navigation button</p>
+                    
+                    {/* Display full URL */}
+                    {formData.slug && (
+                      <div className="mt-3 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Globe className="h-4 w-4 text-indigo-600 flex-shrink-0" />
+                          <span className="text-xs text-indigo-800 font-medium">Page URL:</span>
+                          <span className="text-xs text-indigo-900 font-mono break-all">
+                            /{formData.portfolio_parent_slug || 'portfolio'}/{formData.slug}
+                          </span>
+                          {formData.is_published && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const url = `/${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
+                                window.open(url, '_blank');
+                              }}
+                              className="h-7 px-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-100 ml-auto flex-shrink-0"
+                              title="View page"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 mr-1" />
+                              <span className="text-xs">View</span>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Display Order for Navigation */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold text-gray-700">Navigation Order</Label>
+                    <Input
+                      type="number"
+                      value={formData.service_display_order}
+                      onChange={(e) => setFormData(prev => ({ ...prev, service_display_order: parseInt(e.target.value) || 0 }))}
+                      placeholder="0"
+                      className="text-gray-900 h-11 w-32"
+                    />
+                    <p className="text-xs text-gray-500">Détermine l'ordre dans la navigation entre les pages portfolio child (plus petit = en premier)</p>
+                  </div>
+                </div>
+
+                {/* Projects Manager - Only show for existing pages */}
+                {editingPage && (
+                  <div className="p-5 bg-gray-50 rounded-lg border border-gray-200">
+                    <PortfolioProjectsEditor pageId={editingPage.id} />
+                  </div>
+                )}
+
+                {!editingPage && (
+                  <div className="p-5 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Note:</strong> Sauvegardez d'abord la page, puis vous pourrez ajouter des projets.
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
+              )}
 
               {/* Service Card Tab - Only for Service Pages */}
               {isServiceTemplate && (
@@ -835,18 +1483,17 @@ export default function Pages() {
                     <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Preview de la carte</h4>
                     <div className="flex justify-center">
                       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-lg w-full max-w-xs">
-                        {/* Icon Container */}
+                        {/* Icon Container - Sans cercle de fond */}
                         <div className="flex justify-center mb-6">
-                          <div className="relative w-24 h-24 flex items-center justify-center">
-                            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-50 to-orange-100/80" />
+                          <div className="w-20 h-20 flex items-center justify-center">
                             {formData.service_icon ? (
                               <img
                                 src={formData.service_icon}
                                 alt="Icon"
-                                className="relative z-10 w-14 h-14 object-contain"
+                                className="w-full h-full object-contain"
                               />
                             ) : (
-                              <div className="relative z-10 w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center">
+                              <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center">
                                 <span className="text-2xl font-bold text-accent">
                                   {formData.title.charAt(0) || 'S'}
                                 </span>
@@ -1067,16 +1714,18 @@ export default function Pages() {
                     </div>
                   </div>
                   
-                  {/* Preview */}
+                  {/* Preview CTA complet */}
                   <div 
-                    className="h-24 rounded-lg relative overflow-hidden flex items-center justify-center"
+                    className="rounded-lg relative overflow-hidden py-6 sm:py-8"
                   >
+                    {/* Background Image */}
                     {formData.cta_background_image && (
                       <div 
-                        className="absolute inset-0 bg-cover bg-center"
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                         style={{ backgroundImage: `url(${formData.cta_background_image})` }}
                       />
                     )}
+                    {/* Overlay gradient */}
                     <div 
                       className="absolute inset-0"
                       style={{ 
@@ -1085,12 +1734,39 @@ export default function Pages() {
                           : `linear-gradient(135deg, ${formData.cta_gradient_from} 0%, ${formData.cta_gradient_to} 100%)`
                       }}
                     />
-                    <p 
-                      className="relative z-10 text-lg font-medium italic"
-                      style={{ color: formData.cta_text_color }}
-                    >
-                      Preview Text
-                    </p>
+                    
+                    {/* Content */}
+                    <div className="relative z-10 px-4 flex flex-col items-center text-center">
+                      <p className="text-xs text-white/60 mb-2 uppercase tracking-wide">Preview CTA Section</p>
+                      <div className="space-y-1">
+                        <p 
+                          className="text-base sm:text-lg md:text-xl font-medium leading-tight italic"
+                          style={{ color: formData.cta_text_color || '#FFFFFF' }}
+                        >
+                          {formData.cta_text || 'Contactez-nous dès maintenant'}
+                        </p>
+                        {formData.cta_text_line2 && (
+                          <p 
+                            className="text-base sm:text-lg md:text-xl font-medium leading-tight italic"
+                            style={{ color: formData.cta_text_color || '#FFFFFF' }}
+                          >
+                            {formData.cta_text_line2}
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* Button preview */}
+                      {formData.cta_show_button && (
+                        <div className="mt-4">
+                          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-white bg-accent text-sm">
+                            {formData.cta_button_text || 'Démarrer un projet'}
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white/20">
+                              <ArrowRight className="w-3 h-3" />
+                            </div>
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

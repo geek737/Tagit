@@ -5,13 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Trash2, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Image as ImageIcon, RefreshCw, Loader2 } from 'lucide-react';
 import MediaUploadDialog from '@/components/admin/MediaUploadDialog';
+import { generateMissingThumbnails } from '@/lib/mediaStorage';
 
 interface MediaFile {
   id: string;
   filename: string;
   url: string;
+  thumbnail: string | null;
   file_type: string;
   category: string;
   section_name: string;
@@ -23,6 +25,8 @@ export default function Media() {
   const [media, setMedia] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [generatingThumbnails, setGeneratingThumbnails] = useState(false);
+  const [thumbnailProgress, setThumbnailProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     loadMedia();
@@ -87,7 +91,42 @@ export default function Media() {
   const filteredMedia = filterCategory === 'all'
     ? media
     : media.filter(item => item.category === filterCategory);
-  console.log(filteredMedia);
+
+  // Count media without thumbnails
+  const mediaWithoutThumbnails = media.filter(item => !item.thumbnail).length;
+
+  const handleGenerateThumbnails = async () => {
+    setGeneratingThumbnails(true);
+    setThumbnailProgress({ current: 0, total: 0 });
+    
+    try {
+      const result = await generateMissingThumbnails((current, total) => {
+        setThumbnailProgress({ current, total });
+      });
+      
+      // Build result message
+      const messages: string[] = [];
+      if (result.success > 0) messages.push(`${result.success} généré(s)`);
+      if (result.skipped > 0) messages.push(`${result.skipped} ignoré(s)`);
+      if (result.failed > 0) messages.push(`${result.failed} échoué(s)`);
+      
+      if (result.success > 0) {
+        toast.success(`Thumbnails: ${messages.join(', ')}`);
+        loadMedia(); // Reload to show new thumbnails
+      } else if (result.skipped > 0 && result.failed === 0) {
+        toast.info(`Thumbnails: ${messages.join(', ')} (images locales non supportées)`);
+      } else if (result.failed > 0) {
+        toast.error(`Thumbnails: ${messages.join(', ')}`);
+      } else {
+        toast.info('Toutes les images ont déjà des thumbnails');
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la génération des thumbnails');
+    } finally {
+      setGeneratingThumbnails(false);
+      setThumbnailProgress({ current: 0, total: 0 });
+    }
+  };
 
   if (loading) {
     return (
@@ -102,23 +141,47 @@ export default function Media() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Media Library</h2>
-            <p className="text-gray-600 mt-1">Manage images and media files</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Media Library</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Manage images and media files</p>
           </div>
-          <MediaUploadDialog onUploadComplete={loadMedia} />
+          <div className="flex flex-wrap gap-2">
+            {/* Bouton toujours visible pour générer les thumbnails manquants */}
+            <Button
+              variant="outline"
+              onClick={handleGenerateThumbnails}
+              disabled={generatingThumbnails || media.length === 0}
+              className="text-gray-700"
+            >
+              {generatingThumbnails ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  {thumbnailProgress.total > 0 
+                    ? `${thumbnailProgress.current}/${thumbnailProgress.total}...`
+                    : 'Génération...'
+                  }
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Générer thumbnails {mediaWithoutThumbnails > 0 ? `(${mediaWithoutThumbnails})` : ''}
+                </>
+              )}
+            </Button>
+            <MediaUploadDialog onUploadComplete={loadMedia} />
+          </div>
         </div>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <CardTitle>All Media</CardTitle>
                 <CardDescription>{filteredMedia.length} files</CardDescription>
               </div>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -142,15 +205,20 @@ export default function Media() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {filteredMedia.map(item => (
                   <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="aspect-square bg-gray-100 flex items-center justify-center p-4">
+                    <div className="aspect-square bg-gray-100 flex items-center justify-center p-2 relative">
                       {item.file_type?.startsWith('image/') ? (
                         <img
-                          src={item.url}
+                          src={item.thumbnail || item.url}
                           alt={item.alt_text || item.filename}
                           className="max-w-full max-h-full object-contain"
+                          loading="lazy"
                         />
                       ) : (
                         <ImageIcon className="h-12 w-12 text-gray-400" />
+                      )}
+                      {/* Indicator for missing thumbnail */}
+                      {!item.thumbnail && item.file_type?.startsWith('image/') && (
+                        <div className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full" title="No thumbnail" />
                       )}
                     </div>
                     <div className="p-3 space-y-2">

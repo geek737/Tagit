@@ -176,19 +176,21 @@ export default function Appearance() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Appearance Settings</h2>
-          <p className="text-gray-600 mt-1">Customize your website's visual appearance</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Appearance Settings</h2>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Customize your website's visual appearance</p>
         </div>
 
-        <Tabs defaultValue="colors" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="colors">
-              <Palette className="h-4 w-4 mr-2" />
-              Colors
+        <Tabs defaultValue="colors" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid grid-cols-2 sm:flex w-full sm:w-auto">
+            <TabsTrigger value="colors" className="text-xs sm:text-sm">
+              <Palette className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Colors</span>
+              <span className="sm:hidden">Colors</span>
             </TabsTrigger>
-            <TabsTrigger value="sections">
-              <Upload className="h-4 w-4 mr-2" />
-              Section Backgrounds
+            <TabsTrigger value="sections" className="text-xs sm:text-sm">
+              <Upload className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Section Backgrounds</span>
+              <span className="sm:hidden">Sections</span>
             </TabsTrigger>
           </TabsList>
 
@@ -198,48 +200,48 @@ export default function Appearance() {
                 <CardTitle>Global Color Scheme</CardTitle>
                 <CardDescription>Configure the color palette for your entire website</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {colorSettings.map(setting => (
-                    <div key={setting.key} className="space-y-3">
+                    <div key={setting.key} className="space-y-2 sm:space-y-3">
                       <div>
-                        <Label htmlFor={setting.key}>{setting.label}</Label>
+                        <Label htmlFor={setting.key} className="text-sm">{setting.label}</Label>
                         <p className="text-xs text-gray-500 mt-1">{setting.description}</p>
                       </div>
-                      <div className="flex gap-3 items-center">
+                      <div className="flex gap-2 sm:gap-3 items-center">
                         <Input
                           id={setting.key}
                           type="color"
                           value={settings[setting.key] || '#000000'}
                           onChange={(e) => updateSetting(setting.key, e.target.value)}
-                          className="w-20 h-12 cursor-pointer"
+                          className="w-14 sm:w-20 h-10 sm:h-12 cursor-pointer"
                         />
                         <Input
                           type="text"
                           value={settings[setting.key] || '#000000'}
                           onChange={(e) => updateSetting(setting.key, e.target.value)}
                           placeholder="#000000"
-                          className="flex-1"
+                          className="flex-1 text-sm"
                         />
                       </div>
                       <div
-                        className="h-16 rounded-md border-2 border-gray-200"
+                        className="h-12 sm:h-16 rounded-md border-2 border-gray-200"
                         style={{ backgroundColor: settings[setting.key] || '#000000' }}
                       />
                     </div>
                   ))}
                 </div>
 
-                <div className="flex justify-between items-center pt-6 border-t">
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={loadData}>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-4 sm:pt-6 border-t">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button variant="outline" onClick={loadData} className="w-full sm:w-auto text-sm">
                       Cancel Changes
                     </Button>
-                    <Button variant="outline" onClick={handleResetToDefaults}>
+                    <Button variant="outline" onClick={handleResetToDefaults} className="w-full sm:w-auto text-sm">
                       Reset to Defaults
                     </Button>
                   </div>
-                  <Button onClick={handleSaveColors} disabled={saving}>
+                  <Button onClick={handleSaveColors} disabled={saving} className="w-full sm:w-auto">
                     {saving ? 'Saving...' : 'Save Color Scheme'}
                   </Button>
                 </div>

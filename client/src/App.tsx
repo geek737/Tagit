@@ -34,6 +34,21 @@ const DynamicPage = () => {
   return <PageTemplate slug={slug} />;
 };
 
+// Portfolio Child Page - Dynamic route: /:parentSlug/:childSlug
+const PortfolioChildPage = () => {
+  const [, params] = useRoute("/:parentSlug/:childSlug");
+  const parentSlug = params?.parentSlug || "";
+  const childSlug = params?.childSlug || "";
+  
+  // Exclude admin routes
+  if (parentSlug.startsWith("admin")) {
+    return <NotFound />;
+  }
+  
+  // The child page slug in DB is just the child part, but we verify parent in PageTemplate
+  return <PageTemplate slug={childSlug} parentSlug={parentSlug} />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -89,6 +104,8 @@ const App = () => (
               <Settings />
             </ProtectedRoute>
           </Route>
+          {/* Portfolio child pages route: /:parentSlug/:childSlug (dynamic) */}
+          <Route path="/:parentSlug/:childSlug" component={PortfolioChildPage} />
           <Route path="/:slug" component={DynamicPage} />
           <Route component={NotFound} />
         </Switch>

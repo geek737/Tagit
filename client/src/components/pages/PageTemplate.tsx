@@ -8,6 +8,8 @@ import HeroBanner from './HeroBanner';
 import TextSection from './TextSection';
 import OtherServices from './OtherServices';
 import CTASection from './CTASection';
+import PortfolioSection from './PortfolioSection';
+import PortfolioChildSection from './PortfolioChildSection';
 
 interface Page {
   id: string;
@@ -54,10 +56,25 @@ interface Page {
   seo_title: string | null;
   seo_description: string | null;
   seo_keywords: string | null;
+  
+  // Portfolio fields
+  portfolio_title_line1: string | null;
+  portfolio_title_line2: string | null;
+  portfolio_title_line1_color: string | null;
+  portfolio_title_line2_color: string | null;
+  portfolio_items_per_page: number | null;
+  
+  // Portfolio Child fields
+  portfolio_child_title: string | null;
+  portfolio_child_title_color: string | null;
+  portfolio_child_subtitle: string | null;
+  portfolio_child_subtitle_color: string | null;
+  portfolio_parent_slug: string | null;
 }
 
 interface PageTemplateProps {
   slug: string;
+  parentSlug?: string; // For portfolio child pages
 }
 
 // Helper function to update meta tags
@@ -134,7 +151,7 @@ function updateMetaTag(name: string, content: string) {
   tag.setAttribute('content', content);
 }
 
-export default function PageTemplate({ slug }: PageTemplateProps) {
+export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
   const [page, setPage] = useState<Page | null>(null);
   const [loading, setLoading] = useState(true);
   const [, setLocation] = useLocation();
@@ -143,7 +160,7 @@ export default function PageTemplate({ slug }: PageTemplateProps) {
     loadPage();
     // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [slug]);
+  }, [slug, parentSlug]);
 
   // Update SEO when page data changes
   useEffect(() => {
@@ -159,19 +176,58 @@ export default function PageTemplate({ slug }: PageTemplateProps) {
 
   const loadPage = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('pages')
         .select('*')
         .eq('slug', slug)
-        .eq('is_published', true)
-        .single();
+        .eq('is_published', true);
+
+      // If parentSlug is provided, verify it's a portfolio child page
+      if (parentSlug) {
+        query = query.eq('template_type', 'portfolio_child');
+      }
+
+      const { data, error } = await query.single();
 
       if (error) {
         if (error.code === 'PGRST116') {
+          // Page not found - try to handle legacy URLs for portfolio_child
+          if (!parentSlug) {
+            // Try to find if it's a portfolio_child that should have parent prefix
+            const legacyQuery = await supabase
+              .from('pages')
+              .select('*')
+              .eq('slug', slug)
+              .eq('template_type', 'portfolio_child')
+              .eq('is_published', true)
+              .maybeSingle();
+            
+            if (legacyQuery.data) {
+              // Redirect to new URL format
+              const parentSlugValue = legacyQuery.data.portfolio_parent_slug || 'portfolio';
+              setLocation(`/${parentSlugValue}/${slug}`);
+              return;
+            }
+          }
           setLocation('/');
           return;
         }
         throw error;
+      }
+
+      // If it's a portfolio_child but accessed without parentSlug, redirect to correct URL
+      if (data.template_type === 'portfolio_child' && !parentSlug) {
+        const parentSlugValue = data.portfolio_parent_slug || 'portfolio';
+        setLocation(`/${parentSlugValue}/${slug}`);
+        return;
+      }
+
+      // Verify parent slug matches if provided
+      if (parentSlug && data.template_type === 'portfolio_child' && data.portfolio_parent_slug !== parentSlug) {
+        // Parent slug mismatch - redirect to correct URL
+        const correctParentSlug = data.portfolio_parent_slug || 'portfolio';
+        setLocation(`/${correctParentSlug}/${slug}`);
+        return;
       }
 
       setPage(data);
@@ -216,6 +272,32 @@ export default function PageTemplate({ slug }: PageTemplateProps) {
     return null;
   }
 
+  // Build breadcrumb based on page type
+  const getBreadcrumbItems = () => {
+    if (page.template_type === 'portfolio_child') {
+      // For portfolio child: Accueil > Portfolio > nom du page child
+      // Use parentSlug from route if available, otherwise from page data
+      const parentSlugValue = parentSlug || page.portfolio_parent_slug || 'portfolio';
+      
+      // Get parent page title for breadcrumb
+      const parentTitle = 'Portfolio'; // Default, could be fetched from parent page if needed
+      
+      return [
+        { label: 'Accueil', href: '/' },
+        { label: parentTitle, href: `/${parentSlugValue}` },
+        { label: page.hero_breadcrumb_label || page.title }
+      ];
+    }
+    // For other pages, use simple breadcrumb
+    if (page.hero_breadcrumb_label) {
+      return [
+        { label: 'Accueil', href: '/' },
+        { label: page.hero_breadcrumb_label }
+      ];
+    }
+    return undefined; // Will use default breadcrumbLabel
+  };
+
   return (
     <main className="animate-fade-in">
       <Header />
@@ -228,21 +310,50 @@ export default function PageTemplate({ slug }: PageTemplateProps) {
         titleColor2={page.hero_title_color_2 || '#FFFFFF'}
         image={page.hero_image}
         breadcrumbLabel={page.hero_breadcrumb_label || undefined}
+        breadcrumbItems={getBreadcrumbItems()}
         gradientFrom={page.hero_gradient_from || '#FF6B35'}
         gradientTo={page.hero_gradient_to || '#4C1D95'}
       />
 
-      <TextSection
-        title={page.text_section_title || page.hero_title || page.title}
-        content={page.text_content || ''}
-        textColor={page.text_content_color}
-        backgroundColor={page.text_background_color || '#f5f5f5'}
-        buttonText={page.text_button_text || 'See Our Work'}
-        buttonLink={page.text_button_link || '#portfolio'}
-        showButton={page.text_show_button !== false}
-      />
+      {/* Content Section - Only for service pages */}
+      {page.template_type === 'service' && (
+        <TextSection
+          title={page.text_section_title || page.hero_title || page.title}
+          content={page.text_content || ''}
+          textColor={page.text_content_color}
+          backgroundColor={page.text_background_color || '#f5f5f5'}
+          buttonText={page.text_button_text || 'See Our Work'}
+          buttonLink={page.text_button_link || '#portfolio'}
+          showButton={page.text_show_button !== false}
+        />
+      )}
 
-      {/* Autres Services - Exclure la page actuelle */}
+      {/* Portfolio Section - Only for portfolio pages */}
+      {page.template_type === 'portfolio' && (
+        <PortfolioSection
+          titleLine1={page.portfolio_title_line1 || 'Our bold'}
+          titleLine2={page.portfolio_title_line2 || 'projects'}
+          titleLine1Color={page.portfolio_title_line1_color || '#7C3AED'}
+          titleLine2Color={page.portfolio_title_line2_color || '#7C3AED'}
+          itemsPerPage={page.portfolio_items_per_page || 4}
+          parentSlug={page.slug}
+        />
+      )}
+
+      {/* Portfolio Child Section - Only for portfolio child pages */}
+      {page.template_type === 'portfolio_child' && (
+        <PortfolioChildSection
+          pageId={page.id}
+          currentSlug={page.slug}
+          title={page.portfolio_child_title || page.title}
+          titleColor={page.portfolio_child_title_color || '#FF6B35'}
+          subtitle={page.portfolio_child_subtitle || undefined}
+          subtitleColor={page.portfolio_child_subtitle_color || '#1f2937'}
+          parentSlug={page.portfolio_parent_slug || 'portfolio'}
+        />
+      )}
+
+      {/* Autres Services - Only for service pages */}
       {page.template_type === 'service' && (
         <OtherServices currentPageSlug={page.slug} />
       )}

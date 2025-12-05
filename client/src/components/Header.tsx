@@ -176,7 +176,7 @@ const Header = () => {
         <div className="flex items-center">
           <button
             onClick={handleLogoClick}
-            className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-lg transition-transform hover:scale-105"
+            className="cursor-pointer rounded-lg transition-transform hover:scale-105"
             aria-label="Go to homepage"
           >
             <img src={logo} alt="tagit Logo" className="h-14 md:h-16 w-auto" />
