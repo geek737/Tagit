@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { supabase } from '@/lib/supabase';
+import GlobalLoader, { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface PortfolioProject {
   id: string;
@@ -50,6 +51,7 @@ export default function PortfolioChildSection({
   const [portfolioChildPages, setPortfolioChildPages] = useState<PortfolioChildPage[]>([]);
   const [currentPageIndex, setCurrentPageIndex] = useState(-1);
   const [loadingPages, setLoadingPages] = useState(true);
+  const [navigating, setNavigating] = useState(false);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function PortfolioChildSection({
   }, [portfolioChildPages, currentSlug]);
 
   const loadProjects = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('portfolio_projects')
@@ -89,6 +92,7 @@ export default function PortfolioChildSection({
       console.error('Error loading portfolio projects:', error);
     } finally {
       setLoading(false);
+      setNavigating(false);
     }
   };
 
@@ -139,7 +143,7 @@ export default function PortfolioChildSection({
   };
 
   const navigateToPage = (direction: 'prev' | 'next') => {
-    if (currentPageIndex === -1 || portfolioChildPages.length === 0) return;
+    if (currentPageIndex === -1 || portfolioChildPages.length === 0 || navigating) return;
     
     let targetIndex: number;
     if (direction === 'prev') {
@@ -149,8 +153,11 @@ export default function PortfolioChildSection({
     }
 
     if (targetIndex >= 0 && targetIndex < portfolioChildPages.length) {
+      setNavigating(true);
       const targetPage = portfolioChildPages[targetIndex];
-      setLocation(`/${parentSlug}/${targetPage.slug}`);
+      // The slug in DB is now the full route (e.g., 'portfolio/social-media-management')
+      setLocation(`/${targetPage.slug}`);
+      // Note: The loading state will be reset when loadProjects completes in the new page
     }
   };
 
@@ -158,27 +165,11 @@ export default function PortfolioChildSection({
     setLocation(`/${parentSlug}`);
   };
 
-  if (loading) {
+  if (loading || navigating) {
     return (
       <section className="w-full py-12 md:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
-          <div className="animate-pulse space-y-12">
-            <div className="h-10 bg-gray-200 rounded w-64"></div>
-            {[1, 2].map((i) => (
-              <div key={i} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2 aspect-video bg-gray-200 rounded-lg"></div>
-                  <div className="aspect-square bg-gray-200 rounded-lg"></div>
-                  <div className="aspect-square bg-gray-200 rounded-lg"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <GlobalLoader isLoading={true} text="Chargement du projet..." fullScreen={false} />
         </div>
       </section>
     );
@@ -232,18 +223,22 @@ export default function PortfolioChildSection({
           {/* Previous Portfolio Child Page */}
           <button
             onClick={() => navigateToPage('prev')}
-            disabled={currentPageIndex <= 0 || loadingPages}
+            disabled={currentPageIndex <= 0 || loadingPages || navigating}
             className="flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             <div className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-              currentPageIndex > 0 && !loadingPages
+              currentPageIndex > 0 && !loadingPages && !navigating
                 ? 'bg-accent text-white group-hover:bg-orange-600'
                 : 'bg-gray-300 text-gray-500'
             }`}>
-              <ChevronLeft className="w-5 h-5" />
+              {navigating && currentPageIndex > 0 ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <ChevronLeft className="w-5 h-5" />
+              )}
             </div>
             <span className={`text-base font-medium ${
-              currentPageIndex > 0 && !loadingPages
+              currentPageIndex > 0 && !loadingPages && !navigating
                 ? 'text-gray-900'
                 : 'text-gray-400'
             }`}>
@@ -262,22 +257,26 @@ export default function PortfolioChildSection({
           {/* Next Portfolio Child Page */}
           <button
             onClick={() => navigateToPage('next')}
-            disabled={currentPageIndex >= portfolioChildPages.length - 1 || currentPageIndex === -1 || loadingPages}
+            disabled={currentPageIndex >= portfolioChildPages.length - 1 || currentPageIndex === -1 || loadingPages || navigating}
             className="flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             <span className={`text-base font-medium ${
-              currentPageIndex < portfolioChildPages.length - 1 && currentPageIndex !== -1 && !loadingPages
+              currentPageIndex < portfolioChildPages.length - 1 && currentPageIndex !== -1 && !loadingPages && !navigating
                 ? 'text-gray-900'
                 : 'text-gray-400'
             }`}>
               Next Project
             </span>
             <div className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
-              currentPageIndex < portfolioChildPages.length - 1 && currentPageIndex !== -1 && !loadingPages
+              currentPageIndex < portfolioChildPages.length - 1 && currentPageIndex !== -1 && !loadingPages && !navigating
                 ? 'bg-accent text-white group-hover:bg-orange-600'
                 : 'bg-gray-300 text-gray-500'
             }`}>
-              <ChevronRight className="w-5 h-5" />
+              {navigating && currentPageIndex < portfolioChildPages.length - 1 && currentPageIndex !== -1 ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <ChevronRight className="w-5 h-5" />
+              )}
             </div>
           </button>
         </div>

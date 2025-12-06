@@ -78,17 +78,33 @@ interface MediaSelectorProps {
   placeholder?: string;
   className?: string;
   buttonOnly?: boolean; // Show only add button (for adding to arrays)
+  previewShape?: 'rectangle' | 'square'; // Shape of the preview (default: rectangle)
 }
 
 const ITEMS_PER_PAGE = 12;
 
-export default function MediaSelector({ value, onChange, label, placeholder, className, buttonOnly }: MediaSelectorProps) {
+export default function MediaSelector({ value, onChange, label, placeholder, className, buttonOnly, previewShape = 'rectangle' }: MediaSelectorProps) {
   const [open, setOpen] = useState(false);
   const [media, setMedia] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+
+  // Load thumbnail for the current value when component mounts or value changes
+  useEffect(() => {
+    if (value && media.length > 0) {
+      const selectedItem = media.find(item => item.url === value);
+      if (selectedItem?.thumbnail) {
+        setThumbnailUrl(selectedItem.thumbnail);
+      } else {
+        setThumbnailUrl(null);
+      }
+    } else {
+      setThumbnailUrl(null);
+    }
+  }, [value, media]);
 
   useEffect(() => {
     if (open) {
@@ -153,8 +169,9 @@ export default function MediaSelector({ value, onChange, label, placeholder, cla
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedMedia = filteredMedia.slice(startIndex, endIndex);
 
-  const handleSelect = (url: string) => {
-    onChange(url);
+  const handleSelect = (item: MediaFile) => {
+    onChange(item.url);
+    setThumbnailUrl(item.thumbnail);
     setOpen(false);
   };
 
@@ -235,12 +252,12 @@ export default function MediaSelector({ value, onChange, label, placeholder, cla
                 <p>No media found. Upload an image to get started.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {paginatedMedia.map((item) => (
                   <div
                     key={item.id}
                     className="relative group cursor-pointer border-2 rounded-lg overflow-hidden transition-all border-gray-200 hover:border-accent hover:shadow-md"
-                    onClick={() => handleSelect(item.url)}
+                    onClick={() => handleSelect(item)}
                   >
                     <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
                       {/* Use thumbnail for fast loading, fallback to original if no thumbnail */}
@@ -282,23 +299,34 @@ export default function MediaSelector({ value, onChange, label, placeholder, cla
       {label && <label className="text-sm font-medium text-gray-700">{label}</label>}
       <div className="flex gap-2">
         {value ? (
-          <div className="flex-1 relative group">
+          <div className={`relative group ${previewShape === 'square' ? 'w-20 h-20 flex-shrink-0' : 'flex-1'}`}>
             <img
-              src={value}
+              src={thumbnailUrl || value}
               alt="Selected image preview"
-              className="w-full h-20 object-cover rounded-lg border border-gray-300"
+              className={`object-cover rounded-lg border border-gray-300 ${
+                previewShape === 'square' ? 'w-20 h-20' : 'w-full h-20'
+              }`}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
+                // If thumbnail fails, try original URL
+                if (thumbnailUrl && target.src === thumbnailUrl) {
+                  target.src = value;
+                  return;
+                }
                 target.style.display = 'none';
                 const parent = target.parentElement;
                 if (parent) {
-                  parent.innerHTML = `<div class="w-full h-20 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center text-gray-400 text-sm">Invalid image URL</div>`;
+                  const sizeClass = previewShape === 'square' ? 'w-20 h-20' : 'w-full h-20';
+                  parent.innerHTML = `<div class="${sizeClass} bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center text-gray-400 text-sm">Invalid</div>`;
                 }
               }}
             />
             <button
               type="button"
-              onClick={() => onChange('')}
+              onClick={() => {
+                onChange('');
+                setThumbnailUrl(null);
+              }}
               className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <X className="h-3 w-3" />
@@ -384,7 +412,7 @@ export default function MediaSelector({ value, onChange, label, placeholder, cla
                             ? 'border-accent ring-2 ring-accent'
                             : 'border-gray-200 hover:border-accent'
                         }`}
-                        onClick={() => handleSelect(item.url)}
+                        onClick={() => handleSelect(item)}
                       >
                         <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
                           {/* Use thumbnail for fast loading, fallback to original if no thumbnail */}

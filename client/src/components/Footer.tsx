@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
-import logo from "@/assets/logo-tagtik.png";
+import logo from "@/assets/logo-tagit.png";
 import { supabase } from "@/lib/supabase";
 
 interface FooterSection {

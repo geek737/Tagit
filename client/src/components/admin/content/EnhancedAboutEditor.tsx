@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Upload, Save, Eye } from 'lucide-react';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface AboutContent {
   id?: string;
@@ -110,11 +111,7 @@ export default function EnhancedAboutEditor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <SectionLoader text="Chargement de la section À propos..." />;
   }
 
   return (

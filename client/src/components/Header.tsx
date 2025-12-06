@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useLocation } from "wouter";
-import logo from "@/assets/logo-tagtik.png";
+import logo from "@/assets/logo-tagit.png";
 import { supabase } from "@/lib/supabase";
 
 interface MenuItem {

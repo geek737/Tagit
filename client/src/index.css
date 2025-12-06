@@ -243,4 +243,100 @@ All colors MUST be HSL.
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  /* ==========================================
+     TAGIT Global Loader Animations
+     "Bottle filling" effect - Professional loading
+     ========================================== */
+  
+  /* Fill up animation - Logo fills from bottom to top */
+  @keyframes fillUp {
+    0% {
+      clip-path: inset(100% 0 0 0);
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  
+  .animate-fill-up {
+    animation: fillUp 1.8s ease-in-out infinite;
+  }
+  
+  .animate-fill-up-fast {
+    animation: fillUp 1.2s ease-in-out infinite;
+  }
+  
+  /* Loading bar animation */
+  @keyframes loadingBar {
+    0% {
+      width: 0%;
+      margin-left: 0%;
+    }
+    50% {
+      width: 70%;
+      margin-left: 15%;
+    }
+    100% {
+      width: 0%;
+      margin-left: 100%;
+    }
+  }
+  
+  .animate-loading-bar {
+    animation: loadingBar 2s ease-in-out infinite;
+  }
+  
+  .animate-loading-bar-fast {
+    animation: loadingBar 1.5s ease-in-out infinite;
+  }
+  
+  /* Shine effect animation */
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) skewX(-12deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateX(200%) skewX(-12deg);
+      opacity: 0;
+    }
+  }
+  
+  .animate-shine {
+    animation: shine 2.5s ease-in-out infinite;
+    overflow: hidden;
+  }
+  
+  /* Pulse glow effect for loader */
+  @keyframes pulseGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.3));
+    }
+    50% {
+      filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.6));
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  
+  /* Fade out animation for loader exit */
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  
+  .animate-fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
 }

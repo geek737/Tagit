@@ -9,6 +9,8 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Save, Eye, Plus, Trash2, GripVertical } from 'lucide-react';
 import { compressImage, validateImageFile } from '@/utils/imageUtils';
+import MediaSelector from '../MediaSelector';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface ServiceItem {
   id?: string;
@@ -183,11 +185,7 @@ export default function EnhancedServicesEditor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <SectionLoader text="Chargement des services..." />;
   }
 
   return (
@@ -390,12 +388,12 @@ export default function EnhancedServicesEditor() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm">Icon Upload</Label>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageUpload(e, index)}
-                          className="text-sm"
+                        <Label className="text-sm">Icon Image</Label>
+                        <MediaSelector
+                          value={service.icon_image || ''}
+                          onChange={(url) => updateService(index, 'icon_image', url)}
+                          placeholder="Select an icon image"
+                          previewShape="square"
                         />
                       </div>
                     </div>
@@ -416,11 +414,6 @@ export default function EnhancedServicesEditor() {
                       />
                       <p className="text-xs text-gray-500">URL vers laquelle l'utilisateur sera redirigé en cliquant sur la flèche</p>
                     </div>
-                    {service.icon_image && (
-                      <div className="flex justify-center p-3 sm:p-4 bg-gray-100 rounded">
-                        <img src={service.icon_image} alt={service.title} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl" />
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -491,10 +484,10 @@ export default function EnhancedServicesEditor() {
                   </div>
                   <div className="space-y-2">
                     <Label>Background Image</Label>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, 'background')}
+                    <MediaSelector
+                      value={header.background_image || ''}
+                      onChange={(url) => setHeader(prev => ({ ...prev, background_image: url }))}
+                      placeholder="Select a background image"
                     />
                   </div>
                 </div>

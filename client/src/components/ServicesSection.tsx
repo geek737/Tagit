@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { SectionLoader } from "@/components/ui/GlobalLoader";
 
 interface Service {
   id: string;
@@ -57,8 +58,8 @@ const ServicesSection = () => {
 
   if (loading) {
     return (
-      <section id="services" className="w-full min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      <section id="services" className="w-full min-h-screen flex items-center justify-center bg-accent">
+        <SectionLoader text="Chargement des services..." />
       </section>
     );
   }

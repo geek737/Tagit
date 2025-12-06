@@ -268,7 +268,7 @@ function PortfolioCard({
 }) {
   return (
     <a
-      href={`/${parentSlug}/${item.slug}`}
+      href={`/${item.slug}`}
       className={`group relative block cursor-pointer ${
         isAnimating ? '' : 'animate-fade-in-up'
       }`}

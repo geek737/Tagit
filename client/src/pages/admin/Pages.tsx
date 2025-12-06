@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { Plus, Edit, Trash2, ExternalLink, FileText, Calendar, Globe, Palette, Type, Megaphone, Layers, ArrowRight, ChevronRight, FolderOpen } from 'lucide-react';
 import MediaSelector from '@/components/admin/MediaSelector';
 import PortfolioProjectsEditor from '@/components/admin/content/PortfolioProjectsEditor';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface Page {
   id: string;
@@ -276,9 +277,20 @@ export default function Pages() {
   const handleOpenDialog = (page?: Page) => {
     if (page) {
       setEditingPage(page);
+      
+      // For portfolio_child pages, extract just the child part of the slug
+      // The full slug in DB is now: parent/child (e.g., 'portfolio/social-media-management')
+      let displaySlug = page.slug;
+      if (page.template_type === 'portfolio_child' && page.portfolio_parent_slug) {
+        const prefix = `${page.portfolio_parent_slug}/`;
+        if (page.slug.startsWith(prefix)) {
+          displaySlug = page.slug.substring(prefix.length);
+        }
+      }
+      
       setFormData({
         title: page.title,
-        slug: page.slug,
+        slug: displaySlug,
         template_type: page.template_type,
         is_published: page.is_published,
         hero_title: page.hero_title || '',
@@ -347,9 +359,24 @@ export default function Pages() {
       return;
     }
 
+    // Build the full slug/route for portfolio_child pages
+    let finalSlug = formData.slug;
+    
+    // For portfolio_child, prefix with parent slug to make route unique
+    if (formData.template_type === 'portfolio_child') {
+      const parentSlug = formData.portfolio_parent_slug || 'portfolio';
+      // Remove any existing parent prefix to avoid duplication
+      const cleanSlug = formData.slug.replace(new RegExp(`^${parentSlug}/`), '');
+      finalSlug = `${parentSlug}/${cleanSlug}`;
+    } else {
+      // For non-child pages, ensure no slash prefix
+      finalSlug = formData.slug.replace(/^\/+/, '');
+    }
+
     try {
       const dataToSave = {
         ...formData,
+        slug: finalSlug,
         updated_at: new Date().toISOString(),
       };
 
@@ -364,7 +391,7 @@ export default function Pages() {
       } else {
         const { error } = await supabase
           .from('pages')
-          .insert([formData]);
+          .insert([dataToSave]);
 
         if (error) throw error;
         toast.success('Page created successfully');
@@ -373,7 +400,12 @@ export default function Pages() {
       setIsDialogOpen(false);
       loadPages();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save page');
+      // Better error message for duplicate slug
+      if (error.message?.includes('duplicate key') || error.message?.includes('unique constraint')) {
+        toast.error(`Cette route existe déjà : /${finalSlug}`);
+      } else {
+        toast.error(error.message || 'Failed to save page');
+      }
     }
   };
 
@@ -425,9 +457,7 @@ export default function Pages() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-        </div>
+        <SectionLoader text="Chargement des pages..." />
       </AdminLayout>
     );
   }
@@ -514,10 +544,7 @@ export default function Pages() {
                       <CardDescription className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                         <Globe className="h-3 w-3" />
                         <span className="font-mono">
-                          {page.template_type === 'portfolio_child' 
-                            ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
-                            : `/${page.slug}`
-                          }
+                          /{page.slug}
                         </span>
                       </CardDescription>
                     </div>
@@ -579,17 +606,9 @@ export default function Pages() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          const url = page.template_type === 'portfolio_child'
-                            ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
-                            : `/${page.slug}`;
-                          window.open(url, '_blank');
-                        }}
+                        onClick={() => window.open(`/${page.slug}`, '_blank')}
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        title={`View page: ${page.template_type === 'portfolio_child' 
-                          ? `/${page.portfolio_parent_slug || 'portfolio'}/${page.slug}`
-                          : `/${page.slug}`
-                        }`}
+                        title={`View page: /${page.slug}`}
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Button>

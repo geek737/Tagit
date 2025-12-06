@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "wouter";
 import {
   Carousel,
   CarouselContent,
@@ -6,6 +7,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { supabase } from "@/lib/supabase";
+import { SectionLoader } from "@/components/ui/GlobalLoader";
 
 interface Project {
   id: string;
@@ -52,7 +54,7 @@ const ProjectsSection = () => {
   const loadContent = async () => {
     try {
       const [headerRes, projectsRes] = await Promise.all([
-        supabase.from('projects_header').select('*').eq('is_active', true).single(),
+        supabase.from('projects_header').select('*').single(),
         supabase.from('projects').select('*').eq('is_visible', true).order('display_order', { ascending: true })
       ]);
 
@@ -67,8 +69,8 @@ const ProjectsSection = () => {
 
   if (loading) {
     return (
-      <section id="projects" className="w-full min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      <section id="projects" className="w-full min-h-screen flex items-center justify-center bg-gray-100">
+        <SectionLoader text="Chargement des projets..." />
       </section>
     );
   }
@@ -164,20 +166,24 @@ const ProjectsSection = () => {
                 </p>
               </div>
 
-              <button
-                className="px-5 py-2.5 rounded-full font-semibold text-base inline-flex items-center gap-2 transition-colors w-fit"
-                style={{
-                  backgroundColor: displayHeader.button_bg_color,
-                  color: displayHeader.button_text_color
-                }}
-              >
-                {displayHeader.button_text}
-                <span className="bg-primary rounded-full p-1.5 flex items-center justify-center">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </button>
+              {displayHeader.button_url && (
+                <Link href={displayHeader.button_url}>
+                  <button
+                    className="px-5 py-2.5 rounded-full font-semibold text-base inline-flex items-center gap-2 transition-colors w-fit hover:opacity-90"
+                    style={{
+                      backgroundColor: displayHeader.button_bg_color,
+                      color: displayHeader.button_text_color
+                    }}
+                  >
+                    {displayHeader.button_text}
+                    <span className="bg-primary rounded-full p-1.5 flex items-center justify-center">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

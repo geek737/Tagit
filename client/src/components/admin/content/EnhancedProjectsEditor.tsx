@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Save, Eye, Plus, Trash2, GripVertical } from 'lucide-react';
-import { compressImage, validateImageFile } from '@/utils/imageUtils';
+import MediaSelector from '../MediaSelector';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface Project {
   id?: string;
@@ -122,26 +123,6 @@ export default function EnhancedProjectsEditor() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, projectIndex: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validation = validateImageFile(file);
-    if (!validation.valid) {
-      toast.error(validation.error);
-      return;
-    }
-
-    try {
-      const compressed = await compressImage(file, 1200, 900);
-      setProjects(prev => prev.map((p, i) =>
-        i === projectIndex ? { ...p, image: compressed } : p
-      ));
-    } catch (error) {
-      toast.error('Failed to process image');
-    }
-  };
-
   const addProject = () => {
     setProjects(prev => [...prev, {
       title: 'New Project',
@@ -170,11 +151,7 @@ export default function EnhancedProjectsEditor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <SectionLoader text="Chargement des projets..." />;
   }
 
   return (
@@ -357,17 +334,13 @@ export default function EnhancedProjectsEditor() {
                     </div>
                     <div className="space-y-2">
                       <Label>Project Image</Label>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, index)}
+                      <MediaSelector
+                        value={project.image || ''}
+                        onChange={(url) => updateProject(index, 'image', url)}
+                        placeholder="Select a project image"
+                        previewShape="square"
                       />
                     </div>
-                    {project.image && (
-                      <div className="p-4 bg-gray-100 rounded">
-                        <img src={project.image} alt={project.title} className="w-full h-auto object-contain" />
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               ))}

@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface MenuItem {
   id: string;
@@ -121,9 +122,7 @@ export default function Menu() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-        </div>
+        <SectionLoader text="Chargement du menu..." />
       </AdminLayout>
     );
   }

@@ -9,13 +9,9 @@ import {
   FileText,
   Menu,
   Palette,
-  Users,
-  Briefcase,
   LogOut,
   File,
   X,
-  ChevronLeft,
-  ChevronRight,
   PanelLeftClose,
   PanelLeft
 } from 'lucide-react';
@@ -32,8 +28,6 @@ const navItems = [
   { path: '/admin/appearance', icon: Palette, label: 'Appearance' },
   { path: '/admin/media', icon: Image, label: 'Media' },
   { path: '/admin/menu', icon: Menu, label: 'Menu' },
-  { path: '/admin/projects', icon: Briefcase, label: 'Projects' },
-  { path: '/admin/team', icon: Users, label: 'Team' },
   { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 

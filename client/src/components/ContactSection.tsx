@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { SectionLoader } from "@/components/ui/GlobalLoader";
 
 interface ContactHeader {
   heading_line1: string;
@@ -103,7 +104,7 @@ const ContactSection = () => {
     return (
       <section id="contact" className="w-full px-4 md:px-8 lg:px-16 py-16 md:py-20 lg:py-24 bg-gradient-bg dark">
         <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          <SectionLoader text="Chargement..." />
         </div>
       </section>
     );

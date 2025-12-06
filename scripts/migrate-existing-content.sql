@@ -38,7 +38,7 @@ ON CONFLICT DO NOTHING;
 
 -- Import all existing images to media library
 INSERT INTO media_library (filename, url, file_type, category, section_name, alt_text) VALUES
-  ('logo-tagtik.png', '/client/src/assets/logo-tagtik.png', 'image/png', 'logo', 'header', 'Tagit Logo'),
+  ('logo-tagit.png', '/client/src/assets/logo-tagit.png', 'image/png', 'logo', 'header', 'Tagit Logo'),
   ('hero-handshake-3d.png', '/client/src/assets/hero-handshake-3d.png', 'image/png', 'hero', 'hero', 'Hero Handshake 3D'),
   ('icon-website.png', '/client/src/assets/icon-website.png', 'image/png', 'icon', 'services', 'Website Icon'),
   ('icon-branding.png', '/client/src/assets/icon-branding.png', 'image/png', 'icon', 'services', 'Branding Icon'),

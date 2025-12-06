@@ -15,8 +15,6 @@ import Pages from "./pages/admin/Pages";
 import Appearance from "./pages/admin/Appearance";
 import Media from "./pages/admin/Media";
 import Menu from "./pages/admin/Menu";
-import Projects from "./pages/admin/Projects";
-import Team from "./pages/admin/Team";
 import Settings from "./pages/admin/Settings";
 import PageTemplate from "./components/pages/PageTemplate";
 
@@ -45,8 +43,9 @@ const PortfolioChildPage = () => {
     return <NotFound />;
   }
   
-  // The child page slug in DB is just the child part, but we verify parent in PageTemplate
-  return <PageTemplate slug={childSlug} parentSlug={parentSlug} />;
+  // The slug in DB is now the full route: parentSlug/childSlug
+  const fullSlug = `${parentSlug}/${childSlug}`;
+  return <PageTemplate slug={fullSlug} parentSlug={parentSlug} />;
 };
 
 const App = () => (
@@ -87,16 +86,6 @@ const App = () => (
           <Route path="/admin/menu">
             <ProtectedRoute>
               <Menu />
-            </ProtectedRoute>
-          </Route>
-          <Route path="/admin/projects">
-            <ProtectedRoute>
-              <Projects />
-            </ProtectedRoute>
-          </Route>
-          <Route path="/admin/team">
-            <ProtectedRoute>
-              <Team />
             </ProtectedRoute>
           </Route>
           <Route path="/admin/settings">

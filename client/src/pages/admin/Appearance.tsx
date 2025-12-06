@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Upload, Palette } from 'lucide-react';
 import MediaUploadDialog from '@/components/admin/MediaUploadDialog';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface SiteSetting {
   id: string;
@@ -165,9 +166,7 @@ export default function Appearance() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-        </div>
+        <SectionLoader text="Chargement de l'apparence..." />
       </AdminLayout>
     );
   }

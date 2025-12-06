@@ -6,6 +6,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { supabase } from "@/lib/supabase";
+import { SectionLoader } from "@/components/ui/GlobalLoader";
 import defaultRobotImage from "@/assets/robot-3d-orange.png";
 
 interface TeamMember {
@@ -92,8 +93,8 @@ const TeamSection = () => {
 
   if (loading) {
     return (
-      <section id="team" className="w-full min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+      <section id="team" className="w-full min-h-screen flex items-center justify-center bg-white">
+        <SectionLoader text="Chargement de l'équipe..." />
       </section>
     );
   }

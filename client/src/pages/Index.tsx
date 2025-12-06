@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -9,9 +9,21 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import GlobalLoader from "@/components/ui/GlobalLoader";
 import heroBackground from "@/assets/hero-handshake-3d.png";
 
 const Index = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial page load
+  useEffect(() => {
+    // Wait for all critical components to be ready
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200);
+    
+    return () => clearTimeout(timer);
+  }, []);
   // Gérer le scroll vers l'ancre après le chargement de la page
   useEffect(() => {
     const hash = window.location.hash;
@@ -44,54 +56,59 @@ const Index = () => {
   }, []);
 
   return (
-    <main>
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white">
-        Skip to main content
-      </a>
+    <>
+      {/* Global loading screen */}
+      <GlobalLoader isLoading={isLoading} text="Chargement..." fullScreen />
+      
+      <main className={isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-500'}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-accent focus:text-white">
+          Skip to main content
+        </a>
 
-      <Header />
+        <Header />
 
-      <div className="bg-gradient-bg dark min-h-screen">
-        <div className="relative min-h-screen">
-          <div className="absolute inset-0 bg-gradient-bg lg:bg-none" />
-          <div
-            className="absolute inset-0 hidden lg:block"
-            style={{
-              backgroundImage: `url(${heroBackground})`,
-              backgroundSize: 'auto',
-              backgroundRepeat: 'no-repeat',
-            }}
-            role="presentation"
-            aria-hidden="true"
-          >
+        <div className="bg-gradient-bg dark min-h-screen">
+          <div className="relative min-h-screen">
+            <div className="absolute inset-0 bg-gradient-bg lg:bg-none" />
             <div
-              className="absolute inset-0 opacity-30 pointer-events-none hidden lg:block"
+              className="absolute inset-0 hidden lg:block"
               style={{
-                backgroundImage: `
-                  radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-                  repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(255, 255, 255, 0.03) 100px, rgba(255, 255, 255, 0.03) 101px),
-                  repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255, 255, 255, 0.03) 100px, rgba(255, 255, 255, 0.03) 101px)
-                `,
+                backgroundImage: `url(${heroBackground})`,
+                backgroundSize: 'auto',
+                backgroundRepeat: 'no-repeat',
               }}
-            />
-          </div>
+              role="presentation"
+              aria-hidden="true"
+            >
+              <div
+                className="absolute inset-0 opacity-30 pointer-events-none hidden lg:block"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                    repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(255, 255, 255, 0.03) 100px, rgba(255, 255, 255, 0.03) 101px),
+                    repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255, 255, 255, 0.03) 100px, rgba(255, 255, 255, 0.03) 101px)
+                  `,
+                }}
+              />
+            </div>
 
-          <div className="relative z-10">
-            <HeroSection />
+            <div className="relative z-10">
+              <HeroSection />
+            </div>
           </div>
         </div>
-      </div>
 
-      <AboutSection />
-      <ServicesSection />
-      <ProjectsSection />
-      <TeamSection />
-      <TestimonialsSection />
-      <ContactSection />
-      <Footer />
-      <ScrollToTop />
-    </main>
+        <AboutSection />
+        <ServicesSection />
+        <ProjectsSection />
+        <TeamSection />
+        <TestimonialsSection />
+        <ContactSection />
+        <Footer />
+        <ScrollToTop />
+      </main>
+    </>
   );
 };
 

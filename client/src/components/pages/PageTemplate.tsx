@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import GlobalLoader from '@/components/ui/GlobalLoader';
 import HeroBanner from './HeroBanner';
 import TextSection from './TextSection';
 import OtherServices from './OtherServices';
@@ -176,57 +177,30 @@ export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
 
   const loadPage = async () => {
     try {
-      let query = supabase
+      // The slug now contains the full route (e.g., 'portfolio/social-media-management')
+      const { data, error } = await supabase
         .from('pages')
         .select('*')
         .eq('slug', slug)
-        .eq('is_published', true);
-
-      // If parentSlug is provided, verify it's a portfolio child page
-      if (parentSlug) {
-        query = query.eq('template_type', 'portfolio_child');
-      }
-
-      const { data, error } = await query.single();
+        .eq('is_published', true)
+        .single();
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // Page not found - try to handle legacy URLs for portfolio_child
-          if (!parentSlug) {
-            // Try to find if it's a portfolio_child that should have parent prefix
-            const legacyQuery = await supabase
-              .from('pages')
-              .select('*')
-              .eq('slug', slug)
-              .eq('template_type', 'portfolio_child')
-              .eq('is_published', true)
-              .maybeSingle();
-            
-            if (legacyQuery.data) {
-              // Redirect to new URL format
-              const parentSlugValue = legacyQuery.data.portfolio_parent_slug || 'portfolio';
-              setLocation(`/${parentSlugValue}/${slug}`);
-              return;
-            }
-          }
+          // Page not found
+          console.log('Page not found for slug:', slug);
           setLocation('/');
           return;
         }
         throw error;
       }
 
-      // If it's a portfolio_child but accessed without parentSlug, redirect to correct URL
-      if (data.template_type === 'portfolio_child' && !parentSlug) {
-        const parentSlugValue = data.portfolio_parent_slug || 'portfolio';
-        setLocation(`/${parentSlugValue}/${slug}`);
-        return;
-      }
-
-      // Verify parent slug matches if provided
+      // Verify parent slug matches for portfolio_child pages
       if (parentSlug && data.template_type === 'portfolio_child' && data.portfolio_parent_slug !== parentSlug) {
         // Parent slug mismatch - redirect to correct URL
         const correctParentSlug = data.portfolio_parent_slug || 'portfolio';
-        setLocation(`/${correctParentSlug}/${slug}`);
+        const childSlug = slug.split('/').pop() || slug;
+        setLocation(`/${correctParentSlug}/${childSlug}`);
         return;
       }
 
@@ -240,32 +214,7 @@ export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-center space-y-6">
-          {/* Animated Logo/Loader */}
-          <div className="relative">
-            <div className="w-16 h-16 md:w-20 md:h-20 mx-auto">
-              <div className="absolute inset-0 rounded-full border-4 border-accent/20"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-accent animate-spin"></div>
-              <div className="absolute inset-2 md:inset-3 rounded-full border-4 border-transparent border-t-orange-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}></div>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <p className="text-base md:text-lg font-medium text-gray-700 animate-pulse">Chargement...</p>
-            <div className="flex justify-center gap-1">
-              {[0, 1, 2].map((i) => (
-                <div 
-                  key={i}
-                  className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <GlobalLoader isLoading={true} text="Chargement de la page..." fullScreen />;
   }
 
   if (!page) {

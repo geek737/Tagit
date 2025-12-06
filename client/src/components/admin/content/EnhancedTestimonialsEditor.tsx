@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Save, Eye, Plus, Trash2, GripVertical } from 'lucide-react';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface Testimonial {
   id?: string;
@@ -143,11 +144,7 @@ export default function EnhancedTestimonialsEditor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <SectionLoader text="Chargement des témoignages..." />;
   }
 
   return (

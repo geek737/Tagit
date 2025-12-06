@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Save, Eye, Plus, Trash2, GripVertical, X } from 'lucide-react';
+import { SectionLoader } from '@/components/ui/GlobalLoader';
 import { compressImage, validateImageFile } from '@/utils/imageUtils';
 
 interface TeamMember {
@@ -192,11 +193,7 @@ export default function EnhancedTeamEditor() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
-      </div>
-    );
+    return <SectionLoader text="Chargement de l'équipe..." />;
   }
 
   return (
