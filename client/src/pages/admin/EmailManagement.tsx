@@ -322,7 +322,7 @@ export default function EmailManagement() {
       test: 'Test',
       general: 'General',
     };
-    return <Badge variant="outline">{labels[type] || type}</Badge>;
+    return <Badge variant="outline" className="border-gray-300 text-gray-700">{labels[type] || type}</Badge>;
   };
 
   return (
