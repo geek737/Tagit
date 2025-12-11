@@ -654,21 +654,21 @@ export default function EmailManagement() {
         </Card>
 
         <Dialog open={!!selectedEmail} onOpenChange={() => setSelectedEmail(null)}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white">
             <DialogHeader>
-              <DialogTitle>Details de l'email</DialogTitle>
+              <DialogTitle className="text-gray-900">Details de l'email</DialogTitle>
             </DialogHeader>
             {selectedEmail && (
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <Label className="text-gray-500">Destinataire</Label>
-                    <p className="font-medium">{selectedEmail.recipient_name || '-'}</p>
+                    <p className="font-medium text-gray-900">{selectedEmail.recipient_name || '-'}</p>
                     <p className="text-sm text-gray-600">{selectedEmail.recipient_email}</p>
                   </div>
                   <div>
                     <Label className="text-gray-500">Expediteur</Label>
-                    <p className="font-medium">{selectedEmail.sender_name || '-'}</p>
+                    <p className="font-medium text-gray-900">{selectedEmail.sender_name || '-'}</p>
                     <p className="text-sm text-gray-600">{selectedEmail.sender_email}</p>
                   </div>
                 </div>
@@ -676,7 +676,7 @@ export default function EmailManagement() {
                 <div className="grid gap-4 md:grid-cols-3">
                   <div>
                     <Label className="text-gray-500">Date d'envoi</Label>
-                    <p className="font-medium">
+                    <p className="font-medium text-gray-900">
                       {format(new Date(selectedEmail.created_at), 'dd MMMM yyyy HH:mm', { locale: fr })}
                     </p>
                   </div>
@@ -692,7 +692,7 @@ export default function EmailManagement() {
 
                 <div>
                   <Label className="text-gray-500">Sujet</Label>
-                  <p className="font-medium">{selectedEmail.subject}</p>
+                  <p className="font-medium text-gray-900">{selectedEmail.subject}</p>
                 </div>
 
                 {selectedEmail.error_message && (
@@ -706,11 +706,11 @@ export default function EmailManagement() {
                   <Label className="text-gray-500">Contenu</Label>
                   {selectedEmail.body_html ? (
                     <div
-                      className="mt-2 border rounded-lg p-4 bg-gray-50 prose prose-sm max-w-none"
+                      className="mt-2 border border-gray-200 rounded-lg p-4 bg-gray-50 prose prose-sm max-w-none text-gray-900"
                       dangerouslySetInnerHTML={{ __html: selectedEmail.body_html }}
                     />
                   ) : (
-                    <pre className="mt-2 border rounded-lg p-4 bg-gray-50 text-sm whitespace-pre-wrap">
+                    <pre className="mt-2 border border-gray-200 rounded-lg p-4 bg-gray-50 text-sm whitespace-pre-wrap text-gray-800">
                       {selectedEmail.body_text}
                     </pre>
                   )}
