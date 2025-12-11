@@ -13,7 +13,8 @@ import {
   File,
   X,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  Mail
 } from 'lucide-react';
 import logoAdmin from '@/assets/logo-admin.png';
 
@@ -28,6 +29,7 @@ const navItems = [
   { path: '/admin/appearance', icon: Palette, label: 'Appearance' },
   { path: '/admin/media', icon: Image, label: 'Media' },
   { path: '/admin/menu', icon: Menu, label: 'Menu' },
+  { path: '/admin/emails', icon: Mail, label: 'Emails' },
   { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 

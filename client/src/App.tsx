@@ -18,6 +18,7 @@ import Appearance from "./pages/admin/Appearance";
 import Media from "./pages/admin/Media";
 import Menu from "./pages/admin/Menu";
 import Settings from "./pages/admin/Settings";
+import EmailManagement from "./pages/admin/EmailManagement";
 import PageTemplate from "./components/pages/PageTemplate";
 
 const AdminRedirect = () => <Redirect to="/admin/dashboard" />;
@@ -94,6 +95,11 @@ const App = () => (
             <Route path="/admin/settings">
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            </Route>
+            <Route path="/admin/emails">
+              <ProtectedRoute>
+                <EmailManagement />
               </ProtectedRoute>
             </Route>
             <Route path="/:parentSlug/:childSlug" component={PortfolioChildPage} />
