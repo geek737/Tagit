@@ -9,7 +9,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { FacebookPixelEditor } from '@/components/admin/integrations/FacebookPixelEditor';
 import { CookieConsentEditor } from '@/components/admin/integrations/CookieConsentEditor';
-import { User, Plug } from 'lucide-react';
+import { SMTPEditor } from '@/components/admin/integrations/SMTPEditor';
+import { EmailTemplatesEditor } from '@/components/admin/integrations/EmailTemplatesEditor';
+import { EmailRecipientsEditor } from '@/components/admin/integrations/EmailRecipientsEditor';
+import { User, Plug, Mail } from 'lucide-react';
 
 export default function Settings() {
   const { user } = useAuth();
@@ -49,6 +52,10 @@ export default function Settings() {
             <TabsTrigger value="account" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Compte
+            </TabsTrigger>
+            <TabsTrigger value="email" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Email
             </TabsTrigger>
             <TabsTrigger value="integrations" className="flex items-center gap-2">
               <Plug className="h-4 w-4" />
@@ -127,6 +134,12 @@ export default function Settings() {
                 <p>- Deconnectez-vous lorsque vous avez termine</p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="email" className="space-y-6 max-w-3xl">
+            <SMTPEditor />
+            <EmailRecipientsEditor />
+            <EmailTemplatesEditor />
           </TabsContent>
 
           <TabsContent value="integrations" className="space-y-6 max-w-3xl">

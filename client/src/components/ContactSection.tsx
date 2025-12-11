@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { SectionLoader } from "@/components/ui/GlobalLoader";
+import { toast } from "sonner";
 
 interface ContactHeader {
   heading_line1: string;
@@ -32,11 +33,14 @@ const ContactSection = () => {
     name: "",
     email: "",
     phone: "",
+    subject: "",
     message: "",
   });
   const [header, setHeader] = useState<ContactHeader | null>(null);
   const [contactInfos, setContactInfos] = useState<ContactInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -58,9 +62,49 @@ const ContactSection = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Veuillez entrer une adresse email valide');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        toast.success('Votre message a ete envoye avec succes!');
+      } else {
+        toast.error(result.error || 'Une erreur est survenue');
+      }
+    } catch (err) {
+      toast.error('Erreur de connexion. Veuillez reessayer.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -273,6 +317,21 @@ const ContactSection = () => {
             </div>
 
             <div className="space-y-2">
+              <label htmlFor="subject" className="text-sm font-medium text-white">
+                Subject
+              </label>
+              <Input
+                id="subject"
+                name="subject"
+                type="text"
+                placeholder="What is this about?"
+                value={formData.subject}
+                onChange={handleChange}
+                className="bg-white/10 border-white/20 text-white placeholder:text-foreground/50 focus:border-accent"
+              />
+            </div>
+
+            <div className="space-y-2">
               <label htmlFor="message" className="text-sm font-medium text-white">
                 Message
               </label>
@@ -288,14 +347,29 @@ const ContactSection = () => {
               />
             </div>
 
-            <Button
-              type="submit"
-              variant="hero"
-              size="lg"
-              className="w-full focus:ring-2 focus:ring-accent focus:ring-offset-2"
-            >
-              Send Message
-            </Button>
+            {submitted ? (
+              <div className="flex items-center justify-center gap-2 p-4 bg-green-500/20 rounded-lg border border-green-500/30">
+                <CheckCircle className="h-5 w-5 text-green-400" />
+                <span className="text-green-400 font-medium">Message sent successfully!</span>
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                variant="hero"
+                size="lg"
+                disabled={submitting}
+                className="w-full focus:ring-2 focus:ring-accent focus:ring-offset-2"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Message'
+                )}
+              </Button>
+            )}
           </form>
         </div>
       </div>
