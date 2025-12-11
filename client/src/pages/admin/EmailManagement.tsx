@@ -331,11 +331,11 @@ export default function EmailManagement() {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">Gestion des Emails</h2>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => { loadEmails(); loadStats(); }}>
+            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-100" onClick={() => { loadEmails(); loadStats(); }}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Actualiser
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExport}>
+            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-100" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Exporter CSV
             </Button>
@@ -411,13 +411,14 @@ export default function EmailManagement() {
                 <Button
                   variant={showFilters ? 'secondary' : 'outline'}
                   size="sm"
+                  className={showFilters ? '' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   <Filter className="h-4 w-4 mr-2" />
                   Filtres
                 </Button>
                 {(filters.status !== 'all' || filters.emailType !== 'all' || filters.dateFrom || filters.dateTo) && (
-                  <Button variant="ghost" size="sm" onClick={resetFilters}>
+                  <Button variant="ghost" size="sm" className="text-gray-700 hover:bg-gray-100" onClick={resetFilters}>
                     <X className="h-4 w-4 mr-1" />
                     Reinitialiser
                   </Button>
@@ -629,6 +630,7 @@ export default function EmailManagement() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(p => p - 1)}
                   >
@@ -638,6 +640,7 @@ export default function EmailManagement() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(p => p + 1)}
                   >
