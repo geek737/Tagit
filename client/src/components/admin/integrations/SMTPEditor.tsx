@@ -94,7 +94,8 @@ export function SMTPEditor() {
     }
 
     if (error) {
-      toast.error('Erreur lors de la sauvegarde');
+      console.error('Save error:', error);
+      toast.error('Erreur lors de la sauvegarde: ' + (error.message || 'Erreur inconnue'));
     } else {
       toast.success('Configuration SMTP sauvegardee');
     }
@@ -109,8 +110,11 @@ export function SMTPEditor() {
 
     setTesting(true);
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email/test`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email?action=test`,
         {
           method: 'POST',
           headers: {
@@ -118,17 +122,24 @@ export function SMTPEditor() {
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify(settings),
+          signal: controller.signal,
         }
       );
 
+      clearTimeout(timeoutId);
       const result = await response.json();
+
       if (result.success) {
         toast.success('Test reussi! Un email a ete envoye a ' + settings.from_email);
       } else {
         toast.error('Echec du test: ' + (result.error || 'Erreur inconnue'));
       }
     } catch (err) {
-      toast.error('Erreur de connexion au serveur');
+      if (err instanceof Error && err.name === 'AbortError') {
+        toast.error('Timeout: le serveur SMTP ne repond pas');
+      } else {
+        toast.error('Erreur de connexion au serveur');
+      }
     }
     setTesting(false);
   }

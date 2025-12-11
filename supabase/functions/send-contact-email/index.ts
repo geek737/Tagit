@@ -50,39 +50,51 @@ function replacePlaceholders(template: string, data: Record<string, string>): st
   return result;
 }
 
-async function sendEmail(
+function sendEmailWithTimeout(
   smtp: SMTPSettings,
   to: string,
   toName: string,
   subject: string,
   htmlBody: string,
-  textBody: string
+  textBody: string,
+  timeoutMs: number = 30000
 ): Promise<{ success: boolean; error?: string }> {
-  try {
-    const client = new SMTPClient({
-      user: smtp.username,
-      password: smtp.password,
-      host: smtp.host,
-      port: smtp.port,
-      tls: smtp.encryption === 'tls',
-      ssl: smtp.encryption === 'ssl',
-    });
+  return new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      resolve({ success: false, error: 'Connection timeout - the SMTP server did not respond in time' });
+    }, timeoutMs);
 
-    await client.sendAsync({
-      from: `${smtp.from_name} <${smtp.from_email}>`,
-      to: toName ? `${toName} <${to}>` : to,
-      subject: subject,
-      text: textBody,
-      attachment: [
-        { data: htmlBody, alternative: true },
-      ],
-    });
+    (async () => {
+      try {
+        const client = new SMTPClient({
+          user: smtp.username,
+          password: smtp.password,
+          host: smtp.host,
+          port: smtp.port,
+          tls: smtp.encryption === 'tls',
+          ssl: smtp.encryption === 'ssl',
+          timeout: timeoutMs,
+        });
 
-    return { success: true };
-  } catch (error) {
-    console.error('SMTP Error:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
-  }
+        await client.sendAsync({
+          from: `${smtp.from_name} <${smtp.from_email}>`,
+          to: toName ? `${toName} <${to}>` : to,
+          subject: subject,
+          text: textBody,
+          attachment: [
+            { data: htmlBody, alternative: true },
+          ],
+        });
+
+        clearTimeout(timeout);
+        resolve({ success: true });
+      } catch (error) {
+        clearTimeout(timeout);
+        console.error('SMTP Error:', error);
+        resolve({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    })();
+  });
 }
 
 Deno.serve(async (req: Request) => {
@@ -94,46 +106,47 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     const url = new URL(req.url);
-    const action = url.pathname.split('/').pop();
+    const pathParts = url.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    const isTestRequest = lastPart === 'test' || url.searchParams.get('action') === 'test';
 
-    if (action === 'test' && req.method === 'POST') {
-      const smtpData: SMTPSettings = await req.json();
-      
+    if (isTestRequest && req.method === 'POST') {
+      let smtpData: SMTPSettings;
       try {
-        const client = new SMTPClient({
-          user: smtpData.username,
-          password: smtpData.password,
-          host: smtpData.host,
-          port: smtpData.port,
-          tls: smtpData.encryption === 'tls',
-          ssl: smtpData.encryption === 'ssl',
-        });
+        smtpData = await req.json();
+      } catch {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Invalid request body' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
-        await client.sendAsync({
-          from: `${smtpData.from_name} <${smtpData.from_email}>`,
-          to: smtpData.from_email,
-          subject: 'Test SMTP Connection',
-          text: 'This is a test email to verify your SMTP configuration is working correctly.',
-          attachment: [
-            { 
-              data: '<html><body><h2>SMTP Test Successful</h2><p>Your SMTP configuration is working correctly.</p></body></html>', 
-              alternative: true 
-            },
-          ],
-        });
+      if (!smtpData.host || !smtpData.from_email) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Missing required SMTP configuration' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
+      const result = await sendEmailWithTimeout(
+        smtpData,
+        smtpData.from_email,
+        smtpData.from_name || 'Test',
+        'Test SMTP Connection',
+        '<html><body><h2>SMTP Test Successful</h2><p>Your SMTP configuration is working correctly.</p></body></html>',
+        'SMTP Test Successful\n\nYour SMTP configuration is working correctly.',
+        20000
+      );
+
+      if (result.success) {
         return new Response(
           JSON.stringify({ success: true, message: 'Test email sent successfully' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
-      } catch (error) {
+      } else {
         return new Response(
-          JSON.stringify({ success: false, error: error instanceof Error ? error.message : 'Connection failed' }),
+          JSON.stringify({ success: false, error: result.error || 'Connection failed' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -146,7 +159,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const formData: ContactFormData = await req.json();
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    let formData: ContactFormData;
+    try {
+      formData = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!formData.name || !formData.email || !formData.message) {
       return new Response(
@@ -194,11 +219,11 @@ Deno.serve(async (req: Request) => {
 
     if (!smtpSettings?.is_enabled || !smtpSettings?.host) {
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           message: 'Message received successfully',
           submission_id: submission.id,
-          emails_sent: false 
+          emails_sent: false
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -234,13 +259,14 @@ Deno.serve(async (req: Request) => {
       const textBody = replacePlaceholders(notificationTemplate.body_text, placeholders);
 
       for (const recipient of recipients) {
-        const result = await sendEmail(
+        const result = await sendEmailWithTimeout(
           smtpSettings as SMTPSettings,
           recipient.email,
           recipient.name,
           subject,
           htmlBody,
-          textBody
+          textBody,
+          30000
         );
         if (result.success) notificationSent = true;
       }
@@ -252,13 +278,14 @@ Deno.serve(async (req: Request) => {
       const htmlBody = replacePlaceholders(autoResponseTemplate.body_html, placeholders);
       const textBody = replacePlaceholders(autoResponseTemplate.body_text, placeholders);
 
-      const result = await sendEmail(
+      const result = await sendEmailWithTimeout(
         smtpSettings as SMTPSettings,
         formData.email,
         formData.name,
         subject,
         htmlBody,
-        textBody
+        textBody,
+        30000
       );
       autoResponseSent = result.success;
     }
@@ -285,7 +312,7 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
