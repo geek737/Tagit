@@ -83,13 +83,13 @@ export function CookieConsentBanner() {
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 border-gray-300 bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               onClick={() => setShowManage(false)}
             >
               Annuler
             </Button>
             <Button
-              className="flex-1 bg-[#FF6B35] hover:bg-[#e55a2a]"
+              className="flex-1 bg-[#FF6B35] hover:bg-[#e55a2a] text-white"
               onClick={handleSavePreferences}
             >
               Enregistrer
@@ -116,7 +116,7 @@ export function CookieConsentBanner() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-600 hover:text-gray-900"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               onClick={() => setShowManage(true)}
             >
               {settings.manage_button_text}
@@ -124,6 +124,7 @@ export function CookieConsentBanner() {
             <Button
               variant="outline"
               size="sm"
+              className="border-gray-300 bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               onClick={declineAll}
             >
               {settings.decline_button_text}
