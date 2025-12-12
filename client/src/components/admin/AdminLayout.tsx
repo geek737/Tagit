@@ -23,14 +23,14 @@ interface AdminLayoutProps {
 }
 
 const navItems = [
-  { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/admin/content', icon: FileText, label: 'Content' },
-  { path: '/admin/pages', icon: File, label: 'Pages' },
-  { path: '/admin/appearance', icon: Palette, label: 'Appearance' },
-  { path: '/admin/media', icon: Image, label: 'Media' },
-  { path: '/admin/menu', icon: Menu, label: 'Menu' },
-  { path: '/admin/emails', icon: Mail, label: 'Emails' },
-  { path: '/admin/settings', icon: Settings, label: 'Settings' },
+  { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/content', icon: FileText, label: 'Content' },
+  { path: '/pages', icon: File, label: 'Pages' },
+  { path: '/appearance', icon: Palette, label: 'Appearance' },
+  { path: '/media', icon: Image, label: 'Media' },
+  { path: '/menu', icon: Menu, label: 'Menu' },
+  { path: '/emails', icon: Mail, label: 'Emails' },
+  { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 const SIDEBAR_COLLAPSED_KEY = 'admin_sidebar_collapsed';
@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = async () => {
     await logout();
-    setLocation('/admin/login');
+    setLocation('/login');
   };
 
   const toggleCollapse = () => {
