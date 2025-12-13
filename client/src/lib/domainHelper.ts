@@ -2,6 +2,7 @@ export function isAdminSubdomain(): boolean {
   if (typeof window === 'undefined') return false;
 
   const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
 
   const adminDomain = import.meta.env.VITE_ADMIN_SUBDOMAIN || 'admin.tagit.ma';
 
@@ -13,9 +14,14 @@ export function isAdminSubdomain(): boolean {
     return true;
   }
 
-  const devMode = import.meta.env.VITE_DEV_MODE === 'true';
-  if (devMode && window.location.pathname.startsWith('/admin')) {
-    return false;
+  const isDev = hostname === 'localhost' ||
+                hostname.includes('.replit.dev') ||
+                hostname.includes('.bolt.') ||
+                hostname.includes('.webcontainer.') ||
+                import.meta.env.DEV;
+
+  if (isDev && pathname.startsWith('/admin')) {
+    return true;
   }
 
   return false;
