@@ -456,7 +456,7 @@ export default function Administration() {
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{u.username}</span>
                               {u.id === user?.id && (
-                                <Badge variant="outline" className="text-xs">Vous</Badge>
+                                <Badge variant="outline" className="text-xs text-gray-700 border-gray-400">Vous</Badge>
                               )}
                               {!u.is_active && (
                                 <Badge variant="secondary" className="text-xs bg-red-100 text-red-700">Inactif</Badge>
@@ -539,7 +539,7 @@ export default function Administration() {
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{role.display_name}</span>
                               {role.is_system && (
-                                <Badge variant="outline" className="text-xs">Systeme</Badge>
+                                <Badge variant="outline" className="text-xs text-blue-700 border-blue-400 bg-blue-50">Systeme</Badge>
                               )}
                             </div>
                             <p className="text-sm text-gray-500">{role.description}</p>
@@ -579,7 +579,7 @@ export default function Administration() {
       </div>
 
       <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>{editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}</DialogTitle>
             <DialogDescription>
@@ -660,7 +660,7 @@ export default function Administration() {
       </Dialog>
 
       <Dialog open={roleDialogOpen} onOpenChange={setRoleDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>{editingRole ? 'Modifier le role' : 'Nouveau role'}</DialogTitle>
             <DialogDescription>
@@ -702,9 +702,9 @@ export default function Administration() {
             <div className="space-y-4 pt-4 border-t">
               <Label>Permissions</Label>
               {Object.entries(permissionsByCategory).map(([category, perms]) => (
-                <Card key={category}>
+                <Card key={category} className="bg-gray-50 border-gray-200">
                   <CardHeader className="py-3">
-                    <CardTitle className="text-sm">{categoryLabels[category] || category}</CardTitle>
+                    <CardTitle className="text-sm text-gray-800">{categoryLabels[category] || category}</CardTitle>
                   </CardHeader>
                   <CardContent className="py-2">
                     <div className="grid grid-cols-2 gap-2">
@@ -729,7 +729,7 @@ export default function Administration() {
                           />
                           <label
                             htmlFor={perm.id}
-                            className="text-sm cursor-pointer"
+                            className="text-sm cursor-pointer text-gray-700"
                             title={perm.description}
                           >
                             {perm.display_name}
@@ -755,7 +755,7 @@ export default function Administration() {
       </Dialog>
 
       <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle>Reinitialiser le mot de passe</DialogTitle>
             <DialogDescription>
@@ -788,7 +788,7 @@ export default function Administration() {
       </Dialog>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-white text-gray-900">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
               <AlertTriangle className="h-5 w-5" />
