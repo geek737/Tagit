@@ -12,31 +12,45 @@ import { CookieConsentEditor } from '@/components/admin/integrations/CookieConse
 import { SMTPEditor } from '@/components/admin/integrations/SMTPEditor';
 import { EmailTemplatesEditor } from '@/components/admin/integrations/EmailTemplatesEditor';
 import { EmailRecipientsEditor } from '@/components/admin/integrations/EmailRecipientsEditor';
-import { User, Plug, Mail } from 'lucide-react';
+import { User, Plug, Mail, Loader2 } from 'lucide-react';
 
 export default function Settings() {
-  const { user } = useAuth();
+  const { user, changePassword } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!currentPassword) {
+      toast.error('Veuillez entrer votre mot de passe actuel');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Les mots de passe ne correspondent pas');
       return;
     }
 
     if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Le mot de passe doit contenir au moins 6 caracteres');
       return;
     }
 
-    toast.info('Password change functionality will be implemented with proper encryption');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    setIsChangingPassword(true);
+    const result = await changePassword(currentPassword, newPassword);
+    setIsChangingPassword(false);
+
+    if (result.success) {
+      toast.success('Mot de passe mis a jour avec succes');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } else {
+      toast.error(result.error || 'Echec du changement de mot de passe');
+    }
   };
 
   return (
@@ -118,7 +132,16 @@ export default function Settings() {
                       placeholder="Confirmez le nouveau mot de passe"
                     />
                   </div>
-                  <Button type="submit">Mettre a jour</Button>
+                  <Button type="submit" disabled={isChangingPassword}>
+                    {isChangingPassword ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Mise a jour...
+                      </>
+                    ) : (
+                      'Mettre a jour'
+                    )}
+                  </Button>
                 </form>
               </CardContent>
             </Card>

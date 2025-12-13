@@ -10,6 +10,7 @@ import Media from "@/pages/admin/Media";
 import Menu from "@/pages/admin/Menu";
 import Settings from "@/pages/admin/Settings";
 import EmailManagement from "@/pages/admin/EmailManagement";
+import Administration from "@/pages/admin/Administration";
 import NotFound from "@/pages/NotFound";
 
 export default function AdminApp() {
@@ -55,6 +56,11 @@ export default function AdminApp() {
       <Route path="/emails">
         <ProtectedRoute>
           <EmailManagement />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/administration">
+        <ProtectedRoute>
+          <Administration />
         </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
