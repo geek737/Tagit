@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { FacebookPixelProvider } from "@/components/analytics/FacebookPixelProvider";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
 import { isAdminSubdomain } from "@/lib/domainHelper";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import AdminApp from "@/components/AdminApp";
 import PublicApp from "@/components/PublicApp";
 
@@ -14,18 +15,20 @@ const App = () => {
   const isAdmin = isAdminSubdomain();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FacebookPixelProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            {isAdmin ? <AdminApp /> : <PublicApp />}
-            {!isAdmin && <CookieConsentBanner />}
-          </TooltipProvider>
-        </FacebookPixelProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <FacebookPixelProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              {isAdmin ? <AdminApp /> : <PublicApp />}
+              {!isAdmin && <CookieConsentBanner />}
+            </TooltipProvider>
+          </FacebookPixelProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
