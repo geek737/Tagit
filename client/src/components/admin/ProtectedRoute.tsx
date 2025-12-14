@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!user) {
-    return <Redirect to="/admin/login" />;
+    return <Redirect to="/login" />;
   }
 
   return <>{children}</>;

@@ -1,7 +1,8 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard,
   Settings,
@@ -14,7 +15,8 @@ import {
   X,
   PanelLeftClose,
   PanelLeft,
-  Mail
+  Mail,
+  Shield
 } from 'lucide-react';
 import logoAdmin from '@/assets/logo-admin.png';
 
@@ -22,22 +24,39 @@ interface AdminLayoutProps {
   children: ReactNode;
 }
 
-const navItems = [
-  { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/admin/content', icon: FileText, label: 'Content' },
-  { path: '/admin/pages', icon: File, label: 'Pages' },
-  { path: '/admin/appearance', icon: Palette, label: 'Appearance' },
-  { path: '/admin/media', icon: Image, label: 'Media' },
-  { path: '/admin/menu', icon: Menu, label: 'Menu' },
-  { path: '/admin/emails', icon: Mail, label: 'Emails' },
-  { path: '/admin/settings', icon: Settings, label: 'Settings' },
+interface NavItem {
+  path: string;
+  icon: any;
+  label: string;
+  permission?: string;
+  adminOnly?: boolean;
+}
+
+const allNavItems: NavItem[] = [
+  { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/content', icon: FileText, label: 'Content', permission: 'content.view' },
+  { path: '/pages', icon: File, label: 'Pages', permission: 'pages.view' },
+  { path: '/appearance', icon: Palette, label: 'Appearance', permission: 'appearance.view' },
+  { path: '/media', icon: Image, label: 'Media', permission: 'media.view' },
+  { path: '/menu', icon: Menu, label: 'Menu', permission: 'menu.view' },
+  { path: '/emails', icon: Mail, label: 'Emails', permission: 'emails.view' },
+  { path: '/administration', icon: Shield, label: 'Administration', adminOnly: true },
+  { path: '/settings', icon: Settings, label: 'Settings', permission: 'settings.view' },
 ];
 
 const SIDEBAR_COLLAPSED_KEY = 'admin_sidebar_collapsed';
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [location, setLocation] = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, hasPermission, isAdmin } = useAuth();
+
+  const navItems = useMemo(() => {
+    return allNavItems.filter(item => {
+      if (item.adminOnly) return isAdmin();
+      if (item.permission) return hasPermission(item.permission);
+      return true;
+    });
+  }, [user, isAdmin, hasPermission]);
   
   // États pour responsive
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,7 +89,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = async () => {
     await logout();
-    setLocation('/admin/login');
+    setLocation('/login');
   };
 
   const toggleCollapse = () => {
@@ -169,6 +188,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{user?.username}</p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                {user?.role && (
+                  <Badge variant="secondary" className="mt-1 text-xs">
+                    {user.role.display_name}
+                  </Badge>
+                )}
               </div>
             </div>
             <Button
@@ -265,7 +289,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{user?.username}</p>
-                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                    {user?.role && (
+                      <Badge variant="secondary" className="text-xs">
+                        {user.role.display_name}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <Button

@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import GlobalLoader from '@/components/ui/GlobalLoader';
+import ErrorPage from '@/components/ErrorPage';
 import HeroBanner from './HeroBanner';
 import TextSection from './TextSection';
 import OtherServices from './OtherServices';
@@ -155,6 +156,7 @@ function updateMetaTag(name: string, content: string) {
 export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
   const [page, setPage] = useState<Page | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -176,28 +178,28 @@ export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
   }, [page]);
 
   const loadPage = async () => {
+    setNotFound(false);
     try {
-      // The slug now contains the full route (e.g., 'portfolio/social-media-management')
       const { data, error } = await supabase
         .from('pages')
         .select('*')
         .eq('slug', slug)
         .eq('is_published', true)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // Page not found
-          console.log('Page not found for slug:', slug);
-          setLocation('/');
-          return;
-        }
-        throw error;
+        console.error('Error loading page:', error);
+        setNotFound(true);
+        return;
       }
 
-      // Verify parent slug matches for portfolio_child pages
+      if (!data) {
+        console.log('Page not found for slug:', slug);
+        setNotFound(true);
+        return;
+      }
+
       if (parentSlug && data.template_type === 'portfolio_child' && data.portfolio_parent_slug !== parentSlug) {
-        // Parent slug mismatch - redirect to correct URL
         const correctParentSlug = data.portfolio_parent_slug || 'portfolio';
         const childSlug = slug.split('/').pop() || slug;
         setLocation(`/${correctParentSlug}/${childSlug}`);
@@ -207,7 +209,7 @@ export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
       setPage(data);
     } catch (error) {
       console.error('Error loading page:', error);
-      setLocation('/');
+      setNotFound(true);
     } finally {
       setLoading(false);
     }
@@ -217,8 +219,8 @@ export default function PageTemplate({ slug, parentSlug }: PageTemplateProps) {
     return <GlobalLoader isLoading={true} text="Chargement de la page..." fullScreen />;
   }
 
-  if (!page) {
-    return null;
+  if (notFound || !page) {
+    return <ErrorPage type={404} />;
   }
 
   // Build breadcrumb based on page type

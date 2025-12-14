@@ -18,7 +18,7 @@ export default function Login() {
   // Rediriger si l'utilisateur est déjà connecté
   useEffect(() => {
     if (!authLoading && user) {
-      setLocation('/admin/dashboard');
+      setLocation('/dashboard');
     }
   }, [user, authLoading, setLocation]);
 
@@ -53,7 +53,7 @@ export default function Login() {
 
   // Si l'utilisateur est connecté, rediriger
   if (user) {
-    return <Redirect to="/admin/dashboard" />;
+    return <Redirect to="/dashboard" />;
   }
 
   return (
