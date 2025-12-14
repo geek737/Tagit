@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Loader2, CheckCircle, ExternalLink } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, CheckCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { SectionLoader } from "@/components/ui/GlobalLoader";
 import { toast } from "sonner";
@@ -17,13 +17,9 @@ interface ContactHeader {
   background_color: string;
   background_gradient: string | null;
   map_enabled: boolean;
-  map_latitude: number;
-  map_longitude: number;
-  map_zoom: number;
+  map_embed_code: string;
   map_address: string;
-  map_style: string;
   map_height: string;
-  map_marker_title: string;
 }
 
 interface ContactInfo {
@@ -134,25 +130,16 @@ const ContactSection = () => {
     background_color: '#2D1B4E',
     background_gradient: null,
     map_enabled: true,
-    map_latitude: 33.5731,
-    map_longitude: -7.5898,
-    map_zoom: 15,
-    map_address: 'Casablanca, Morocco',
-    map_style: 'roadmap',
-    map_height: '300px',
-    map_marker_title: 'Our Location'
+    map_embed_code: '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13120.798867211159!2d-1.9428840296350465!3d34.70014227450874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sma!4v1765714776080!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+    map_address: 'Oujda, Morocco',
+    map_height: '300px'
   };
 
   const displayHeader = header || defaultHeader;
 
-  const getGoogleMapsEmbedUrl = () => {
-    const { map_latitude, map_longitude, map_zoom } = displayHeader;
-    return `https://maps.google.com/maps?q=${map_latitude},${map_longitude}&z=${map_zoom}&output=embed`;
-  };
-
-  const openInGoogleMaps = () => {
-    const { map_latitude, map_longitude } = displayHeader;
-    window.open(`https://www.google.com/maps?q=${map_latitude},${map_longitude}`, '_blank');
+  const extractMapSrc = (embedCode: string): string | null => {
+    const match = embedCode.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
   };
 
   // Fonction pour obtenir l'icône
@@ -292,30 +279,22 @@ const ContactSection = () => {
               )}
             </div>
 
-            {displayHeader.map_enabled && (
+            {displayHeader.map_enabled && displayHeader.map_embed_code && (
               <div className="mt-6">
                 <div
-                  className="relative rounded-xl overflow-hidden border border-white/10 group cursor-pointer"
+                  className="relative rounded-xl overflow-hidden border border-white/10"
                   style={{ height: displayHeader.map_height }}
-                  onClick={openInGoogleMaps}
                 >
                   <iframe
-                    src={getGoogleMapsEmbedUrl()}
+                    src={extractMapSrc(displayHeader.map_embed_code) || ''}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title={displayHeader.map_marker_title}
-                    className="pointer-events-none"
+                    title="Google Maps"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
-                      <ExternalLink className="w-4 h-4 text-gray-700" />
-                      <span className="text-sm font-medium text-gray-700">Open in Google Maps</span>
-                    </div>
-                  </div>
                 </div>
                 {displayHeader.map_address && (
                   <p className="text-white/60 text-sm mt-2 text-center">

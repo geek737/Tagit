@@ -22,13 +22,9 @@ interface ContactHeader {
   background_gradient: string | null;
   is_active: boolean;
   map_enabled: boolean;
-  map_latitude: number;
-  map_longitude: number;
-  map_zoom: number;
+  map_embed_code: string;
   map_address: string;
-  map_style: string;
   map_height: string;
-  map_marker_title: string;
 }
 
 interface ContactInfo {
@@ -59,14 +55,15 @@ export default function ContactEditor() {
     background_gradient: null,
     is_active: true,
     map_enabled: true,
-    map_latitude: 33.5731,
-    map_longitude: -7.5898,
-    map_zoom: 15,
-    map_address: 'Casablanca, Morocco',
-    map_style: 'roadmap',
-    map_height: '300px',
-    map_marker_title: 'Our Location'
+    map_embed_code: '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13120.798867211159!2d-1.9428840296350465!3d34.70014227450874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sma!4v1765714776080!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+    map_address: 'Oujda, Morocco',
+    map_height: '300px'
   });
+
+  const extractMapSrc = (embedCode: string): string | null => {
+    const match = embedCode.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
+  };
   const [contacts, setContacts] = useState<ContactInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -449,43 +446,38 @@ export default function ContactEditor() {
               <CardContent className="space-y-6">
                 {header.map_enabled && (
                   <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Latitude</Label>
-                        <Input
-                          type="number"
-                          step="0.0000001"
-                          value={header.map_latitude}
-                          onChange={(e) => updateHeader('map_latitude', parseFloat(e.target.value) || 0)}
-                          placeholder="33.5731"
-                        />
-                        <p className="text-xs text-gray-500">Example: 33.5731 for Casablanca</p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Longitude</Label>
-                        <Input
-                          type="number"
-                          step="0.0000001"
-                          value={header.map_longitude}
-                          onChange={(e) => updateHeader('map_longitude', parseFloat(e.target.value) || 0)}
-                          placeholder="-7.5898"
-                        />
-                        <p className="text-xs text-gray-500">Example: -7.5898 for Casablanca</p>
-                      </div>
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="font-medium text-blue-800 mb-2">How to get the embed code</h4>
+                      <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
+                        <li>Go to <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a></li>
+                        <li>Search for your location</li>
+                        <li>Click the "Share" button</li>
+                        <li>Select "Embed a map"</li>
+                        <li>Copy the HTML code and paste it below</li>
+                      </ol>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Google Maps Embed Code</Label>
+                      <Textarea
+                        value={header.map_embed_code}
+                        onChange={(e) => updateHeader('map_embed_code', e.target.value)}
+                        placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" ...></iframe>'
+                        rows={4}
+                        className="font-mono text-sm"
+                      />
+                      <p className="text-xs text-gray-500">Paste the complete iframe code from Google Maps</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Zoom Level (1-20)</Label>
+                        <Label>Display Address</Label>
                         <Input
-                          type="number"
-                          min="1"
-                          max="20"
-                          value={header.map_zoom}
-                          onChange={(e) => updateHeader('map_zoom', parseInt(e.target.value) || 15)}
-                          placeholder="15"
+                          value={header.map_address}
+                          onChange={(e) => updateHeader('map_address', e.target.value)}
+                          placeholder="Oujda, Morocco"
                         />
-                        <p className="text-xs text-gray-500">1 = World view, 20 = Building level</p>
+                        <p className="text-xs text-gray-500">Address text shown below the map</p>
                       </div>
                       <div className="space-y-2">
                         <Label>Map Height</Label>
@@ -498,67 +490,30 @@ export default function ContactEditor() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Display Address</Label>
-                      <Input
-                        value={header.map_address}
-                        onChange={(e) => updateHeader('map_address', e.target.value)}
-                        placeholder="Casablanca, Morocco"
-                      />
-                      <p className="text-xs text-gray-500">Address text shown below the map</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Marker Title</Label>
-                      <Input
-                        value={header.map_marker_title}
-                        onChange={(e) => updateHeader('map_marker_title', e.target.value)}
-                        placeholder="Our Location"
-                      />
-                      <p className="text-xs text-gray-500">Title shown when hovering over the map marker</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Map Style</Label>
-                      <select
-                        value={header.map_style}
-                        onChange={(e) => updateHeader('map_style', e.target.value)}
-                        className="w-full h-10 px-3 border border-gray-300 rounded-md"
-                      >
-                        <option value="roadmap">Road Map</option>
-                        <option value="satellite">Satellite</option>
-                        <option value="hybrid">Hybrid</option>
-                        <option value="terrain">Terrain</option>
-                      </select>
-                    </div>
-
-                    <div className="p-4 bg-gray-50 rounded-lg border">
-                      <h4 className="font-medium mb-2">Map Preview</h4>
-                      <div className="rounded-lg overflow-hidden" style={{ height: header.map_height }}>
-                        <iframe
-                          src={`https://maps.google.com/maps?q=${header.map_latitude},${header.map_longitude}&z=${header.map_zoom}&output=embed`}
-                          width="100%"
-                          height="100%"
-                          style={{ border: 0 }}
-                          loading="lazy"
-                          title="Map Preview"
-                        />
+                    {header.map_embed_code && extractMapSrc(header.map_embed_code) && (
+                      <div className="p-4 bg-gray-50 rounded-lg border">
+                        <h4 className="font-medium mb-2">Map Preview</h4>
+                        <div className="rounded-lg overflow-hidden" style={{ height: header.map_height }}>
+                          <iframe
+                            src={extractMapSrc(header.map_embed_code) || ''}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            title="Map Preview"
+                          />
+                        </div>
+                        {header.map_address && (
+                          <p className="text-sm text-gray-600 mt-2 text-center">{header.map_address}</p>
+                        )}
                       </div>
-                      {header.map_address && (
-                        <p className="text-sm text-gray-600 mt-2 text-center">{header.map_address}</p>
-                      )}
-                    </div>
+                    )}
 
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <h4 className="font-medium text-blue-800 mb-2">How to find coordinates</h4>
-                      <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
-                        <li>Go to <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a></li>
-                        <li>Search for your location</li>
-                        <li>Right-click on the exact spot</li>
-                        <li>Click on the coordinates that appear (they will be copied)</li>
-                        <li>Paste them here (latitude, longitude)</li>
-                      </ol>
-                    </div>
+                    {header.map_embed_code && !extractMapSrc(header.map_embed_code) && (
+                      <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p className="text-sm text-yellow-700">Invalid embed code. Please paste the complete iframe code from Google Maps.</p>
+                      </div>
+                    )}
                   </>
                 )}
 
