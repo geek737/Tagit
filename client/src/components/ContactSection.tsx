@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Loader2, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { SectionLoader } from "@/components/ui/GlobalLoader";
 import { toast } from "sonner";
@@ -16,6 +16,14 @@ interface ContactHeader {
   description_color: string;
   background_color: string;
   background_gradient: string | null;
+  map_enabled: boolean;
+  map_latitude: number;
+  map_longitude: number;
+  map_zoom: number;
+  map_address: string;
+  map_style: string;
+  map_height: string;
+  map_marker_title: string;
 }
 
 interface ContactInfo {
@@ -116,7 +124,6 @@ const ContactSection = () => {
     });
   };
 
-  // Valeurs par défaut
   const defaultHeader: ContactHeader = {
     heading_line1: 'Contact',
     heading_line2: 'Us',
@@ -125,10 +132,28 @@ const ContactSection = () => {
     description: 'Ready to make your brand shine? Let\'s talk about your project and discover together how we can help you.',
     description_color: '#FFFFFF',
     background_color: '#2D1B4E',
-    background_gradient: null
+    background_gradient: null,
+    map_enabled: true,
+    map_latitude: 33.5731,
+    map_longitude: -7.5898,
+    map_zoom: 15,
+    map_address: 'Casablanca, Morocco',
+    map_style: 'roadmap',
+    map_height: '300px',
+    map_marker_title: 'Our Location'
   };
 
   const displayHeader = header || defaultHeader;
+
+  const getGoogleMapsEmbedUrl = () => {
+    const { map_latitude, map_longitude, map_zoom } = displayHeader;
+    return `https://maps.google.com/maps?q=${map_latitude},${map_longitude}&z=${map_zoom}&output=embed`;
+  };
+
+  const openInGoogleMaps = () => {
+    const { map_latitude, map_longitude } = displayHeader;
+    window.open(`https://www.google.com/maps?q=${map_latitude},${map_longitude}`, '_blank');
+  };
 
   // Fonction pour obtenir l'icône
   const getIcon = (iconName: string) => {
@@ -266,6 +291,39 @@ const ContactSection = () => {
                 </>
               )}
             </div>
+
+            {displayHeader.map_enabled && (
+              <div className="mt-6">
+                <div
+                  className="relative rounded-xl overflow-hidden border border-white/10 group cursor-pointer"
+                  style={{ height: displayHeader.map_height }}
+                  onClick={openInGoogleMaps}
+                >
+                  <iframe
+                    src={getGoogleMapsEmbedUrl()}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={displayHeader.map_marker_title}
+                    className="pointer-events-none"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg">
+                      <ExternalLink className="w-4 h-4 text-gray-700" />
+                      <span className="text-sm font-medium text-gray-700">Open in Google Maps</span>
+                    </div>
+                  </div>
+                </div>
+                {displayHeader.map_address && (
+                  <p className="text-white/60 text-sm mt-2 text-center">
+                    {displayHeader.map_address}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">

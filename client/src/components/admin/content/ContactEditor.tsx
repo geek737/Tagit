@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Plus, Trash2, Mail, Phone, MapPin, Save, Eye } from 'lucide-react';
+import { Plus, Trash2, Mail, Phone, MapPin, Save, Eye, Map } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 interface ContactHeader {
@@ -21,6 +21,14 @@ interface ContactHeader {
   background_color: string;
   background_gradient: string | null;
   is_active: boolean;
+  map_enabled: boolean;
+  map_latitude: number;
+  map_longitude: number;
+  map_zoom: number;
+  map_address: string;
+  map_style: string;
+  map_height: string;
+  map_marker_title: string;
 }
 
 interface ContactInfo {
@@ -49,7 +57,15 @@ export default function ContactEditor() {
     description_color: '#FFFFFF',
     background_color: '#2D1B4E',
     background_gradient: null,
-    is_active: true
+    is_active: true,
+    map_enabled: true,
+    map_latitude: 33.5731,
+    map_longitude: -7.5898,
+    map_zoom: 15,
+    map_address: 'Casablanca, Morocco',
+    map_style: 'roadmap',
+    map_height: '300px',
+    map_marker_title: 'Our Location'
   });
   const [contacts, setContacts] = useState<ContactInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -276,6 +292,7 @@ export default function ContactEditor() {
           <TabsList>
             <TabsTrigger value="header">Header Content</TabsTrigger>
             <TabsTrigger value="contacts">Contact Information</TabsTrigger>
+            <TabsTrigger value="map">Google Maps</TabsTrigger>
             <TabsTrigger value="styling">Colors & Background</TabsTrigger>
           </TabsList>
 
@@ -406,6 +423,153 @@ export default function ContactEditor() {
       </div>
 
             </div>
+          </TabsContent>
+
+          <TabsContent value="map">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Map className="h-5 w-5" />
+                      Google Maps Integration
+                    </CardTitle>
+                    <CardDescription>Configure the interactive map display in the contact section</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="map-enabled"
+                      checked={header.map_enabled}
+                      onCheckedChange={(checked) => updateHeader('map_enabled', checked)}
+                    />
+                    <Label htmlFor="map-enabled">Enable Map</Label>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {header.map_enabled && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Latitude</Label>
+                        <Input
+                          type="number"
+                          step="0.0000001"
+                          value={header.map_latitude}
+                          onChange={(e) => updateHeader('map_latitude', parseFloat(e.target.value) || 0)}
+                          placeholder="33.5731"
+                        />
+                        <p className="text-xs text-gray-500">Example: 33.5731 for Casablanca</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Longitude</Label>
+                        <Input
+                          type="number"
+                          step="0.0000001"
+                          value={header.map_longitude}
+                          onChange={(e) => updateHeader('map_longitude', parseFloat(e.target.value) || 0)}
+                          placeholder="-7.5898"
+                        />
+                        <p className="text-xs text-gray-500">Example: -7.5898 for Casablanca</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Zoom Level (1-20)</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="20"
+                          value={header.map_zoom}
+                          onChange={(e) => updateHeader('map_zoom', parseInt(e.target.value) || 15)}
+                          placeholder="15"
+                        />
+                        <p className="text-xs text-gray-500">1 = World view, 20 = Building level</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Map Height</Label>
+                        <Input
+                          value={header.map_height}
+                          onChange={(e) => updateHeader('map_height', e.target.value)}
+                          placeholder="300px"
+                        />
+                        <p className="text-xs text-gray-500">CSS height (e.g., 300px, 400px)</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Display Address</Label>
+                      <Input
+                        value={header.map_address}
+                        onChange={(e) => updateHeader('map_address', e.target.value)}
+                        placeholder="Casablanca, Morocco"
+                      />
+                      <p className="text-xs text-gray-500">Address text shown below the map</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Marker Title</Label>
+                      <Input
+                        value={header.map_marker_title}
+                        onChange={(e) => updateHeader('map_marker_title', e.target.value)}
+                        placeholder="Our Location"
+                      />
+                      <p className="text-xs text-gray-500">Title shown when hovering over the map marker</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Map Style</Label>
+                      <select
+                        value={header.map_style}
+                        onChange={(e) => updateHeader('map_style', e.target.value)}
+                        className="w-full h-10 px-3 border border-gray-300 rounded-md"
+                      >
+                        <option value="roadmap">Road Map</option>
+                        <option value="satellite">Satellite</option>
+                        <option value="hybrid">Hybrid</option>
+                        <option value="terrain">Terrain</option>
+                      </select>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg border">
+                      <h4 className="font-medium mb-2">Map Preview</h4>
+                      <div className="rounded-lg overflow-hidden" style={{ height: header.map_height }}>
+                        <iframe
+                          src={`https://maps.google.com/maps?q=${header.map_latitude},${header.map_longitude}&z=${header.map_zoom}&output=embed`}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          title="Map Preview"
+                        />
+                      </div>
+                      {header.map_address && (
+                        <p className="text-sm text-gray-600 mt-2 text-center">{header.map_address}</p>
+                      )}
+                    </div>
+
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="font-medium text-blue-800 mb-2">How to find coordinates</h4>
+                      <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
+                        <li>Go to <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a></li>
+                        <li>Search for your location</li>
+                        <li>Right-click on the exact spot</li>
+                        <li>Click on the coordinates that appear (they will be copied)</li>
+                        <li>Paste them here (latitude, longitude)</li>
+                      </ol>
+                    </div>
+                  </>
+                )}
+
+                {!header.map_enabled && (
+                  <div className="text-center py-8 text-gray-500">
+                    <Map className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                    <p>Enable the map to configure its settings</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="styling">
