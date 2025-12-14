@@ -101,6 +101,11 @@ const ContactSection = () => {
         setSubmitted(true);
         setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
         toast.success('Votre message a ete envoye avec succes!');
+        
+        // Reset submitted state after 3 seconds to show button again
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 3000);
       } else {
         toast.error(result.error || 'Une erreur est survenue');
       }
