@@ -16,6 +16,10 @@ interface ContactHeader {
   description_color: string;
   background_color: string;
   background_gradient: string | null;
+  map_enabled: boolean;
+  map_embed_code: string;
+  map_address: string;
+  map_height: string;
 }
 
 interface ContactInfo {
@@ -97,6 +101,11 @@ const ContactSection = () => {
         setSubmitted(true);
         setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
         toast.success('Votre message a ete envoye avec succes!');
+        
+        // Reset submitted state after 3 seconds to show button again
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 3000);
       } else {
         toast.error(result.error || 'Une erreur est survenue');
       }
@@ -116,7 +125,6 @@ const ContactSection = () => {
     });
   };
 
-  // Valeurs par défaut
   const defaultHeader: ContactHeader = {
     heading_line1: 'Contact',
     heading_line2: 'Us',
@@ -125,10 +133,19 @@ const ContactSection = () => {
     description: 'Ready to make your brand shine? Let\'s talk about your project and discover together how we can help you.',
     description_color: '#FFFFFF',
     background_color: '#2D1B4E',
-    background_gradient: null
+    background_gradient: null,
+    map_enabled: true,
+    map_embed_code: '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13120.798867211159!2d-1.9428840296350465!3d34.70014227450874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sma!4v1765714776080!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+    map_address: 'Oujda, Morocco',
+    map_height: '300px'
   };
 
   const displayHeader = header || defaultHeader;
+
+  const extractMapSrc = (embedCode: string): string | null => {
+    const match = embedCode.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
+  };
 
   // Fonction pour obtenir l'icône
   const getIcon = (iconName: string) => {
@@ -266,6 +283,31 @@ const ContactSection = () => {
                 </>
               )}
             </div>
+
+            {displayHeader.map_enabled && displayHeader.map_embed_code && (
+              <div className="mt-6">
+                <div
+                  className="relative rounded-xl overflow-hidden border border-white/10"
+                  style={{ height: displayHeader.map_height }}
+                >
+                  <iframe
+                    src={extractMapSrc(displayHeader.map_embed_code) || ''}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Maps"
+                  />
+                </div>
+                {displayHeader.map_address && (
+                  <p className="text-white/60 text-sm mt-2 text-center">
+                    {displayHeader.map_address}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">

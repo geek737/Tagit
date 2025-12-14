@@ -81,23 +81,23 @@ interface Page {
 }
 
 const defaultFormData = {
-  title: '',
-  slug: '',
-  template_type: 'service',
-  is_published: false,
+    title: '',
+    slug: '',
+    template_type: 'service',
+    is_published: false,
   // Hero
-  hero_title: '',
+    hero_title: '',
   hero_title_highlight: '',
   hero_title_rest: '',
   hero_title_color_1: '#FFFFFF',
   hero_title_color_2: '#FFFFFF',
-  hero_image: '',
-  hero_background_color: '#2D1B4E',
+    hero_image: '',
+    hero_background_color: '#2D1B4E',
   hero_gradient_from: '#FF6B35',
   hero_gradient_to: '#4C1D95',
   hero_breadcrumb_label: '',
   // Text
-  text_content: '',
+    text_content: '',
   text_content_color: '#374151',
   text_background_color: '#f5f5f5',
   text_section_title: '',
@@ -106,11 +106,11 @@ const defaultFormData = {
   text_show_button: true,
   // CTA
   cta_background_type: 'gradient',
-  cta_background_value: '',
-  cta_text: '',
+    cta_background_value: '',
+    cta_text: '',
   cta_text_line2: '',
-  cta_text_color: '#FFFFFF',
-  cta_text_position: 'center',
+    cta_text_color: '#FFFFFF',
+    cta_text_position: 'center',
   cta_background_image: '',
   cta_show_button: true,
   cta_button_text: 'Démarrer un projet',
@@ -404,7 +404,7 @@ export default function Pages() {
       if (error.message?.includes('duplicate key') || error.message?.includes('unique constraint')) {
         toast.error(`Cette route existe déjà : /${finalSlug}`);
       } else {
-        toast.error(error.message || 'Failed to save page');
+      toast.error(error.message || 'Failed to save page');
       }
     }
   };
@@ -549,12 +549,12 @@ export default function Pages() {
                       </CardDescription>
                     </div>
                     <div className="flex flex-col gap-1 items-end">
-                      <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 transition-all ${
-                        page.is_published
-                          ? 'bg-green-50 text-green-700 border border-green-200'
-                          : 'bg-gray-50 text-gray-700 border border-gray-200'
-                      }`}>
-                        {page.is_published ? 'Published' : 'Draft'}
+                    <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 transition-all ${
+                      page.is_published
+                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-gray-50 text-gray-700 border border-gray-200'
+                    }`}>
+                      {page.is_published ? 'Published' : 'Draft'}
                       </div>
                       {page.template_type === 'service' && (
                         <span className="text-xs text-orange-500 font-medium">Service</span>
@@ -714,30 +714,30 @@ export default function Pages() {
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="space-y-5">
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-semibold text-gray-700">
-                        Page Title <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="title"
-                        value={formData.title}
-                        onChange={(e) => handleTitleChange(e.target.value)}
-                        placeholder="e.g., Branding & Brand Content"
-                        className="text-gray-900 h-11"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="slug" className="text-sm font-semibold text-gray-700">
-                        URL Slug <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="slug"
-                        value={formData.slug}
-                        onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                        placeholder="branding-brand-content"
-                        className="text-gray-900 h-11 font-mono text-sm"
-                      />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-semibold text-gray-700">
+                      Page Title <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => handleTitleChange(e.target.value)}
+                      placeholder="e.g., Branding & Brand Content"
+                      className="text-gray-900 h-11"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="slug" className="text-sm font-semibold text-gray-700">
+                      URL Slug <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="slug"
+                      value={formData.slug}
+                      onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                      placeholder="branding-brand-content"
+                      className="text-gray-900 h-11 font-mono text-sm"
+                    />
                       {/* Display full URL for portfolio_child pages */}
                       {formData.template_type === 'portfolio_child' && formData.slug && (
                         <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
@@ -783,48 +783,48 @@ export default function Pages() {
                           </div>
                         </div>
                       )}
-                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Page Template</Label>
-                      <Select
-                        value={formData.template_type}
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, template_type: value }))}
-                      >
-                        <SelectTrigger className="text-gray-900 h-11">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
+                    <Select
+                      value={formData.template_type}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, template_type: value }))}
+                    >
+                      <SelectTrigger className="text-gray-900 h-11">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
                           <SelectItem value="service">Service Page</SelectItem>
                           <SelectItem value="portfolio">Portfolio Page</SelectItem>
                           <SelectItem value="portfolio_child">Portfolio Child (Projects)</SelectItem>
                           <SelectItem value="landing">Landing Page</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      </SelectContent>
+                    </Select>
                       <p className="text-xs text-gray-500">
                         {formData.template_type === 'service' && 'Service pages appear in "Autres Services" section'}
                         {formData.template_type === 'portfolio' && 'Portfolio displays all services in a masonry grid'}
                         {formData.template_type === 'portfolio_child' && 'Portfolio Child displays detailed projects with images'}
                         {formData.template_type === 'landing' && 'Landing pages are standalone pages'}
                       </p>
-                    </div>
-                    <div className="flex items-end">
-                      <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors w-full">
-                        <input
-                          type="checkbox"
-                          checked={formData.is_published}
-                          onChange={(e) => setFormData(prev => ({ ...prev, is_published: e.target.checked }))}
-                          className="w-5 h-5 text-accent border-gray-300 rounded focus:ring-2 focus:ring-accent"
-                        />
-                        <div>
-                          <span className="text-sm font-semibold text-gray-900 block">Published</span>
+                  </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors w-full">
+                      <input
+                        type="checkbox"
+                        checked={formData.is_published}
+                        onChange={(e) => setFormData(prev => ({ ...prev, is_published: e.target.checked }))}
+                        className="w-5 h-5 text-accent border-gray-300 rounded focus:ring-2 focus:ring-accent"
+                      />
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900 block">Published</span>
                           <span className="text-xs text-gray-500">Make visible to visitors</span>
-                        </div>
-                      </label>
-                    </div>
+                      </div>
+                    </label>
                   </div>
                 </div>
+              </div>
               </TabsContent>
 
               {/* Hero Banner Tab */}
@@ -946,16 +946,16 @@ export default function Pages() {
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                     <Label className="text-sm font-semibold text-gray-700">Breadcrumb Label</Label>
-                    <Input
+                  <Input
                       value={formData.hero_breadcrumb_label}
                       onChange={(e) => setFormData(prev => ({ ...prev, hero_breadcrumb_label: e.target.value }))}
-                      placeholder="Branding & Brand content"
-                      className="text-gray-900 h-11"
-                    />
-                  </div>
+                    placeholder="Branding & Brand content"
+                    className="text-gray-900 h-11"
+                  />
+                </div>
                 </div>
 
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
@@ -973,20 +973,20 @@ export default function Pages() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Gradient Start</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          type="color"
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
                           value={formData.hero_gradient_from}
                           onChange={(e) => setFormData(prev => ({ ...prev, hero_gradient_from: e.target.value }))}
                           className="w-16 h-11 cursor-pointer"
-                        />
-                        <Input
+                    />
+                    <Input
                           value={formData.hero_gradient_from}
                           onChange={(e) => setFormData(prev => ({ ...prev, hero_gradient_from: e.target.value }))}
                           className="text-gray-900 h-11 font-mono"
-                        />
-                      </div>
-                    </div>
+                    />
+                  </div>
+                </div>
                     <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Gradient End</Label>
                       <div className="flex gap-2">
@@ -1001,7 +1001,7 @@ export default function Pages() {
                           onChange={(e) => setFormData(prev => ({ ...prev, hero_gradient_to: e.target.value }))}
                           className="text-gray-900 h-11 font-mono"
                         />
-                      </div>
+              </div>
                     </div>
                   </div>
                 </div>
@@ -1033,7 +1033,7 @@ export default function Pages() {
                           <circle cx="350" cy="280" r="3" />
                         </g>
                       </svg>
-                    </div>
+                </div>
                     
                     <div className="relative z-10 max-w-lg">
                       {formData.text_section_title && (
@@ -1061,7 +1061,7 @@ export default function Pages() {
 
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Text Section</h4>
-                  <div className="space-y-2">
+                <div className="space-y-2">
                     <Label className="text-sm font-semibold text-gray-700">Section Title</Label>
                     <Input
                       value={formData.text_section_title}
@@ -1072,23 +1072,23 @@ export default function Pages() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-gray-700">Content</Label>
-                    <Textarea
-                      value={formData.text_content}
-                      onChange={(e) => setFormData(prev => ({ ...prev, text_content: e.target.value }))}
+                  <Textarea
+                    value={formData.text_content}
+                    onChange={(e) => setFormData(prev => ({ ...prev, text_content: e.target.value }))}
                       placeholder="Enter your page content here..."
-                      rows={8}
-                      className="text-gray-900 resize-none"
-                    />
-                  </div>
+                    rows={8}
+                    className="text-gray-900 resize-none"
+                  />
+                </div>
                 </div>
 
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Section Background</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
+                <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Background Color</Label>
                       <div className="flex gap-2">
-                        <Input
+                    <Input
                           type="color"
                           value={formData.text_background_color}
                           onChange={(e) => setFormData(prev => ({ ...prev, text_background_color: e.target.value }))}
@@ -1105,20 +1105,20 @@ export default function Pages() {
                       <Label className="text-sm font-semibold text-gray-700">Text Color</Label>
                       <div className="flex gap-2">
                         <Input
-                          type="color"
-                          value={formData.text_content_color}
-                          onChange={(e) => setFormData(prev => ({ ...prev, text_content_color: e.target.value }))}
+                      type="color"
+                      value={formData.text_content_color}
+                      onChange={(e) => setFormData(prev => ({ ...prev, text_content_color: e.target.value }))}
                           className="w-16 h-11 cursor-pointer"
-                        />
-                        <Input
-                          value={formData.text_content_color}
-                          onChange={(e) => setFormData(prev => ({ ...prev, text_content_color: e.target.value }))}
+                    />
+                    <Input
+                      value={formData.text_content_color}
+                      onChange={(e) => setFormData(prev => ({ ...prev, text_content_color: e.target.value }))}
                           className="text-gray-900 h-11 font-mono"
-                        />
+                    />
                       </div>
-                    </div>
                   </div>
                 </div>
+              </div>
 
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <div className="flex items-center justify-between">
@@ -1132,7 +1132,7 @@ export default function Pages() {
                       />
                       <span className="text-sm text-gray-600">Show button</span>
                     </label>
-                  </div>
+                </div>
                   {formData.text_show_button && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="space-y-2">
@@ -1180,7 +1180,7 @@ export default function Pages() {
                       >
                         {formData.portfolio_title_line2 || 'projects'}
                       </h2>
-                    </div>
+                  </div>
                     {/* Grid Preview - Portfolio Child Pages */}
                     {loadingPortfolioChildren ? (
                       <div className="grid grid-cols-2 gap-3">
@@ -1258,7 +1258,7 @@ export default function Pages() {
                   <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
                     <Label className="text-sm font-semibold text-gray-700">Title Line 1</Label>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Input
+                          <Input
                         value={formData.portfolio_title_line1}
                         onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1: e.target.value }))}
                         placeholder="Our bold"
@@ -1267,19 +1267,19 @@ export default function Pages() {
                       <div className="flex gap-2 items-center">
                         <Label className="text-xs text-gray-500 whitespace-nowrap">Color:</Label>
                         <Input
-                          type="color"
+                            type="color"
                           value={formData.portfolio_title_line1_color}
                           onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1_color: e.target.value }))}
                           className="w-14 h-11 cursor-pointer"
-                        />
-                        <Input
+                          />
+                          <Input
                           value={formData.portfolio_title_line1_color}
                           onChange={(e) => setFormData(prev => ({ ...prev, portfolio_title_line1_color: e.target.value }))}
                           placeholder="#FF6B35"
                           className="text-gray-900 h-11 font-mono text-sm flex-1"
-                        />
+                          />
+                        </div>
                       </div>
-                    </div>
                   </div>
 
                   {/* Title Line 2 */}
@@ -1336,7 +1336,7 @@ export default function Pages() {
                   <p className="text-sm text-indigo-800">
                     <strong>Info:</strong> Gérez les projets affichés sur cette page portfolio. Ajoutez des projets avec leurs images, descriptions et informations client.
                   </p>
-                </div>
+                  </div>
 
                 {/* Section Title Settings */}
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
@@ -1359,7 +1359,7 @@ export default function Pages() {
                         {formData.portfolio_child_subtitle}
                       </p>
                     )}
-                  </div>
+                </div>
 
                   {/* Title */}
                   <div className="p-4 bg-white rounded-lg border border-gray-200 space-y-3">
@@ -1570,7 +1570,7 @@ export default function Pages() {
                     <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Card Content</h4>
                     <div className="space-y-2">
                       <Label className="text-sm font-semibold text-gray-700">Short Description</Label>
-                      <Textarea
+                  <Textarea
                         value={formData.service_short_description}
                         onChange={(e) => setFormData(prev => ({ ...prev, service_short_description: e.target.value }))}
                         placeholder="Brief description that appears on the service card..."
@@ -1655,12 +1655,12 @@ export default function Pages() {
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-gray-700">Main Text (Line 1)</Label>
                     <Input
-                      value={formData.cta_text}
-                      onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
+                    value={formData.cta_text}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cta_text: e.target.value }))}
                       placeholder="Contactez-nous dès maintenant"
                       className="text-gray-900 h-11"
-                    />
-                  </div>
+                  />
+                </div>
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-gray-700">Secondary Text (Line 2)</Label>
                     <Input
@@ -1772,7 +1772,7 @@ export default function Pages() {
                             {formData.cta_text_line2}
                           </p>
                         )}
-                      </div>
+                  </div>
                       
                       {/* Button preview */}
                       {formData.cta_show_button && (
@@ -1786,8 +1786,8 @@ export default function Pages() {
                         </div>
                       )}
                     </div>
-                  </div>
                 </div>
+              </div>
 
                 <div className="p-5 bg-gray-50 rounded-lg border border-gray-200 space-y-5">
                   <div className="flex items-center justify-between">
@@ -1896,19 +1896,19 @@ export default function Pages() {
             </Tabs>
 
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setIsDialogOpen(false)}
-                className="px-6 text-gray-700 hover:text-gray-900 border-gray-300 hover:bg-gray-50"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSave}
-                className="px-6 bg-accent hover:bg-accent/90 text-white shadow-md hover:shadow-lg transition-all"
-              >
-                {editingPage ? 'Update Page' : 'Create Page'}
-              </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="px-6 text-gray-700 hover:text-gray-900 border-gray-300 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSave}
+                  className="px-6 bg-accent hover:bg-accent/90 text-white shadow-md hover:shadow-lg transition-all"
+                >
+                  {editingPage ? 'Update Page' : 'Create Page'}
+                </Button>
             </div>
           </DialogContent>
         </Dialog>

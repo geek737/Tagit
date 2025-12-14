@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Plus, Trash2, Mail, Phone, MapPin, Save, Eye } from 'lucide-react';
+import { Plus, Trash2, Mail, Phone, MapPin, Save, Eye, Map } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 interface ContactHeader {
@@ -21,6 +21,10 @@ interface ContactHeader {
   background_color: string;
   background_gradient: string | null;
   is_active: boolean;
+  map_enabled: boolean;
+  map_embed_code: string;
+  map_address: string;
+  map_height: string;
 }
 
 interface ContactInfo {
@@ -49,8 +53,17 @@ export default function ContactEditor() {
     description_color: '#FFFFFF',
     background_color: '#2D1B4E',
     background_gradient: null,
-    is_active: true
+    is_active: true,
+    map_enabled: true,
+    map_embed_code: '<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13120.798867211159!2d-1.9428840296350465!3d34.70014227450874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sma!4v1765714776080!5m2!1sfr!2sma" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+    map_address: 'Oujda, Morocco',
+    map_height: '300px'
   });
+
+  const extractMapSrc = (embedCode: string): string | null => {
+    const match = embedCode.match(/src="([^"]+)"/);
+    return match ? match[1] : null;
+  };
   const [contacts, setContacts] = useState<ContactInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -276,6 +289,7 @@ export default function ContactEditor() {
           <TabsList>
             <TabsTrigger value="header">Header Content</TabsTrigger>
             <TabsTrigger value="contacts">Contact Information</TabsTrigger>
+            <TabsTrigger value="map">Google Maps</TabsTrigger>
             <TabsTrigger value="styling">Colors & Background</TabsTrigger>
           </TabsList>
 
@@ -406,6 +420,111 @@ export default function ContactEditor() {
       </div>
 
             </div>
+          </TabsContent>
+
+          <TabsContent value="map">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Map className="h-5 w-5" />
+                      Google Maps Integration
+                    </CardTitle>
+                    <CardDescription>Configure the interactive map display in the contact section</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="map-enabled"
+                      checked={header.map_enabled}
+                      onCheckedChange={(checked) => updateHeader('map_enabled', checked)}
+                    />
+                    <Label htmlFor="map-enabled">Enable Map</Label>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {header.map_enabled && (
+                  <>
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 className="font-medium text-blue-800 mb-2">How to get the embed code</h4>
+                      <ol className="text-sm text-blue-700 list-decimal list-inside space-y-1">
+                        <li>Go to <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline">Google Maps</a></li>
+                        <li>Search for your location</li>
+                        <li>Click the "Share" button</li>
+                        <li>Select "Embed a map"</li>
+                        <li>Copy the HTML code and paste it below</li>
+                      </ol>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Google Maps Embed Code</Label>
+                      <Textarea
+                        value={header.map_embed_code}
+                        onChange={(e) => updateHeader('map_embed_code', e.target.value)}
+                        placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" ...></iframe>'
+                        rows={4}
+                        className="font-mono text-sm"
+                      />
+                      <p className="text-xs text-gray-500">Paste the complete iframe code from Google Maps</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Display Address</Label>
+                        <Input
+                          value={header.map_address}
+                          onChange={(e) => updateHeader('map_address', e.target.value)}
+                          placeholder="Oujda, Morocco"
+                        />
+                        <p className="text-xs text-gray-500">Address text shown below the map</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Map Height</Label>
+                        <Input
+                          value={header.map_height}
+                          onChange={(e) => updateHeader('map_height', e.target.value)}
+                          placeholder="300px"
+                        />
+                        <p className="text-xs text-gray-500">CSS height (e.g., 300px, 400px)</p>
+                      </div>
+                    </div>
+
+                    {header.map_embed_code && extractMapSrc(header.map_embed_code) && (
+                      <div className="p-4 bg-gray-50 rounded-lg border">
+                        <h4 className="font-medium mb-2">Map Preview</h4>
+                        <div className="rounded-lg overflow-hidden" style={{ height: header.map_height }}>
+                          <iframe
+                            src={extractMapSrc(header.map_embed_code) || ''}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            title="Map Preview"
+                          />
+                        </div>
+                        {header.map_address && (
+                          <p className="text-sm text-gray-600 mt-2 text-center">{header.map_address}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {header.map_embed_code && !extractMapSrc(header.map_embed_code) && (
+                      <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <p className="text-sm text-yellow-700">Invalid embed code. Please paste the complete iframe code from Google Maps.</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {!header.map_enabled && (
+                  <div className="text-center py-8 text-gray-500">
+                    <Map className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                    <p>Enable the map to configure its settings</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="styling">

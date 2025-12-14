@@ -255,37 +255,37 @@ export default function EnhancedServicesEditor() {
                           {/* Icon */}
                           <div className="w-14 h-14 md:w-18 md:h-18 lg:w-24 lg:h-24 rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0">
                             {service.icon_image ? (
-                              <img src={service.icon_image} alt={service.title} className="w-full h-full object-cover" />
+                            <img src={service.icon_image} alt={service.title} className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full bg-white/20 flex items-center justify-center">
                                 <span className="text-white text-xl font-bold">{service.title.charAt(0)}</span>
                               </div>
-                            )}
-                          </div>
+                          )}
+                        </div>
                           {/* Title */}
                           <h3 
                             className="font-bold text-xs md:text-sm lg:text-base leading-tight min-h-[2rem] md:min-h-[2.5rem] flex items-center"
                             style={{ color: service.title_color }}
                           >
-                            {service.title}
-                          </h3>
+                          {service.title}
+                        </h3>
                           {/* Description - hidden on mobile */}
                           <p 
                             className="text-[10px] md:text-xs leading-relaxed hidden md:block flex-grow line-clamp-3"
                             style={{ color: service.description_color }}
                           >
-                            {service.description}
-                          </p>
+                          {service.description}
+                        </p>
                           {/* Arrow button */}
                           <a
                             href={service.link_url || '#'}
                             className="w-7 h-7 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-opacity flex-shrink-0 mt-auto"
-                            style={{ backgroundColor: service.button_color }}
+                          style={{ backgroundColor: service.button_color }}
                             title={service.link_url || 'No URL set'}
-                          >
+                        >
                             <span className="text-xs md:text-sm lg:text-base">→</span>
                           </a>
-                        </div>
+                      </div>
                       </article>
                     ))}
                   </div>
@@ -413,7 +413,7 @@ export default function EnhancedServicesEditor() {
                         placeholder="Ex: /branding, https://example.com, #contact"
                       />
                       <p className="text-xs text-gray-500">URL vers laquelle l'utilisateur sera redirigé en cliquant sur la flèche</p>
-                    </div>
+                      </div>
                   </CardContent>
                 </Card>
               ))}
