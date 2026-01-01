@@ -73,7 +73,7 @@ const Index = () => {
             <div
               className="absolute inset-0 hidden lg:block"
               style={{
-                backgroundImage: `url(${heroBackground})`,
+                background: 'transparent',
                 backgroundSize: 'auto',
                 backgroundRepeat: 'no-repeat',
               }}
