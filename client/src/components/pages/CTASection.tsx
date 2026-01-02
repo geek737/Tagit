@@ -25,6 +25,17 @@ export default function CTASection({
 }: CTASectionProps) {
   if (!text) return null;
 
+  // Handle link click - navigate to home page first for hash links if not on home
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (buttonLink?.startsWith('#')) {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/' && currentPath !== '') {
+        e.preventDefault();
+        window.location.href = '/' + buttonLink;
+      }
+    }
+  };
+
   const hasBackgroundImage = !!backgroundImage;
 
   return (
@@ -77,6 +88,7 @@ export default function CTASection({
             <div className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <a 
                 href={buttonLink}
+                onClick={handleLinkClick}
                 className="group inline-flex items-center gap-3 px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold text-white bg-accent hover:bg-orange-600 transition-all duration-300 hover:shadow-xl hover:shadow-accent/40 transform hover:scale-105"
               >
                 <span className="text-base md:text-lg">{buttonText}</span>

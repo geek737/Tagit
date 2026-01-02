@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Upload, Palette } from 'lucide-react';
-import MediaUploadDialog from '@/components/admin/MediaUploadDialog';
+import { Palette, Image as ImageIcon } from 'lucide-react';
+import MediaSelector from '@/components/admin/MediaSelector';
 import { SectionLoader } from '@/components/ui/GlobalLoader';
 
 interface SiteSetting {
@@ -136,17 +136,6 @@ export default function Appearance() {
     );
   };
 
-  const handleBackgroundUpload = (sectionId: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateSection(sectionId, 'background_image', reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const DEFAULT_COLORS = {
     primary_color: '#FF6B35',
     secondary_color: '#7C3AED',
@@ -187,7 +176,7 @@ export default function Appearance() {
               <span className="sm:hidden">Colors</span>
             </TabsTrigger>
             <TabsTrigger value="sections" className="text-xs sm:text-sm">
-              <Upload className="h-4 w-4 mr-1 sm:mr-2" />
+              <ImageIcon className="h-4 w-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Section Backgrounds</span>
               <span className="sm:hidden">Sections</span>
             </TabsTrigger>
@@ -312,39 +301,14 @@ export default function Appearance() {
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label>Background Image (Optional)</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleBackgroundUpload(section.id, e)}
-                              className="flex-1"
-                            />
-                            <Button variant="outline" size="icon">
-                              <Upload className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
+                        <MediaSelector
+                          label="Background Image (Optional)"
+                          value={section.background_image || ''}
+                          onChange={(url) => updateSection(section.id, 'background_image', url)}
+                          placeholder="Select background image"
+                          previewShape="rectangle"
+                        />
                       </div>
-
-                      {section.background_image && (
-                        <div className="space-y-2">
-                          <Label>Current Background</Label>
-                          <img
-                            src={section.background_image}
-                            alt={`${section.name} background`}
-                            className="w-full h-32 object-cover rounded-md"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => updateSection(section.id, 'background_image', '')}
-                          >
-                            Remove Background Image
-                          </Button>
-                        </div>
-                      )}
 
                       <div
                         className="h-24 rounded-md border-2 relative overflow-hidden"

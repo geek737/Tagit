@@ -7,8 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Upload, Save, Eye } from 'lucide-react';
+import { Save, Eye } from 'lucide-react';
 import { SectionLoader } from '@/components/ui/GlobalLoader';
+import MediaSelector from '@/components/admin/MediaSelector';
 
 interface AboutContent {
   id?: string;
@@ -69,17 +70,6 @@ export default function EnhancedAboutEditor() {
       console.error('Error loading about content:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setContent(prev => ({ ...prev, robot_image: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -412,15 +402,13 @@ export default function EnhancedAboutEditor() {
                 <CardDescription>Upload and configure the robot image</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="robot_image">Upload Robot Image</Label>
-                  <Input
-                    id="robot_image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-                </div>
+                <MediaSelector
+                  label="Robot Image"
+                  value={content.robot_image || ''}
+                  onChange={(url) => updateField('robot_image', url)}
+                  placeholder="Select robot image"
+                  previewShape="square"
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="robot_alt_text">Image Alt Text</Label>
@@ -430,19 +418,6 @@ export default function EnhancedAboutEditor() {
                     onChange={(e) => updateField('robot_alt_text', e.target.value)}
                   />
                 </div>
-
-                {content.robot_image && (
-                  <div className="space-y-2">
-                    <Label>Current Image Preview</Label>
-                    <div className="bg-gray-100 p-4 rounded-lg flex justify-center">
-                      <img
-                        src={content.robot_image}
-                        alt={content.robot_alt_text}
-                        className="max-w-md h-auto object-contain"
-                      />
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </TabsContent>

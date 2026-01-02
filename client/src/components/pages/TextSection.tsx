@@ -21,6 +21,17 @@ export default function TextSection({
 }: TextSectionProps) {
   if (!content) return null;
 
+  // Handle link click - navigate to home page first for hash links if not on home
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (buttonLink?.startsWith('#')) {
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/' && currentPath !== '') {
+        e.preventDefault();
+        window.location.href = '/' + buttonLink;
+      }
+    }
+  };
+
   const paragraphs = content.split('\n').filter(p => p.trim());
 
   return (
@@ -108,6 +119,7 @@ export default function TextSection({
           <div className="mt-6 md:mt-8">
             <a 
               href={buttonLink}
+              onClick={handleLinkClick}
               className="group inline-flex items-center gap-2 text-gray-800 font-medium hover:text-accent transition-colors duration-300"
             >
               <span className="text-sm md:text-base">{buttonText}</span>

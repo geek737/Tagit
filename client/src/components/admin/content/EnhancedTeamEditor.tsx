@@ -9,7 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Save, Eye, Plus, Trash2, GripVertical, X } from 'lucide-react';
 import { SectionLoader } from '@/components/ui/GlobalLoader';
-import { compressImage, validateImageFile } from '@/utils/imageUtils';
+import MediaSelector from '@/components/admin/MediaSelector';
 
 interface TeamMember {
   id?: string;
@@ -119,24 +119,10 @@ export default function EnhancedTeamEditor() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, memberIndex: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validation = validateImageFile(file);
-    if (!validation.valid) {
-      toast.error(validation.error);
-      return;
-    }
-
-    try {
-      const compressed = await compressImage(file, 500, 500);
-      setMembers(prev => prev.map((m, i) =>
-        i === memberIndex ? { ...m, image: compressed } : m
-      ));
-    } catch (error) {
-      toast.error('Failed to process image');
-    }
+  const updateMemberImage = (memberIndex: number, imageUrl: string) => {
+    setMembers(prev => prev.map((m, i) =>
+      i === memberIndex ? { ...m, image: imageUrl } : m
+    ));
   };
 
   const addMember = () => {
@@ -361,19 +347,13 @@ export default function EnhancedTeamEditor() {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Photo Upload</Label>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(e, index)}
-                      />
-                    </div>
-                    {member.image && (
-                      <div className="flex justify-center p-4 bg-gray-100 rounded">
-                        <img src={member.image} alt={member.name} className="w-48 h-auto object-contain rounded-xl" />
-                      </div>
-                    )}
+                    <MediaSelector
+                      label="Member Photo"
+                      value={member.image || ''}
+                      onChange={(url) => updateMemberImage(index, url)}
+                      placeholder="Select member photo"
+                      previewShape="square"
+                    />
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label>Skills</Label>

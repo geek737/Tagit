@@ -137,10 +137,19 @@ const Footer = () => {
   // Determine if we should use DB data or static fallback
   const useDbData = sections.length > 0;
 
-  // Handle smooth scroll for anchor links
+  // Handle smooth scroll for anchor links - Navigate to home first if not on home page
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith('#')) {
       e.preventDefault();
+      const currentPath = window.location.pathname;
+      
+      // If not on home page, navigate to home with the hash
+      if (currentPath !== '/' && currentPath !== '') {
+        window.location.href = '/' + href;
+        return;
+      }
+      
+      // If on home page, smooth scroll to the section
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });

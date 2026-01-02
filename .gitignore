@@ -11,7 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
-
+*.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,5 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
 .env
-*.md
+.env.local
+.env.production
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+*.timestamp-*
+
+# Build artifacts
+attached_assets/
+
+# Keep README and important docs
+!README.md
+!QUICK_START.md
+!SETUP_INSTRUCTIONS.md
