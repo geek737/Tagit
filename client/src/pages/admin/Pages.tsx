@@ -10,10 +10,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Plus, Edit, Trash2, ExternalLink, FileText, Calendar, Globe, Palette, Type, Megaphone, Layers, ArrowRight, ChevronRight, FolderOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, FileText, Calendar, Globe, Palette, Type, Megaphone, Layers, ArrowRight, ChevronRight, FolderOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import MediaSelector from '@/components/admin/MediaSelector';
 import PortfolioProjectsEditor from '@/components/admin/content/PortfolioProjectsEditor';
 import { SectionLoader } from '@/components/ui/GlobalLoader';
+import { getPublicUrl } from '@/lib/domainHelper';
 
 interface Page {
   id: string;
@@ -149,6 +150,14 @@ interface PortfolioChildPreview {
   first_project_image: string | null;
 }
 
+// Category collapse state type
+interface CategoryCollapseState {
+  service: boolean;
+  portfolio: boolean;
+  portfolio_child: boolean;
+  landing: boolean;
+}
+
 export default function Pages() {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,6 +166,42 @@ export default function Pages() {
   const [formData, setFormData] = useState(defaultFormData);
   const [portfolioChildPages, setPortfolioChildPages] = useState<PortfolioChildPreview[]>([]);
   const [loadingPortfolioChildren, setLoadingPortfolioChildren] = useState(false);
+  
+  // Categories collapsed by default
+  const [collapsedCategories, setCollapsedCategories] = useState<CategoryCollapseState>({
+    service: true,
+    portfolio: true,
+    portfolio_child: true,
+    landing: true,
+  });
+
+  const toggleCategory = (category: keyof CategoryCollapseState) => {
+    setCollapsedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  // Group pages by template_type
+  const groupedPages = {
+    service: pages.filter(p => p.template_type === 'service'),
+    portfolio: pages.filter(p => p.template_type === 'portfolio'),
+    portfolio_child: pages.filter(p => p.template_type === 'portfolio_child'),
+    landing: pages.filter(p => p.template_type === 'landing'),
+  };
+
+  const categoryLabels: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
+    service: { label: 'Services', icon: <Layers className="h-5 w-5" />, color: 'border-l-orange-500' },
+    portfolio: { label: 'Portfolio', icon: <FolderOpen className="h-5 w-5" />, color: 'border-l-purple-500' },
+    portfolio_child: { label: 'Portfolio Child', icon: <FileText className="h-5 w-5" />, color: 'border-l-indigo-500' },
+    landing: { label: 'Landing Pages', icon: <Globe className="h-5 w-5" />, color: 'border-l-blue-500' },
+  };
+
+  // Open page in public domain
+  const openPageInPublic = (slug: string) => {
+    const publicUrl = getPublicUrl(slug);
+    window.open(publicUrl, '_blank');
+  };
 
   useEffect(() => {
     loadPages();
@@ -524,107 +569,131 @@ export default function Pages() {
           </div>
         )}
 
-        {/* Pages Grid */}
+        {/* Pages by Category - Collapsible */}
         {pages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pages.map((page) => (
-              <Card 
-                key={page.id}
-                className="group hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-accent/50 overflow-hidden"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <FileText className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                        <CardTitle className="text-xl font-semibold text-gray-900 truncate">
-                          {page.title}
-                        </CardTitle>
+          <div className="space-y-4">
+            {(Object.keys(groupedPages) as Array<keyof typeof groupedPages>).map((category) => {
+              const categoryPages = groupedPages[category];
+              const categoryInfo = categoryLabels[category];
+              const isCollapsed = collapsedCategories[category];
+              
+              if (categoryPages.length === 0) return null;
+              
+              return (
+                <Card key={category} className={`border-l-4 ${categoryInfo.color}`}>
+                  <CardHeader 
+                    className="cursor-pointer hover:bg-gray-50 transition-colors py-3"
+                    onClick={() => toggleCategory(category)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gray-100 rounded-lg">
+                          {categoryInfo.icon}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg font-semibold text-gray-900">
+                            {categoryInfo.label}
+                          </CardTitle>
+                          <CardDescription className="text-sm">
+                            {categoryPages.length} page{categoryPages.length > 1 ? 's' : ''} • {categoryPages.filter(p => p.is_published).length} publiée{categoryPages.filter(p => p.is_published).length > 1 ? 's' : ''}
+                          </CardDescription>
+                        </div>
                       </div>
-                      <CardDescription className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                        <Globe className="h-3 w-3" />
-                        <span className="font-mono">
-                          /{page.slug}
-                        </span>
-                      </CardDescription>
-                    </div>
-                    <div className="flex flex-col gap-1 items-end">
-                    <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 transition-all ${
-                      page.is_published
-                        ? 'bg-green-50 text-green-700 border border-green-200'
-                        : 'bg-gray-50 text-gray-700 border border-gray-200'
-                    }`}>
-                      {page.is_published ? 'Published' : 'Draft'}
-                      </div>
-                      {page.template_type === 'service' && (
-                        <span className="text-xs text-orange-500 font-medium">Service</span>
-                      )}
-                      {page.template_type === 'portfolio' && (
-                        <span className="text-xs text-purple-500 font-medium">Portfolio</span>
-                      )}
-                      {page.template_type === 'portfolio_child' && (
-                        <span className="text-xs text-indigo-500 font-medium">Portfolio Child</span>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Calendar className="h-3 w-3" />
-                    <span>
-                      {new Date(page.updated_at).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleOpenDialog(page)}
-                      className="flex-1 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                    >
-                      <Edit className="h-4 w-4 mr-1.5" />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleTogglePublish(page)}
-                      className={`flex-1 ${
-                        page.is_published 
-                          ? 'text-orange-600 hover:text-orange-700 hover:bg-orange-50' 
-                          : 'text-green-600 hover:text-green-700 hover:bg-green-50'
-                      }`}
-                    >
-                      {page.is_published ? 'Unpublish' : 'Publish'}
-                    </Button>
-                    {page.is_published && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => window.open(`/${page.slug}`, '_blank')}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        title={`View page: /${page.slug}`}
-                      >
-                        <ExternalLink className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        {isCollapsed ? <ChevronDown className="h-5 w-5" /> : <ChevronUp className="h-5 w-5" />}
                       </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(page.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    </div>
+                  </CardHeader>
+                  
+                  {!isCollapsed && (
+                    <CardContent className="pt-0 pb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {categoryPages.map((page) => (
+                          <Card 
+                            key={page.id}
+                            className="group hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-accent/50"
+                          >
+                            <CardHeader className="pb-2 pt-4 px-4">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <CardTitle className="text-base font-semibold text-gray-900 truncate">
+                                    {page.title}
+                                  </CardTitle>
+                                  <CardDescription className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                                    <Globe className="h-3 w-3" />
+                                    <span className="font-mono truncate">/{page.slug}</span>
+                                  </CardDescription>
+                                </div>
+                                <div className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                                  page.is_published
+                                    ? 'bg-green-50 text-green-700 border border-green-200'
+                                    : 'bg-gray-50 text-gray-600 border border-gray-200'
+                                }`}>
+                                  {page.is_published ? '✓ Publiée' : 'Brouillon'}
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="pt-2 pb-4 px-4">
+                              <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(page.updated_at).toLocaleDateString('fr-FR', { 
+                                  day: 'numeric',
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                })}
+                              </div>
+                              
+                              <div className="flex items-center gap-1.5">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenDialog(page)}
+                                  className="flex-1 h-8 text-xs"
+                                >
+                                  <Edit className="h-3 w-3 mr-1" />
+                                  Éditer
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleTogglePublish(page)}
+                                  className={`h-8 text-xs px-2 ${
+                                    page.is_published 
+                                      ? 'text-orange-600 hover:bg-orange-50' 
+                                      : 'text-green-600 hover:bg-green-50'
+                                  }`}
+                                >
+                                  {page.is_published ? 'Dépublier' : 'Publier'}
+                                </Button>
+                                {page.is_published && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openPageInPublic(page.slug)}
+                                    className="h-8 text-xs px-2 text-blue-600 hover:bg-blue-50"
+                                    title="Voir la page sur le site"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                  </Button>
+                                )}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDelete(page.id)}
+                                  className="h-8 text-xs px-2 text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <Card className="border-2 border-dashed border-gray-300">
@@ -752,8 +821,8 @@ export default function Pages() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  const url = `/${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
-                                  window.open(url, '_blank');
+                                  const url = `${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
+                                  openPageInPublic(url);
                                 }}
                                 className="h-6 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 ml-auto"
                               >
@@ -774,7 +843,7 @@ export default function Pages() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => window.open(`/${formData.slug}`, '_blank')}
+                                onClick={() => openPageInPublic(formData.slug)}
                                 className="h-6 px-2 text-gray-600 hover:text-gray-700 hover:bg-gray-100 ml-auto"
                               >
                                 <ExternalLink className="h-3 w-3" />
@@ -1442,8 +1511,8 @@ export default function Pages() {
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                const url = `/${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
-                                window.open(url, '_blank');
+                                const url = `${formData.portfolio_parent_slug || 'portfolio'}/${formData.slug}`;
+                                openPageInPublic(url);
                               }}
                               className="h-7 px-2 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-100 ml-auto flex-shrink-0"
                               title="View page"

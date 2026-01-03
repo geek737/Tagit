@@ -7,8 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { Upload, Eye, EyeOff, Save, Loader2 } from 'lucide-react';
-import { compressImage, validateImageFile } from '@/utils/imageUtils';
+import { Eye, EyeOff, Save, Loader2 } from 'lucide-react';
+import MediaSelector from '@/components/admin/MediaSelector';
 
 interface HeroContent {
   id?: string;
@@ -51,8 +51,6 @@ export default function EnhancedHeroEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
-  const [uploadingBg, setUploadingBg] = useState(false);
-  const [uploadingHero, setUploadingHero] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -107,35 +105,6 @@ export default function EnhancedHeroEditor() {
       console.error(error);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleImageUpload = async (
-    field: 'background_image' | 'hero_image',
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validation = validateImageFile(file);
-    if (!validation.valid) {
-      toast.error(validation.error);
-      return;
-    }
-
-    const setUploading = field === 'background_image' ? setUploadingBg : setUploadingHero;
-    setUploading(true);
-
-    try {
-      toast.info('Compressing and uploading image...');
-      const compressed = await compressImage(file, 1920, 1080, 0.85);
-      setContent(prev => ({ ...prev, [field]: compressed }));
-      toast.success('Image uploaded successfully!');
-    } catch (error) {
-      toast.error('Failed to upload image');
-      console.error(error);
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -491,36 +460,13 @@ export default function EnhancedHeroEditor() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Background Image (Optional - Grid Pattern)</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload('background_image', e)}
-                      disabled={uploadingBg}
-                      className="flex-1"
-                    />
-                    {uploadingBg && <Loader2 className="h-10 w-10 animate-spin text-accent" />}
-                  </div>
-                  {content.background_image && (
-                    <div className="relative">
-                      <img
-                        src={content.background_image}
-                        alt="Background preview"
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={() => updateField('background_image', null)}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                <MediaSelector
+                  label="Background Image (Optional - Grid Pattern)"
+                  value={content.background_image || ''}
+                  onChange={(url) => updateField('background_image', url || null)}
+                  placeholder="Select background image"
+                  previewShape="rectangle"
+                />
               </CardContent>
             </Card>
 
@@ -529,42 +475,13 @@ export default function EnhancedHeroEditor() {
                 <CardTitle>Hero Image</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Main Hero Image (3D Handshake / Robot)</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload('hero_image', e)}
-                      disabled={uploadingHero}
-                      className="flex-1"
-                    />
-                    {uploadingHero && <Loader2 className="h-10 w-10 animate-spin text-accent" />}
-                  </div>
-                  {content.hero_image && (
-                    <div className="relative">
-                      <img
-                        src={content.hero_image}
-                        alt="Hero image preview"
-                        className="w-full h-64 object-contain rounded-md bg-gray-100"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={() => updateField('hero_image', null)}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  )}
-                  {!content.hero_image && (
-                    <div className="border-2 border-dashed border-gray-300 rounded-md p-8 text-center">
-                      <Upload className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-600">No hero image uploaded</p>
-                    </div>
-                  )}
-                </div>
+                <MediaSelector
+                  label="Main Hero Image (3D Handshake / Robot)"
+                  value={content.hero_image || ''}
+                  onChange={(url) => updateField('hero_image', url || null)}
+                  placeholder="Select hero image"
+                  previewShape="square"
+                />
               </CardContent>
             </Card>
           </TabsContent>

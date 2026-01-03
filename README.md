@@ -1,73 +1,108 @@
-# Welcome to your Lovable project
+# TagIT - Digital Marketing & Branding Platform
 
-## Project info
+## 🚀 Description
 
-**URL**: https://lovable.dev/projects/f7c909be-d4c7-4f44-aa6a-fd62152ed754
+TagIT est une plateforme web complète pour une agence de marketing digital et branding au Maroc. Le projet inclut :
+- **Site vitrine** : Pages de services, portfolio, équipe, témoignages
+- **Backoffice CMS** : Gestion complète du contenu, médias, pages
+- **Système d'emails** : Templates stylés, SMTP configurable, logs
 
-## How can I edit this code?
+## 🛠 Technologies
 
-There are several ways of editing your application.
+- **Frontend** : React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui
+- **Backend** : Express.js, Supabase (Database + Auth + Storage)
+- **Email** : Nodemailer avec SMTP configurable
+- **Deployment** : Hostinger (FTP ou GitHub Actions)
 
-**Use Lovable**
+## 📦 Installation
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f7c909be-d4c7-4f44-aa6a-fd62152ed754) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Cloner le repo
 git clone <YOUR_GIT_URL>
+cd Tagit
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Installer les dépendances
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Configurer les variables d'environnement
+cp .env.example .env
+# Éditer .env avec vos clés Supabase
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer en développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🔧 Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Variables d'environnement requises
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=https://votre-projet.supabase.co
+VITE_SUPABASE_ANON_KEY=votre-clé-anon
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Optionnel - pour le déploiement
+VITE_PUBLIC_DOMAIN=tagit.ma
+VITE_ADMIN_SUBDOMAIN=admin.tagit.ma
+```
 
-## What technologies are used for this project?
+### Base de données Supabase
 
-This project is built with:
+Exécuter les migrations dans l'ordre depuis `supabase/migrations/`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🏗 Structure du Projet
 
-## How can I deploy this project?
+```
+├── client/                 # Frontend React
+│   ├── src/
+│   │   ├── components/     # Composants réutilisables
+│   │   │   ├── admin/      # Composants backoffice
+│   │   │   ├── pages/      # Composants de pages publiques
+│   │   │   └── ui/         # shadcn/ui components
+│   │   ├── pages/          # Pages React
+│   │   ├── lib/            # Utilitaires (Supabase, helpers)
+│   │   └── assets/         # Images et assets statiques
+│   └── public/             # Fichiers publics
+├── server/                 # Backend Express
+│   ├── routes.ts           # API routes
+│   └── index.ts            # Entry point
+├── supabase/
+│   └── migrations/         # Migrations SQL
+└── scripts/                # Scripts utilitaires
+```
 
-Simply open [Lovable](https://lovable.dev/projects/f7c909be-d4c7-4f44-aa6a-fd62152ed754) and click on Share -> Publish.
+## 📝 Scripts Disponibles
 
-## Can I connect a custom domain to my Lovable project?
+```bash
+npm run dev          # Serveur de développement
+npm run build        # Build de production
+npm run preview      # Preview du build
+```
 
-Yes, you can!
+## 🚀 Déploiement
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Option 1 : FTP Manuel
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```bash
+npm run build
+# Uploader le contenu de dist/public/ vers public_html/
+```
+
+### Option 2 : GitHub Actions (Automatisé)
+
+Voir `SETUP_INSTRUCTIONS.md` pour la configuration GitHub Actions.
+
+## 📖 Documentation
+
+- `QUICK_START.md` - Guide de démarrage rapide
+- `SETUP_INSTRUCTIONS.md` - Instructions de configuration détaillées
+
+## 🔐 Sécurité
+
+- Variables d'environnement pour les secrets
+- Validation côté serveur des uploads
+- RLS (Row Level Security) sur Supabase
+- HTTPS forcé en production
+
+## 📄 License
+
+Propriétaire - TagIT © 2025
