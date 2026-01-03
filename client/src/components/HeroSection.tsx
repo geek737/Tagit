@@ -96,7 +96,7 @@ const HeroSection = () => {
     >
       {content.background_image && (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+          className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${content.background_image})` }}
         />
       )}
